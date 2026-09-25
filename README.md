@@ -88,7 +88,12 @@ Turn an idea into an experiment. Measure the outcome. Carry what worked into the
 <details>
 <summary><strong>See the actual working playground</strong></summary>
 
-[![The Astral Travel memory explorer](docs/assets/playground.jpg)](https://imagine-os.github.io/astral-travel/#lab)
+<a href="https://imagine-os.github.io/astral-travel/#lab">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/objects-dark.jpg">
+  <img src="docs/assets/objects-light.jpg" alt="Astral Travel: recognizable document objects and a source inspector" width="100%">
+</picture>
+</a>
 
 The website starts in light mode. Use the appearance switch to change the complete interface to dark; your choice is saved on your device.
 
@@ -104,6 +109,8 @@ The [memory explorer](https://imagine-os.github.io/astral-travel/#lab) opens as 
 | **Cards** — browse visual document previews | **Lanes** — separate sources and interpretations |
 | **List** — scan titles and excerpts with the keyboard | **Radial** — put the selected memory at the center |
 | Your view preference is saved on this device. | **Grid** — scan an even arrangement |
+
+![Card lanes separate original sources from processed knowledge, with actual saved-text previews](docs/assets/cards-light.jpg)
 
 Every view uses the same records. Arranging a memory does not change its evidence or review status. The current previews show saved text; PDF page rendering, image attachments, video posters, and audio waveforms are future work. [How the explorer works →](docs/explorer.md)
 

@@ -2,6 +2,16 @@
 
 September 25, 2026.
 
+## v0.3.0–v0.3.2 — Recognizable memory objects
+
+All **37 tests** pass. The added presentation tests cover finite and deterministic layouts for 1, 8, and 30 records, source-edge deduplication, radial neighbor order, evidence lanes, bounded topic grouping, and unchanged record identities. Syntax checks and the static build pass.
+
+Live desktop checks on GitHub Pages exercised actual saved-text previews, object selection and the full source inspector, all four arrangements, Cards and List, filter/search preservation, drag-to-orbit, camera controls, light/dark switching, saved view/layout preferences, and expanded-workspace exit and focus restoration. The test browser disables WebGL; this directly exercised the automatic compatibility 3D renderer. The native GPU renderer is implemented and syntax-checked, but a hardware-accelerated visual check remains outstanding.
+
+[Objects in light mode](assets/objects-light.jpg) · [Objects in dark mode](assets/objects-dark.jpg) · [Card arrangement](assets/cards-light.jpg)
+
+Desktop layout was inspected live. Narrow layouts were reviewed in code; mobile-device and assistive-technology checks remain outstanding. No model, research-automation, attachment, or large-storage capabilities were added in this release.
+
 ## v0.2.0 — Visual storytelling and appearance
 
 The public deployment for commit `2601942` passed GitHub Actions. All 19 existing tests, syntax checks, and the static build pass.
