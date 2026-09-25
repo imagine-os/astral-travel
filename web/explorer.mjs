@@ -59,7 +59,7 @@ export function saveExplorerPreference(view,layout) {
 
 export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}) {
   let data, renderer = null, generation = 0, destroyed = false, page = 0, contentKey = '', arrangementKey = '', currentView = '', cardZoom = 1, board = null;
-  let visibleNodes = [], visibleEdges = [], allEdges = [], arrangement;
+  let visibleNodes = [], visibleEdges = [], allEdges = [], arrangement, rendererMode = ''; 
   const themeObserver = new MutationObserver(()=>renderer?.setTheme(document.documentElement.dataset.theme || 'light'));
   themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   const resizeObserver = new ResizeObserver(()=>{if(currentView==='cards'&&board?.fit)fitCards();});
@@ -104,26 +104,41 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
   }
   function stageCaption() {
     const arrangementDescriptions={rooms:'Grouped by topic',lanes:'Sources → interpretations',radial:'Selected memory at the center',grid:'An even grid for scanning'};
-    return `${arrangementDescriptions[data.layout]} · ${currentView==='objects'?'Drag to orbit · right-drag to pan · pinch or scroll to zoom':'Select a preview to inspect it · zoom for larger cards'}`;
+    return `${rendererMode==='compatibility'&&currentView==='objects'?'Compatibility 3D · ':''}${arrangementDescriptions[data.layout]} · ${currentView==='objects'?'Drag to orbit · right-drag to pan · pinch or scroll to zoom':'Select a preview to inspect it · zoom for larger cards'}`;
   }
   function renderList() {
     const oldTop=host.querySelector('.memory-list')?.scrollTop||0;const focusedId=document.activeElement?.dataset?.memorySelect;
     host.querySelector('.visual-pane').innerHTML=`<div class="memory-list visual-memory-list">${visibleNodes.map(n=>`<button class="memory-item ${n.id===data.selectedId?'selected':''}" data-memory-select="${escapeHtml(n.id)}" aria-pressed="${n.id===data.selectedId}"><img class="list-preview" src="${n.previewUrl}" alt="" width="45" height="56"><div class="list-item-copy"><h4>${escapeHtml(n.title)}</h4><p>${escapeHtml(n.text)}</p><small>${icons[n.icon]||'▤'} ${n.type==='raw'?'Raw source':`${escapeHtml(n.status)} interpretation`} · ${escapeHtml(n.category)}</small></div></button>`).join('')}</div>${footer(data.records.length)}`;
     host.querySelector('.memory-list').scrollTop=oldTop;if(focusedId)[...host.querySelectorAll('[data-memory-select]')].find(b=>b.dataset.memorySelect===focusedId)?.focus({preventScroll:true});
   }
+  function sceneOptions(stage, onError) {
+    return {nodes:visibleNodes,edges:visibleEdges,positions:arrangement.positions,groups:arrangement.groups,selectedId:data.selectedId,onSelect,onReady:()=>stage.querySelector('.stage-loading')?.remove(),onError};
+  }
   async function mount3D() {
-    const ticket=++generation, stage=host.querySelector('.object-stage');
+    const ticket=++generation, stage=host.querySelector('.object-stage');rendererMode='native';
     try {
       const {mountObjects3D}=await import('./objects-3d.mjs');
       if(destroyed||ticket!==generation||!stage?.isConnected)return;
-      renderer=mountObjects3D(stage,{nodes:visibleNodes,edges:visibleEdges,positions:arrangement.positions,groups:arrangement.groups,selectedId:data.selectedId,onSelect,onReady:()=>{stage.querySelector('.stage-loading')?.remove();},onError:showFallback});
+      renderer=mountObjects3D(stage,sceneOptions(stage,()=>showFallback(ticket,stage)));
       renderer.setTheme(document.documentElement.dataset.theme||'light');
-    } catch(error) {if(!destroyed&&ticket===generation)showFallback(error);}
+    } catch(error) {if(!destroyed&&ticket===generation)showFallback(ticket,stage);}
   }
-  function showFallback() {
-    const stage=host.querySelector('.object-stage');if(!stage)return;
+  async function showFallback(ticket,stage) {
+    if(destroyed||ticket!==generation||!stage?.isConnected||rendererMode==='compatibility')return;
+    rendererMode='compatibility';renderer?.destroy();renderer=null;
+    stage.innerHTML='<div class="stage-loading">Opening compatibility 3D…</div>';
+    try {
+      const {mountCompatibility3D}=await import('./objects-css3d.mjs');
+      if(destroyed||ticket!==generation||!stage.isConnected)return;
+      renderer=mountCompatibility3D(stage,sceneOptions(stage,()=>showCardsFallback(ticket,stage)));
+      renderer.setTheme(document.documentElement.dataset.theme||'light');
+      const caption=host.querySelector('[data-scene-note]');if(caption)caption.textContent=stageCaption();
+    } catch(error) {showCardsFallback(ticket,stage);}
+  }
+  function showCardsFallback(ticket,stage) {
+    if(destroyed||ticket!==generation||!stage?.isConnected)return;
     renderer?.destroy();renderer=null;
-    stage.innerHTML='<div class="stage-fallback"><span aria-hidden="true">▤</span><h4>Open the same memories as cards.</h4><p>This browser could not start the 3D renderer. Your records and sources are ready in the card view.</p><button class="button small primary" data-explorer-action="cards">Open cards</button></div>';
+    stage.innerHTML='<div class="stage-fallback"><span aria-hidden="true">▤</span><h4>Open the same memories as cards.</h4><p>This browser could not start the 3D view. Your records and sources are ready in the card view.</p><button class="button small primary" data-explorer-action="cards">Open cards</button></div>';
   }
   function update(next) {
     if(destroyed)return;
@@ -174,5 +189,5 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
   }
   function choose(event){if(event.target.id==='scene-memory-select')onSelect(event.target.value);}
   host.addEventListener('click',click);host.addEventListener('change',choose);
-  return {update,destroy(){destroyed=true;generation++;renderer?.destroy();renderer=null;themeObserver.disconnect();resizeObserver.disconnect();host.removeEventListener('click',click);host.removeEventListener('change',choose);}};
+  return {update,fit(){if(currentView==='objects')renderer?.fit();else if(currentView==='cards')fitCards();},destroy(){destroyed=true;generation++;renderer?.destroy();renderer=null;themeObserver.disconnect();resizeObserver.disconnect();host.removeEventListener('click',click);host.removeEventListener('change',choose);}};
 }

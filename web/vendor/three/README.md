@@ -13,3 +13,5 @@ The three modules were minified independently with esbuild 0.27.4 (`--minify
 --format=esm --legal-comments=inline`). No source was bundled into Astral's core.
 All browser imports are relative, so the static app works on GitHub Pages without
 an import map, CDN, API key, package install, or a request to a third-party host.
+
+`CSS3DRenderer.mjs` comes from `three@0.186.0/examples/jsm/renderers/CSS3DRenderer.js`, minified with its bare import changed to `./three.module.mjs`. The adjacent MIT license covers this addon.

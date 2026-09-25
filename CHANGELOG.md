@@ -2,6 +2,11 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.3.1 — 2026-09-25
+
+- Automatically use DOM-backed 3D objects if WebGL cannot start; preserve previews, layout choices, camera controls, themes, and selection.
+- Expand the workspace across the browser window without requiring native fullscreen support. Restore focus on exit and keep keyboard navigation inside the expanded workspace.
+
 ## 0.3.0 — 2026-09-25
 
 - Open memory in a real 3D object view: original notes are physical page stacks; processed interpretations are violet tablets.

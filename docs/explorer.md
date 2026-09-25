@@ -1,6 +1,6 @@
 # A memory you can recognize
 
-Astral Travel v0.3.0 gives the same source records and interpretations several presentations. Your first view is Objects 3D; Cards and List offer direct, keyboard-accessible alternatives. The appearance and arrangement are saved separately from workspace memory on this browser.
+Astral Travel v0.3.1 gives the same source records and interpretations several presentations. Your first view is Objects 3D; Cards and List offer direct, keyboard-accessible alternatives. The appearance and arrangement are saved separately from workspace memory on this browser.
 
 ## Views and arrangements
 
@@ -24,7 +24,7 @@ The current model contains text records. PDF rendering, uploaded image previews,
 
 ## Navigation
 
-Drag the 3D stage to orbit, right-drag to pan, and scroll or pinch to zoom. Fit returns to an overview; Focus brings the selection closer. The native memory picker and Cards/List controls provide a keyboard route to the same inspector. Full view uses the browser's fullscreen feature when supported; Escape exits it.
+Drag the 3D stage to orbit, right-drag to pan, and scroll or pinch to zoom. Fit returns to an overview; Focus brings the selection closer. The native memory picker and Cards/List controls provide a keyboard route to the same inspector. Full view expands the workspace across the browser window; Escape exits it. It does not require a fullscreen permission prompt.
 
 All views page through 30 records at a time. Search narrows the set before layout. Edges connect records visible on the current page; the inspector retains the full source trail. Three-dimensional selection highlights references without resetting the camera. Switching arrangement fits the new layout.
 
@@ -35,7 +35,7 @@ All views page through 30 records at a time. Search narrows the set before layou
 - `web/objects-3d.mjs`: local Three.js scene, object picking, cameras, themes, and graphics-resource disposal.
 - `web/vendor/three/`: pinned Three.js 0.186.0 and OrbitControls, distributed with their MIT license.
 
-The browser loads these libraries from this site. Preview generation does not fetch source pages or send record content to a service. Preview work is bounded independently of source length. Rendering is requested on interaction or a data change, rather than running an idle scene forever. WebGL failure offers the same records in Cards.
+The browser loads these libraries from this site. Preview generation does not fetch source pages or send record content to a service. Preview work is bounded independently of source length. Rendering is requested on interaction or a data change, rather than running an idle scene forever. If WebGL is unavailable, a labeled compatibility view uses Three camera transforms over CSS 3D document objects. If that also fails, Cards remains available.
 
 ## Design references
 
