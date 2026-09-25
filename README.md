@@ -81,7 +81,7 @@ Turn an idea into an experiment. Measure the outcome. Carry what worked into the
 </tr>
 </table>
 
-*Concept illustrations, with captions kept as readable text. Transparent artwork belongs naturally on both light and dark pages.*
+*Concept illustrations, with captions kept as readable text. Transparent artwork belongs naturally on both light and dark pages. [See the website in light mode](docs/assets/homepage-light.jpg).*
 
 > **A working alpha.** Local memory, traceable knowledge, reviewable connections, research reminders, and isolated scenario worksheets. No account or API key required. Model calls, autonomous research, predictive simulation, and outcome-driven improvement are future work.
 

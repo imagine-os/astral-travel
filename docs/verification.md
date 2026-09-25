@@ -1,6 +1,18 @@
-# Release verification — v0.1.0
+# Release verification
 
 September 25, 2026.
+
+## v0.2.0 — Visual storytelling and appearance
+
+The public deployment for commit `2601942` passed GitHub Actions. All 19 existing tests, syntax checks, and the static build pass.
+
+Live desktop browser checks confirmed a white/light default, dark switching, and saved dark and light preferences after reload. Both graph palettes render correctly. Search, story-to-workspace navigation, capture and help dialogs, research and scenario panes, and the v0.2.0 Version History entry were checked. All six story images load; their transparent backgrounds were visually inspected on both appearances. The README's six illustrated cards were also inspected on the live GitHub page.
+
+[Light homepage](assets/homepage-light.jpg) · [Numbered visual guide](assets/story-light.jpg)
+
+A static responsive review tightened the narrow header, search flex sizing, and small-screen caption sizes. Live browser inspection for this release was at a desktop viewport; dedicated mobile-device and assistive-technology checks remain outstanding. The visual release adds no new model or research automation capabilities.
+
+## Foundation release — v0.1.0
 
 ## Automated checks
 
