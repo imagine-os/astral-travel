@@ -90,8 +90,8 @@ Turn an idea into an experiment. Measure the outcome. Carry what worked into the
 
 <a href="https://imagine-os.github.io/astral-travel/#lab">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/objects-dark.jpg">
-  <img src="docs/assets/objects-light.jpg" alt="Astral Travel: recognizable document objects and a source inspector" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/objects-v04-dark.jpg">
+  <img src="docs/assets/objects-v04-light.jpg" alt="Astral Travel: recognizable document objects and a source inspector" width="100%">
 </picture>
 </a>
 

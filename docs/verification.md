@@ -2,6 +2,16 @@
 
 September 25, 2026.
 
+## v0.4.0 — Object forms and manual placement
+
+**49 tests pass**, including example idempotence, unchanged original records and reviews, presentation classification, immutable placement helpers, layout isolation, invalid preference handling, and bounded saved state. Syntax checks, static build, and GitHub Pages deployment pass.
+
+The live desktop compatibility 3D view showed all ten object forms and 18 sample records, with decoded saved-text previews. Adding examples a second time left the count unchanged. An actual pointer drag moved an audio object while the camera transform stayed unchanged. Connected reference geometry changed with movement. Undo restored the original coordinates; the keyboard movement controls, per-arrangement isolation, Reset, and undoing Reset also worked. A customized form and moved position survived page reload. Background orbit continued to work after dragging objects.
+
+[Light object collection](assets/objects-v04-light.jpg) · [Dark object collection](assets/objects-v04-dark.jpg)
+
+The browser has WebGL disabled, so pointer and visual checks exercised the compatibility renderer. The native renderer has the same movement contract and passes syntax checks; GPU visual and pointer verification, touch-device testing, and active-drag Escape cancellation still need dedicated hardware/input checks. Placement is a browser preference, separate from memory export; no media attachment or playback capability is implied by the new forms.
+
 ## v0.3.0–v0.3.2 — Recognizable memory objects
 
 All **37 tests** pass. The added presentation tests cover finite and deterministic layouts for 1, 8, and 30 records, source-edge deduplication, radial neighbor order, evidence lanes, bounded topic grouping, and unchanged record identities. Syntax checks and the static build pass.
