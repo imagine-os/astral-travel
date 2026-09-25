@@ -1,5 +1,5 @@
 # Astral Travel
-> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.3.2.
+> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.4.0.
 
 - [Repository](https://github.com/imagine-os/astral-travel)
 - [README](https://github.com/imagine-os/astral-travel/blob/main/README.md)

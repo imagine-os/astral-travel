@@ -1,10 +1,13 @@
-import { describeMemory, memoryEdges, arrangeMemories } from './memory-model.mjs';
+import { describeMemory, memoryEdges, arrangeMemories, OBJECT_TYPES } from './memory-model.mjs';
+
+import {createSpatialState,normalizeSpatialState,moveSpatialObject,resetSpatialLayout,setSpatialObjectType,applySpatialPositions} from './spatial-state.mjs';
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const icons = {chat:'❞',experiment:'△',document:'▤',research:'⌕',media:'▧',connection:'✧'};
+const icons = {chat:'❞',experiment:'△',document:'▤',research:'⌕',media:'▧',connection:'✧',book:'▥',image:'▧',video:'▰',audio:'♫',code:'⌘',claim:'✧'};
 const layouts = [['rooms','◫','Rooms'],['lanes','☷','Lanes'],['radial','◎','Radial'],['grid','▦','Grid']];
 const previewCache = new Map();
 const PAGE_SIZE = 30;
+let sessionSpatial;
 
 function wrappedLines(ctx, text, width, maxLines) {
   // A thumbnail is bounded work even when a captured note is very large.
@@ -27,7 +30,7 @@ function wrappedLines(ctx, text, width, maxLines) {
 
 // A small, exact-content document preview. No invented image or remote fetch.
 export function previewFor(node) {
-  const key = JSON.stringify([node.id,node.title,node.text,node.type,node.status]);
+  const key = JSON.stringify([node.id,node.title,node.text,node.type,node.status,node.objectType]);
   if(previewCache.has(key)) return previewCache.get(key);
   const canvas = document.createElement('canvas'); canvas.width = 480; canvas.height = 600;
   const ctx = canvas.getContext('2d'); if(!ctx) return '';
@@ -36,7 +39,7 @@ export function previewFor(node) {
   ctx.fillStyle = node.type === 'raw' ? '#e9f4fa' : '#f0e9fa'; ctx.fillRect(0,0,480,84);
   ctx.fillStyle = accent; ctx.fillRect(0,0,10,600);
   ctx.font = 'bold 32px Arial'; ctx.fillText(icons[node.icon] || '▤',32,53);
-  ctx.font = 'bold 18px Arial'; ctx.fillText(node.type === 'raw' ? 'ORIGINAL NOTE' : 'INTERPRETATION',86,49);
+  ctx.font = 'bold 18px Arial'; ctx.fillText(node.type === 'raw' ? (OBJECT_TYPES.find(t=>t.id===node.objectType)?.label||'Original note').toUpperCase() : 'INTERPRETATION',86,49);
   ctx.fillStyle = '#262136'; ctx.font = 'bold 32px Arial';
   let y = 130;
   for(const line of wrappedLines(ctx,node.title,410,3)) {ctx.fillText(line,32,y);y+=39;}
@@ -57,9 +60,31 @@ export function saveExplorerPreference(view,layout) {
   try {localStorage.setItem('astral-travel.explorer',JSON.stringify({view,layout}));} catch { /* Appearance still works in this session. */ }
 }
 
-export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}) {
+export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml,onNotice=()=>{}}) {
   let data, renderer = null, generation = 0, destroyed = false, page = 0, contentKey = '', arrangementKey = '', currentView = '', cardZoom = 1, board = null;
   let visibleNodes = [], visibleEdges = [], allEdges = [], arrangement, rendererMode = ''; 
+  const SPATIAL_KEY='astral-travel.spatial.v1';
+  let spatial=createSpatialState(),history=[];
+  if(sessionSpatial)spatial=normalizeSpatialState(sessionSpatial);
+  else{try{spatial=normalizeSpatialState(JSON.parse(localStorage.getItem(SPATIAL_KEY)||'null'));}catch{}}
+  sessionSpatial=spatial;
+  function saveSpatial(next){history.push(spatial);if(history.length>30)history.shift();spatial=next;persistSpatial();}
+  function persistSpatial(){sessionSpatial=spatial;try{localStorage.setItem(SPATIAL_KEY,JSON.stringify(spatial));}catch{onNotice('Placement is session-only because browser storage is unavailable.');}}
+  function customPositions(){return visibleNodes.some(r=>Object.hasOwn(spatial.layouts[data.layout]||{},r.id));}
+  function describe(record){const node=describeMemory(record,data.rawIds.has(record.id)?'raw':'claim');const custom=spatial.objects[node.id];return {...node,objectType:node.type==='raw'&&custom?custom:node.objectType,icon:node.type==='raw'&&custom?custom:node.icon};}
+  function moveObject(id,point){
+    if(!visibleNodes.some(n=>n.id===id)||!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return;
+    let next=spatial;
+    // Save the complete visible arrangement so radial selection cannot reshuffle a hand-placed scene.
+    for(const [key,value]of arrangement.positions)next=moveSpatialObject(next,data.layout,key,value);
+    next=moveSpatialObject(next,data.layout,id,point);saveSpatial(next);
+    onSelect(id);refreshPlacementControls();
+  }
+  function refreshPlacementControls(){
+    const undo=host.querySelector('[data-explorer-action="undo-move"]'),reset=host.querySelector('[data-explorer-action="reset-layout"]');
+    if(undo)undo.disabled=!history.length;if(reset)reset.disabled=!customPositions();
+    const caption=host.querySelector('[data-scene-note]');if(caption)caption.textContent=stageCaption();
+  }
   const themeObserver = new MutationObserver(()=>renderer?.setTheme(document.documentElement.dataset.theme || 'light'));
   themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   const resizeObserver = new ResizeObserver(()=>{if(currentView==='cards'&&board?.fit)fitCards();});
@@ -68,8 +93,11 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
   function inspector() {
     const node = data.records.find(r=>r.id===data.selectedId);
     const pane = host.querySelector('.visual-inspector'); if(!pane || !node) return;
-    const described = describeMemory(node,data.rawIds.has(node.id)?'raw':'claim');
-    pane.innerHTML=`<div class="record-preview"><img src="${previewFor(described)}" alt="Preview of the saved text for ${escapeHtml(node.title)}" width="480" height="600"></div><p class="preview-caption">ACTUAL SAVED TEXT · FULL CONTENT BELOW</p>${detailsHtml(node)}`;
+    const described = describe(node),position=arrangement.positions.get(node.id);
+    const active=document.activeElement?.dataset?.nudge;
+    const objectControls=`<div class="object-controls"><label for="object-form">OBJECT FORM</label><select id="object-form" aria-label="Object form" ${described.type==='claim'?'disabled':''}>${described.type==='claim'?'<option>Interpretation tablet</option>':`<option value="">Automatic · ${escapeHtml(OBJECT_TYPES.find(t=>t.id===describeMemory(node,'raw').objectType)?.label||'Document')}</option>${OBJECT_TYPES.filter(t=>t.id!=='claim').map(t=>`<option value="${t.id}" ${spatial.objects[node.id]===t.id?'selected':''}>${escapeHtml(t.icon)} ${escapeHtml(t.label)}</option>`).join('')}`}</select>${currentView==='objects'&&position?`<div class="object-position"><span>Move on floor <small>X ${position.x.toFixed(1)} · Z ${position.z.toFixed(1)}</small></span><div role="group" aria-label="Move selected object"><button data-nudge="north" aria-label="Move object backward">↑</button><button data-nudge="west" aria-label="Move object left">←</button><button data-nudge="east" aria-label="Move object right">→</button><button data-nudge="south" aria-label="Move object forward">↓</button></div></div>`:''}</div>`;
+    pane.innerHTML=`<div class="record-preview"><img src="${previewFor(described)}" alt="Preview of the saved text for ${escapeHtml(node.title)}" width="480" height="600"></div><p class="preview-caption">ACTUAL SAVED TEXT · FULL CONTENT BELOW</p>${objectControls}${detailsHtml(node)}`;
+    if(active)host.querySelector(`[data-nudge="${active}"]`)?.focus({preventScroll:true});
   }
   function fitCards() {
     const stage = host.querySelector('.cards-stage'); if(!stage || !board) return;
@@ -100,11 +128,11 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
     return `<div class="stage-footer"><div class="stage-legend"><span><i class="raw-dot"></i> Raw sources</span><span><i class="claim-dot"></i> Processed</span><span>Lines = recorded references</span>${outside?`<span class="outside-connections">${outside} connection${outside===1?'':'s'} outside this view · follow the source trail</span>`:''}</div><div class="explorer-pagination"><span>${page*PAGE_SIZE+1}–${Math.min((page+1)*PAGE_SIZE,total)} of ${total}</span>${total>PAGE_SIZE?`<button class="scene-control" data-explorer-action="previous" ${page===0?'disabled':''} aria-label="Previous memories">←</button><button class="scene-control" data-explorer-action="next" ${(page+1)*PAGE_SIZE>=total?'disabled':''} aria-label="Next memories">→</button>`:''}</div></div>`;
   }
   function toolbar() {
-    return `<div class="arrange-bar"><span class="arrange-label">ARRANGE</span><div class="layout-options" role="group" aria-label="Memory arrangement">${layouts.map(([id,icon,label])=>`<button data-memory-layout="${id}" class="${data.layout===id?'active':''}" aria-pressed="${data.layout===id}"><span aria-hidden="true">${icon}</span> ${label}</button>`).join('')}</div><div class="camera-tools"><button class="scene-control" data-explorer-action="fit" title="Fit all visible memories" aria-label="Fit all memories">⛶ <span>Fit</span></button><button class="scene-control" data-explorer-action="focus" title="Focus selected memory" aria-label="Focus selected memory">◎</button><button class="scene-control" data-explorer-action="zoom-out" aria-label="Zoom out">−</button><span data-zoom-label></span><button class="scene-control" data-explorer-action="zoom-in" aria-label="Zoom in">＋</button></div></div>`;
+    return `<div class="arrange-bar"><span class="arrange-label">ARRANGE</span><div class="layout-options" role="group" aria-label="Memory arrangement">${layouts.map(([id,icon,label])=>`<button data-memory-layout="${id}" class="${data.layout===id?'active':''}" aria-pressed="${data.layout===id}"><span aria-hidden="true">${icon}</span> ${label}</button>`).join('')}</div><div class="camera-tools"><button class="scene-control" data-explorer-action="undo-move" aria-label="Undo arrangement change" title="Undo arrangement change" ${history.length?'':'disabled'}>↶</button><button class="scene-control" data-explorer-action="reset-layout" aria-label="Reset arrangement" title="Return this arrangement to its automatic layout" ${customPositions()?'':'disabled'}>↺ <span>Reset</span></button><button class="scene-control" data-explorer-action="fit" title="Fit all visible memories" aria-label="Fit all memories">⛶ <span>Fit</span></button><button class="scene-control" data-explorer-action="focus" title="Focus selected memory" aria-label="Focus selected memory">◎</button><button class="scene-control" data-explorer-action="zoom-out" aria-label="Zoom out">−</button><span data-zoom-label></span><button class="scene-control" data-explorer-action="zoom-in" aria-label="Zoom in">＋</button></div></div>`;
   }
   function stageCaption() {
     const arrangementDescriptions={rooms:'Grouped by topic',lanes:'Sources → interpretations',radial:'Selected memory at the center',grid:'An even grid for scanning'};
-    return `${rendererMode==='compatibility'&&currentView==='objects'?'Compatibility 3D · ':''}${arrangementDescriptions[data.layout]} · ${currentView==='objects'?'Drag to orbit · right-drag to pan · pinch or scroll to zoom':'Select a preview to inspect it · zoom for larger cards'}`;
+    return `${rendererMode==='compatibility'&&currentView==='objects'?'Compatibility 3D · ':''}${customPositions()?'Your arrangement · saved on this device':arrangementDescriptions[data.layout]} · ${currentView==='objects'?'Drag an object to move · drag empty space to orbit · scroll to zoom':'Select a preview to inspect it · zoom for larger cards'}`;
   }
   function renderList() {
     const oldTop=host.querySelector('.memory-list')?.scrollTop||0;const focusedId=document.activeElement?.dataset?.memorySelect;
@@ -112,7 +140,7 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
     host.querySelector('.memory-list').scrollTop=oldTop;if(focusedId)[...host.querySelectorAll('[data-memory-select]')].find(b=>b.dataset.memorySelect===focusedId)?.focus({preventScroll:true});
   }
   function sceneOptions(stage, onError) {
-    return {nodes:visibleNodes,edges:visibleEdges,positions:arrangement.positions,groups:arrangement.groups,selectedId:data.selectedId,onSelect,onReady:()=>stage.querySelector('.stage-loading')?.remove(),onError};
+    return {nodes:visibleNodes,edges:visibleEdges,positions:arrangement.positions,groups:arrangement.groups,selectedId:data.selectedId,onSelect,onMove:moveObject,onReady:()=>stage.querySelector('.stage-loading')?.remove(),onError};
   }
   async function mount3D() {
     const ticket=++generation, stage=host.querySelector('.object-stage');rendererMode='native';
@@ -149,12 +177,15 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
     const selectedIndex=next.records.findIndex(r=>r.id===next.selectedId);
     if(selectedIndex>=0&&(selectedIndex<page*PAGE_SIZE||selectedIndex>=(page+1)*PAGE_SIZE))page=Math.floor(selectedIndex/PAGE_SIZE);
     const visible=next.records.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
-    visibleNodes=visible.map(r=>{const node=describeMemory(r,next.rawIds.has(r.id)?'raw':'claim');return {...node,previewUrl:previewFor(node)};});
+    visibleNodes=visible.map(r=>{const node=describe(r);return {...node,previewUrl:previewFor(node)};});
     visibleEdges=memoryEdges(visible,next.links);
     arrangement=arrangeMemories(visibleNodes,visibleEdges,next.layout,next.selectedId);
-    const nextArrangementKey=`${next.layout}|${page}|${next.layout==='radial'?next.selectedId:''}`;
+    arrangement.positions=applySpatialPositions(arrangement.positions,spatial,next.layout);
+    if(customPositions())arrangement.groups=[];
+    const nextArrangementKey=`${next.layout}|${page}|${JSON.stringify([...arrangement.positions])}|${JSON.stringify(spatial.objects)}`;
     const changed=currentView!==next.view||contentKey!==nextKey||!host.querySelector('.memory-explorer');
     const layoutChanged=arrangementKey!==nextArrangementKey;
+    const shouldFit=arrangementKey.split('|')[0]!==next.layout||arrangementKey.split('|')[1]!==String(page)||!customPositions();
     contentKey=nextKey;arrangementKey=nextArrangementKey;currentView=next.view;
     if(!next.records.length) {generation++;renderer?.destroy();renderer=null;host.innerHTML='<div class="empty-state"><span>⌕</span><h4>No memories found</h4><p>Try another word, choose a different layer, or add your first memory.</p></div>';return;}
     if(changed) {
@@ -166,18 +197,23 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
     if(currentView==='list')renderList();
     if(!changed&&currentView==='objects'&&renderer) {
       renderer.update(layoutChanged?{nodes:visibleNodes,edges:visibleEdges,positions:arrangement.positions,groups:arrangement.groups,selectedId:next.selectedId}:{selectedId:next.selectedId});
-      if(layoutChanged)renderer.fit();
+      if(layoutChanged&&shouldFit)renderer.fit();
     }
     host.querySelectorAll('[data-memory-layout]').forEach(b=>{b.classList.toggle('active',b.dataset.memoryLayout===next.layout);b.setAttribute('aria-pressed',String(b.dataset.memoryLayout===next.layout));});
     const caption=host.querySelector('[data-scene-note]');if(caption)caption.textContent=stageCaption();
     if(!changed&&currentView!=='list'){const oldFooter=host.querySelector('.stage-footer');if(oldFooter)oldFooter.outerHTML=footer(next.records.length);}
     const picker=host.querySelector('#scene-memory-select');if(picker){picker.innerHTML=visibleNodes.map(n=>`<option value="${escapeHtml(n.id)}" ${n.id===data.selectedId?'selected':''}>${escapeHtml(n.title)}</option>`).join('');}
-    inspector();
+    inspector();refreshPlacementControls();
   }
   function click(event) {
+    const nudge=event.target.closest('[data-nudge]')?.dataset.nudge;
+    if(nudge){const p=arrangement.positions.get(data.selectedId);if(p){const offsets={north:[0,-.5],south:[0,.5],east:[.5,0],west:[-.5,0]},[x,z]=offsets[nudge];moveObject(data.selectedId,{x:Math.max(-100,Math.min(100,p.x+x)),y:0,z:Math.max(-100,Math.min(100,p.z+z))});}return;}
+
     const selected=event.target.closest('[data-memory-select]');if(selected){onSelect(selected.dataset.memorySelect);return;}
     const layout=event.target.closest('[data-memory-layout]');if(layout){onLayout(layout.dataset.memoryLayout);return;}
     const action=event.target.closest('[data-explorer-action]')?.dataset.explorerAction;if(!action)return;
+    if(action==='undo-move'){if(history.length){spatial=history.pop();persistSpatial();update(data);onNotice('Arrangement change undone.');}return;}
+    if(action==='reset-layout'){saveSpatial(resetSpatialLayout(spatial,data.layout));update(data);renderer?.fit();onNotice('Automatic arrangement restored. Undo is available.');return;}
     if(action==='cards'){onView('cards');return;}
     if(action==='previous'||action==='next'){page+=action==='next'?1:-1;page=Math.max(0,Math.min(page,Math.ceil(data.records.length/PAGE_SIZE)-1));onSelect(data.records[page*PAGE_SIZE].id);return;}
     if(currentView==='objects') {if(action==='fit')renderer?.fit();if(action==='focus')renderer?.focus(data.selectedId);if(action==='zoom-in')renderer?.zoom(1);if(action==='zoom-out')renderer?.zoom(-1);}
@@ -187,7 +223,13 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml}
       if(action==='zoom-in'||action==='zoom-out'){board.fit=false;cardZoom=Math.max(.03,Math.min(2,cardZoom*(action==='zoom-in'?1.2:1/1.2)));applyCardZoom();}
     }
   }
-  function choose(event){if(event.target.id==='scene-memory-select')onSelect(event.target.value);}
+  function choose(event){
+    if(event.target.id==='scene-memory-select')onSelect(event.target.value);
+    if(event.target.id==='object-form'&&data.rawIds.has(data.selectedId)){
+      saveSpatial(setSpatialObjectType(spatial,data.selectedId,event.target.value||null));update(data);
+      host.querySelector('#object-form')?.focus({preventScroll:true});
+    }
+  }
   host.addEventListener('click',click);host.addEventListener('change',choose);
   return {update,fit(){if(currentView==='objects')renderer?.fit();else if(currentView==='cards')fitCards();},destroy(){destroyed=true;generation++;renderer?.destroy();renderer=null;themeObserver.disconnect();resizeObserver.disconnect();host.removeEventListener('click',click);host.removeEventListener('change',choose);}};
 }

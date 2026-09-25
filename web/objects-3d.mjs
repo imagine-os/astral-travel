@@ -118,7 +118,8 @@ function tabletGeometry(width, height, depth) {
 /**
  * @param {HTMLElement} host An element with a definite CSS height.
  * @param {object} options nodes, edges, positions (Map or keyed object), selectedId,
- * onSelect(id), onReady(), and onError(Error). All preview URLs must be local
+ * onSelect(id), onMove(id, { x, y: 0, z }), onDragState(boolean),
+ * moveEnabled (defaults to true), onReady(), and onError(Error). All preview URLs must be local
  * data:image PNG/JPEG/WebP URLs; no record content is sent over the network.
  * @returns {{update:Function,fit:Function,focus:Function,zoom:Function,setTheme:Function,destroy:Function}}
  */
@@ -140,7 +141,7 @@ export function mountObjects3D(host, options = {}) {
   const scene = new THREE.Scene();
   const world = new THREE.Group(); scene.add(world);
   const stage = new THREE.Group(); scene.add(stage);
-  const camera = new THREE.PerspectiveCamera(42, 1, .1, 300);
+  const camera = new THREE.PerspectiveCamera(42, 1, .1, 1600);
   camera.position.set(12, 16, 22);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -159,7 +160,7 @@ export function mountObjects3D(host, options = {}) {
   controls.enableDamping = !reducedMotion;
   controls.dampingFactor = .09;
   controls.minDistance = 5;
-  controls.maxDistance = 120;
+  controls.maxDistance = 800;
   controls.minPolarAngle = .22;
   controls.maxPolarAngle = Math.PI / 2 - .08;
   controls.screenSpacePanning = false;
@@ -182,9 +183,9 @@ export function mountObjects3D(host, options = {}) {
   const rimLight = new THREE.DirectionalLight('#c7c0ff', 1.4);
   rimLight.position.set(12, 10, -12); scene.add(rimLight);
 
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), new THREE.MeshStandardMaterial({ color: THEMES[theme].ground, roughness: .97, metalness: 0 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(440, 440), new THREE.MeshStandardMaterial({ color: THEMES[theme].ground, roughness: .97, metalness: 0 }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -.06; floor.receiveShadow = true; stage.add(floor);
-  const grid = new THREE.GridHelper(80, 40, THEMES[theme].grid, THEMES[theme].grid);
+  const grid = new THREE.GridHelper(400, 200, THEMES[theme].grid, THEMES[theme].grid);
   grid.material.transparent = true; grid.material.opacity = .5; grid.material.depthWrite = false;
   grid.position.y = -.035; stage.add(grid);
 
@@ -205,7 +206,7 @@ export function mountObjects3D(host, options = {}) {
     try {
       // OrbitControls emits change only while its damping still moves the camera.
       // No RAF is retained after the view settles.
-      controls.update();
+      if (controls.enabled) controls.update();
       renderer.render(scene, camera);
     } catch (error) { fail(error); }
   }
@@ -260,41 +261,122 @@ export function mountObjects3D(host, options = {}) {
     const colors = THEMES[theme];
     const group = new THREE.Group(); group.position.copy(location(node.id, index));
     group.userData.id = node.id;
-    const object = new THREE.Group(); object.position.set(0, 1.35, 0);
+    const object = new THREE.Group(); object.position.set(0, 1.45, 0);
     object.rotation.x = -.32;
     object.rotation.y = node.type === 'raw' ? -.08 : .04;
     group.add(object);
     const isRaw = node.type === 'raw';
-    if (isRaw) {
+    // Object kind is presentation metadata. Evidence status still comes from type.
+    const kind = !isRaw ? 'claim' : node.objectType || 'document';
+    const palette = { book: '#45677a', image: '#b58c55', video: '#465264', audio: '#577d7b', code: '#34495e', chat: '#639b9a', research: '#68845f', experiment: '#c18a5b' };
+    const accent = palette[kind] || '#758eab';
+    const matte = color => new THREE.MeshStandardMaterial({ color, roughness: .64, metalness: .06 });
+    const metallic = color => new THREE.MeshStandardMaterial({ color, roughness: .36, metalness: .5 });
+    function addMesh(geometry, material, x = 0, y = 0, z = 0) {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(x, y, z); mesh.castShadow = true; mesh.receiveShadow = true;
+      object.add(mesh); return mesh;
+    }
+    const box = (w, h, d, color, x = 0, y = 0, z = 0) => addMesh(new THREE.BoxGeometry(w, h, d), matte(color), x, y, z);
+    const body = (w, h, d, color, x = 0, y = 0, z = 0) => addMesh(tabletGeometry(w, h, d), matte(color), x, y, z);
+    let faceWidth = 1.82, faceHeight = 2.275, faceY = -.015, faceZ = .038;
+
+    if (kind === 'claim') {
+      addMesh(tabletGeometry(2.05, 2.62, .20), new THREE.MeshPhysicalMaterial({ color: colors.tablet, metalness: .16, roughness: .26, clearcoat: 1, clearcoatRoughness: .16, transparent: true, opacity: .90 }));
+      const foot = new THREE.Mesh(new THREE.CylinderGeometry(.69, .88, .14, 32), metallic(theme === 'dark' ? '#49405d' : '#e3ddf0'));
+      foot.position.set(0, .05, .1); foot.castShadow = true; group.add(foot);
+      addMesh(new THREE.SphereGeometry(.055, 10, 8), new THREE.MeshBasicMaterial({ color: node.status === 'verified' ? '#77b494' : '#d7ae65' }), .80, 1.14, .145);
+      faceWidth = 1.80; faceHeight = 2.25; faceZ = .145; faceY = -.045;
+    } else if (kind === 'book') {
+      // A solid cover, exposed page block, and rounded spine, not another tablet.
+      box(2.11, 2.65, .38, accent, 0, 0, -.09);
+      box(1.93, 2.48, .29, '#ece5d7', .045, -.01, .035);
+      box(2.11, 2.65, .06, accent, 0, 0, .205);
+      addMesh(new THREE.CylinderGeometry(.15, .15, 2.66, 16), matte('#2f5265'), -1.02, 0, .04);
+      for (const y of [-.87, .86]) box(.20, .055, .03, '#c4b079', -.995, y, .192);
+      box(.105, .34, .025, '#d69d5c', .63, -1.34, .12);
+      faceWidth = 1.61; faceHeight = 2.0125; faceY = .015; faceZ = .245;
+    } else if (kind === 'image') {
+      // A deep picture frame with a mat and an easel visible from the side.
+      box(2.28, 2.75, .23, accent);
+      box(2.07, 2.54, .035, '#f7f1e5', 0, 0, .137);
+      box(.20, 2.40, .15, '#886948', .66, -.08, -.43).rotation.x = -.19;
+      faceWidth = 1.81; faceHeight = 2.2625; faceZ = .16;
+    } else if (kind === 'video') {
+      // The striped clapper identifies a video record; it is not a play control.
+      body(2.24, 2.39, .24, '#394454', 0, -.12);
+      box(2.35, .27, .27, '#ece8da', 0, 1.24, -.015);
+      for (let stripe = 0; stripe < 6; stripe++) {
+        const mark = box(.19, .285, .014, '#364052', -.98 + stripe * .39, 1.24, .13);
+        mark.rotation.z = -.35;
+      }
+      box(2.30, .105, .25, '#273342', 0, 1.005);
+      faceWidth = 1.63; faceHeight = 2.0375; faceY = -.15; faceZ = .145;
+    } else if (kind === 'audio') {
+      // Two visible reels and a label window give this a recorder/cassette shape.
+      body(2.30, 2.58, .32, accent, 0, -.035);
+      body(2.04, .61, .045, '#233d43', 0, .80, .20);
+      for (const x of [-.56, .56]) {
+        const reel = addMesh(new THREE.CylinderGeometry(.225, .225, .045, 24), matte('#dfdfce'), x, .80, .26);
+        reel.rotation.x = Math.PI / 2;
+        const hub = addMesh(new THREE.CylinderGeometry(.083, .083, .055, 12), matte('#536d6c'), x, .80, .29);
+        hub.rotation.x = Math.PI / 2;
+        for (const angle of [0, Math.PI / 3, Math.PI * 2 / 3]) box(.31, .023, .011, '#536d6c', x, .80, .319).rotation.z = angle;
+      }
+      faceWidth = 1.29; faceHeight = 1.6125; faceY = -.405; faceZ = .215;
+      for (let slit = 0; slit < 4; slit++) box(.04, .76, .018, '#315556', .87 + slit * .057, -.43, .18);
+    } else if (kind === 'code') {
+      // A terminal on a keyboard base makes code distinguishable in silhouette.
+      body(2.20, 2.40, .23, accent, 0, .08);
+      box(.35, .37, .20, '#526478', 0, -1.24, -.04);
+      box(2.28, .12, .80, '#627286', 0, -1.32, .35);
+      for (let row = 0; row < 3; row++) for (let key = 0; key < 9; key++) {
+        box(.155, .024, .13, '#cbd3db', -.80 + key * .2, -1.245, .14 + row * .185);
+      }
+      faceWidth = 1.67; faceHeight = 2.0875; faceY = .095; faceZ = .147;
+    } else if (kind === 'chat') {
+      // A second offset bubble and a triangular tail make conversations legible.
+      body(2.08, 2.41, .12, '#c7ddda', .17, -.025, -.16);
+      body(2.05, 2.47, .19, accent, -.025, .045);
+      const tailShape = new THREE.Shape();
+      tailShape.moveTo(-.72, -.99); tailShape.lineTo(-.73, -1.54); tailShape.lineTo(-.15, -1.12); tailShape.closePath();
+      addMesh(new THREE.ExtrudeGeometry(tailShape, { depth: .16, bevelEnabled: false }), matte(accent), 0, 0, -.085);
+      faceWidth = 1.72; faceHeight = 2.15; faceY = .04; faceZ = .13;
+    } else if (kind === 'research') {
+      // Spiral notebook, tabbed edge, and visible page block for research sources.
+      box(2.18, 2.68, .22, accent, 0, 0, -.065);
+      box(1.95, 2.47, .15, colors.paper, .03, 0, .085);
+      for (let ring = 0; ring < 7; ring++) {
+        const loop = addMesh(new THREE.TorusGeometry(.105, .023, 6, 14), metallic('#bac7b4'), -1.03, -1.08 + ring * .36, .08);
+        loop.rotation.y = Math.PI / 2;
+      }
+      for (let tab = 0; tab < 3; tab++) box(.20, .27, .04, ['#c9b589', '#a4c8c5', '#c6b3dc'][tab], 1.08, .70 - tab * .48, -.01);
+      faceWidth = 1.71; faceHeight = 2.1375; faceY = -.035; faceZ = .17;
+    } else if (kind === 'experiment') {
+      // Clipboard with a brass clamp; experiment state stays in the text preview.
+      body(2.15, 2.72, .16, accent);
+      box(1.91, 2.42, .045, colors.paper, 0, -.035, .12);
+      addMesh(tabletGeometry(.79, .30, .095), metallic('#c7bc9d'), 0, 1.20, .18);
+      addMesh(new THREE.TorusGeometry(.15, .038, 8, 16), metallic('#c7bc9d'), 0, 1.41, .13);
+      faceWidth = 1.71; faceHeight = 2.1375; faceY = -.10; faceZ = .15;
+    } else {
       // Three thin offset pages and a small brass clip read as a document stack.
       for (let page = 2; page >= 0; page--) {
-        const sheet = new THREE.Mesh(new THREE.BoxGeometry(1.96, 2.5, .065), new THREE.MeshStandardMaterial({ color: page ? '#e2dfeb' : colors.paper, roughness: .78 }));
-        sheet.position.set(page * .065, -page * .025, -page * .07);
+        const sheet = box(1.96, 2.5, .065, page ? '#e2dfeb' : colors.paper, page * .065, -page * .025, -page * .07);
         sheet.rotation.z = page * -.025;
-        sheet.castShadow = true; sheet.receiveShadow = true; object.add(sheet);
-        targets.push(sheet);
       }
-      const clip = new THREE.Mesh(new THREE.BoxGeometry(.42, .09, .18), new THREE.MeshStandardMaterial({ color: '#b59b6a', metalness: .55, roughness: .35 }));
-      clip.position.set(-.42, 1.26, .015); clip.castShadow = true; object.add(clip);
-    } else {
-      const tablet = new THREE.Mesh(tabletGeometry(2.05, 2.62, .20), new THREE.MeshPhysicalMaterial({ color: colors.tablet, metalness: .16, roughness: .26, clearcoat: 1, clearcoatRoughness: .16, transparent: true, opacity: .90 }));
-      tablet.castShadow = true; tablet.receiveShadow = true;
-      object.add(tablet); targets.push(tablet);
-      const foot = new THREE.Mesh(new THREE.CylinderGeometry(.69, .88, .14, 32), new THREE.MeshStandardMaterial({ color: theme === 'dark' ? '#49405d' : '#e3ddf0', metalness: .22, roughness: .5 }));
-      foot.position.set(0, .05, .1); foot.castShadow = true; group.add(foot);
-      const indicator = new THREE.Mesh(new THREE.SphereGeometry(.045, 10, 8), new THREE.MeshBasicMaterial({ color: node.status === 'verified' ? '#77b494' : '#d7ae65' }));
-      indicator.position.set(.78, 1.12, .145); object.add(indicator);
+      addMesh(new THREE.BoxGeometry(.42, .09, .18), metallic('#b59b6a'), -.42, 1.26, .015);
     }
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(isRaw ? 1.82 : 1.83, isRaw ? 2.32 : 2.28), new THREE.MeshBasicMaterial({ map: fallbackPreview(node), toneMapped: false, side: THREE.FrontSide }));
-    face.position.z = isRaw ? .038 : .145;
-    face.position.y = isRaw ? -.015 : -.03;
-    object.add(face); targets.push(face);
-    const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(isRaw ? 2.05 : 2.18, isRaw ? 2.6 : 2.75, isRaw ? .27 : .32)), new THREE.LineBasicMaterial({ color: colors.selected, transparent: true, opacity: .85 }));
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(faceWidth, faceHeight), new THREE.MeshBasicMaterial({ map: fallbackPreview(node), toneMapped: false, side: THREE.FrontSide }));
+    face.position.set(0, faceY, faceZ); object.add(face);
+    // Only physical bodies and previews receive object drag hits; the footprint is decorative.
+    object.traverse(child => { if (child.isMesh) targets.push(child); });
+    const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.48, 3.02, .67)), new THREE.LineBasicMaterial({ color: colors.selected, transparent: true, opacity: .85 }));
     outline.visible = node.id === data.selectedId; outline.position.z = -.025; object.add(outline);
     const halo = new THREE.Mesh(new THREE.RingGeometry(1.40, 1.46, 64), new THREE.MeshBasicMaterial({ color: colors.selected, transparent: true, opacity: .8, side: THREE.DoubleSide, depthWrite: false }));
     halo.rotation.x = -Math.PI / 2; halo.position.y = .025; halo.visible = node.id === data.selectedId; group.add(halo);
     const label = new THREE.Sprite(new THREE.SpriteMaterial({ map: labelTexture(node, colors, node.id === data.selectedId), transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
-    label.scale.set(3.05, .715, 1); label.position.set(0, 3.08, .08); label.renderOrder = 20;
+    label.scale.set(3.05, .715, 1); label.position.set(0, 3.28, .08); label.renderOrder = 20;
     group.add(label); targets.push(label);
     group.traverse(child => { child.userData.id = node.id; });
     world.add(group);
@@ -302,16 +384,49 @@ export function mountObjects3D(host, options = {}) {
     return usePreview(node, face.material, currentGeneration);
   }
 
+  function edgeCurve(edge) {
+    const from = nodeObjects.get(edge.from), to = nodeObjects.get(edge.to);
+    if (!from || !to || edge.from === edge.to) return null;
+    const start = from.group.position.clone().add(new THREE.Vector3(0, .34, 0));
+    const end = to.group.position.clone().add(new THREE.Vector3(0, .34, 0));
+    const distance = start.distanceTo(end);
+    const middle = start.clone().lerp(end, .5); middle.y += Math.min(2.1, .4 + distance * .10);
+    return new THREE.QuadraticBezierCurve3(start, middle, end);
+  }
+
+  function updateShadows() {
+    if (!nodeObjects.size) return;
+    const bounds = new THREE.Box3();
+    for (const item of nodeObjects.values()) bounds.expandByPoint(item.group.position);
+    const center = bounds.getCenter(new THREE.Vector3()); center.y = 0;
+    const radius = Math.max(18, bounds.getSize(new THREE.Vector3()).length() * .65 + 5);
+    keyLight.target.position.copy(center);
+    keyLight.position.copy(center).add(new THREE.Vector3(-10, 20, 12).multiplyScalar(radius / 18));
+    const shadowCamera = keyLight.shadow.camera;
+    shadowCamera.left = -radius; shadowCamera.right = radius;
+    shadowCamera.top = radius; shadowCamera.bottom = -radius;
+    shadowCamera.far = radius * 5;
+    shadowCamera.updateProjectionMatrix();
+    renderer.shadowMap.needsUpdate = true;
+  }
+
+  function refreshMovedEdges(id) {
+    for (const { edge, line, arrow, inferred } of edgeObjects) {
+      if (edge.from !== id && edge.to !== id) continue;
+      const curve = edgeCurve(edge); if (!curve) continue;
+      line.geometry.dispose();
+      line.geometry = inferred ? new THREE.BufferGeometry().setFromPoints(curve.getPoints(60)) : new THREE.TubeGeometry(curve, 32, .026, 5, false);
+      if (inferred) line.computeLineDistances();
+      arrow.position.copy(curve.getPoint(.73)); arrow.quaternion.setFromUnitVectors(Y_AXIS, curve.getTangent(.73).normalize());
+    }
+    updateShadows();
+    requestRender();
+  }
+
   function makeEdges() {
     const colors = THEMES[theme];
     for (const edge of data.edges) {
-      const from = nodeObjects.get(edge.from), to = nodeObjects.get(edge.to);
-      if (!from || !to || edge.from === edge.to) continue;
-      const start = from.group.position.clone().add(new THREE.Vector3(0, .34, 0));
-      const end = to.group.position.clone().add(new THREE.Vector3(0, .34, 0));
-      const distance = start.distanceTo(end);
-      const middle = start.clone().lerp(end, .5); middle.y += Math.min(2.1, .4 + distance * .10);
-      const curve = new THREE.QuadraticBezierCurve3(start, middle, end);
+      const curve = edgeCurve(edge); if (!curve) continue;
       const inferred = /infer|dream|suggest|propos/.test(edge.type || '');
       let line;
       if (inferred) {
@@ -369,6 +484,7 @@ export function mountObjects3D(host, options = {}) {
   }
 
   function rebuild() {
+    if (drag) finishDrag(true);
     generation++;
     const currentGeneration = generation;
     cancelImages.forEach(cancel => cancel()); cancelImages = [];
@@ -376,7 +492,7 @@ export function mountObjects3D(host, options = {}) {
     nodeObjects = new Map(); edgeObjects = []; targets = [];
     makeGroups();
     const loads = data.nodes.slice(0, 30).map((node, index) => makeObject(node, index, currentGeneration));
-    makeEdges(); refreshSelection(); renderer.shadowMap.needsUpdate = true;
+    makeEdges(); refreshSelection(); updateShadows();
     if (!fitted && nodeObjects.size) { fit(); fitted = true; }
     requestRender();
     Promise.all(loads).then(() => {
@@ -408,14 +524,14 @@ export function mountObjects3D(host, options = {}) {
     for (const item of nodeObjects.values()) {
       const point = item.group.position;
       // The tilted page/tablet body, including its thickness and paper offsets.
-      for (const x of [-1.23, 1.23]) for (const y of [0, 2.8]) for (const z of [-.78, .78]) {
+      for (const x of [-1.45, 1.45]) for (const y of [-.12, 3.03]) for (const z of [-.95, 1.0]) {
         corners.push(point.clone().add(new THREE.Vector3(x, y, z)));
       }
       // The selection footprint and the title sprite are also visible objects.
       for (const x of [-1.56, 1.56]) for (const z of [-1.46, 1.46]) {
         corners.push(point.clone().add(new THREE.Vector3(x, -.02, z)));
       }
-      const labelCenter = point.clone().add(new THREE.Vector3(0, 3.08, .08));
+      const labelCenter = point.clone().add(new THREE.Vector3(0, 3.28, .08));
       for (const x of [-1.56, 1.56]) for (const y of [-.39, .39]) {
         corners.push(labelCenter.clone().addScaledVector(right, x).addScaledVector(up, y));
       }
@@ -463,7 +579,7 @@ export function mountObjects3D(host, options = {}) {
     const changed = theme !== next; theme = next;
     const colors = THEMES[theme];
     scene.background = new THREE.Color(colors.background);
-    scene.fog = new THREE.Fog(colors.background, 75, 180);
+    scene.fog = new THREE.Fog(colors.background, 180, 700);
     floor.material.color.set(colors.ground);
     grid.material.color.set(colors.grid);
     renderer.toneMappingExposure = theme === 'dark' ? 1.05 : 1.25;
@@ -471,38 +587,133 @@ export function mountObjects3D(host, options = {}) {
   }
 
   const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
-  let pointerStart = null;
+  const groundPlane = new THREE.Plane(Y_AXIS, 0);
+  let pointerStart = null, drag = null, suppressSequence = false;
   const activePointers = new Set();
-  function hit(event) {
+  function setRay(event) {
     const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return false;
     pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
+    camera.updateMatrixWorld(true);
     raycaster.setFromCamera(pointer, camera);
+    return true;
+  }
+  function hit(event) {
+    if (!setRay(event)) return null;
+    world.updateMatrixWorld(true);
     return raycaster.intersectObjects(targets, false)[0]?.object.userData.id || null;
+  }
+  function groundPoint(event) {
+    if (!setRay(event)) return null;
+    return raycaster.ray.intersectPlane(groundPlane, new THREE.Vector3());
+  }
+  function ownPointer(event) {
+    event.preventDefault(); event.stopImmediatePropagation();
+  }
+  function finishDrag(cancelled = false) {
+    const current = drag; if (!current) return;
+    drag = null;
+    const item = nodeObjects.get(current.id);
+    if (cancelled && item) {
+      item.group.position.copy(current.original);
+      refreshMovedEdges(current.id);
+    }
+    const position = item ? { x: item.group.position.x, y: 0, z: item.group.position.z } : null;
+    controls.enabled = current.controlsEnabled;
+    canvas.style.cursor = data.moveEnabled === false ? 'pointer' : 'grab';
+    if (canvas.hasPointerCapture?.(current.pointerId)) canvas.releasePointerCapture(current.pointerId);
+    if (current.moved) options.onDragState?.(false);
+    if (!cancelled && current.moved && position) {
+      // Keep the local layout stable even when the host persists asynchronously.
+      if (data.positions instanceof Map) data.positions = new Map(data.positions).set(current.id, position);
+      else data.positions = { ...data.positions, [current.id]: position };
+      options.onMove?.(current.id, position);
+    }
+    requestRender();
   }
   function pointerDown(event) {
     activePointers.add(event.pointerId);
-    pointerStart = activePointers.size === 1 && event.button === 0 ? { x: event.clientX, y: event.clientY, id: event.pointerId } : null;
+    if (drag || suppressSequence) {
+      // A gesture that began on an object stays owned by that object. A second
+      // finger cancels the move instead of mixing a partial orbit with a drag.
+      if (drag && drag.pointerId !== event.pointerId) { finishDrag(true); suppressSequence = true; }
+      ownPointer(event); return;
+    }
+    const id = event.button === 0 && activePointers.size === 1 ? hit(event) : null;
+    pointerStart = activePointers.size === 1 && event.button === 0 ? { x: event.clientX, y: event.clientY, pointerId: event.pointerId, id } : null;
+    if (!id || data.moveEnabled === false) return;
+    const item = nodeObjects.get(id); if (!item) return;
+    const controlsEnabled = controls.enabled;
+    controls.enabled = false;
+    // Finish residual orbit damping before measuring the ground-plane offset.
+    const damping = controls.enableDamping; controls.enableDamping = false; controls.update(); controls.enableDamping = damping;
+    const point = groundPoint(event);
+    if (!point) { controls.enabled = controlsEnabled; return; }
+    ownPointer(event);
+    drag = { id, pointerId: event.pointerId, x: event.clientX, y: event.clientY, original: item.group.position.clone(), offset: item.group.position.clone().sub(point), controlsEnabled, moved: false };
+    pointerStart = null;
+    canvas.setPointerCapture(event.pointerId);
+    canvas.style.cursor = 'grabbing';
   }
   function pointerMove(event) {
+    if (suppressSequence) { ownPointer(event); return; }
+    if (drag && drag.pointerId === event.pointerId) {
+      ownPointer(event);
+      if (!drag.moved && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 5) return;
+      const point = groundPoint(event); if (!point) return;
+      const item = nodeObjects.get(drag.id); if (!item) { finishDrag(true); return; }
+      if (!drag.moved) { drag.moved = true; options.onDragState?.(true); }
+      if (!drag || disposed) return;
+      point.add(drag.offset);
+      item.group.position.set(THREE.MathUtils.clamp(point.x, -100, 100), 0, THREE.MathUtils.clamp(point.z, -100, 100));
+      refreshMovedEdges(drag.id);
+      return;
+    }
     if (activePointers.size) {
       if (pointerStart && Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) > 6) pointerStart = null;
       return;
     }
-    canvas.style.cursor = hit(event) ? 'pointer' : 'grab';
+    canvas.style.cursor = hit(event) ? (data.moveEnabled === false ? 'pointer' : 'grab') : 'grab';
   }
   function pointerUp(event) {
     activePointers.delete(event.pointerId);
+    if (suppressSequence) {
+      ownPointer(event); if (!activePointers.size) suppressSequence = false;
+      return;
+    }
+    if (drag && drag.pointerId === event.pointerId) {
+      ownPointer(event);
+      const { id, moved } = drag;
+      finishDrag(false);
+      if (!moved) options.onSelect?.(id);
+      return;
+    }
     const start = pointerStart; pointerStart = null;
-    if (!start || start.id !== event.pointerId || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) return;
+    if (!start || start.pointerId !== event.pointerId || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) return;
     const id = hit(event);
-    if (id) options.onSelect?.(id);
+    if (id && id === start.id) options.onSelect?.(id);
   }
-  function pointerCancel(event) { activePointers.delete(event.pointerId); pointerStart = null; }
+  function pointerCancel(event) {
+    activePointers.delete(event.pointerId); pointerStart = null;
+    if (drag?.pointerId === event.pointerId) { ownPointer(event); finishDrag(true); }
+    if (!activePointers.size) suppressSequence = false;
+  }
+  function lostCapture(event) {
+    if (drag?.pointerId === event.pointerId) { finishDrag(true); activePointers.delete(event.pointerId); }
+  }
+  function cancelKey(event) {
+    if (event.key !== 'Escape' || !drag) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    finishDrag(true); pointerStart = null; suppressSequence = activePointers.size > 0;
+  }
   function contextLost(event) { event.preventDefault(); fail(new Error('The device lost its 3D graphics context. Use the card or list view to continue.')); }
-  canvas.addEventListener('pointerdown', pointerDown);
-  canvas.addEventListener('pointermove', pointerMove);
-  canvas.addEventListener('pointerup', pointerUp);
-  canvas.addEventListener('pointercancel', pointerCancel);
+  // Capture object gestures before OrbitControls' own target-phase listeners.
+  canvas.addEventListener('pointerdown', pointerDown, true);
+  canvas.addEventListener('pointermove', pointerMove, true);
+  canvas.addEventListener('pointerup', pointerUp, true);
+  canvas.addEventListener('pointercancel', pointerCancel, true);
+  canvas.addEventListener('lostpointercapture', lostCapture);
+  window.addEventListener('keydown', cancelKey, true);
   canvas.addEventListener('webglcontextlost', contextLost);
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   function motionChanged(event) { reducedMotion = event.matches; controls.enableDamping = !reducedMotion; requestRender(); }
@@ -510,15 +721,19 @@ export function mountObjects3D(host, options = {}) {
 
   function destroy() {
     if (disposed) return;
+    if (drag) finishDrag(true);
     disposed = true; generation++;
     if (frame) cancelAnimationFrame(frame);
     cancelImages.forEach(cancel => cancel()); cancelImages = [];
     observer.disconnect();
     controls.removeEventListener('change', requestRender); controls.dispose();
-    canvas.removeEventListener('pointerdown', pointerDown);
-    canvas.removeEventListener('pointermove', pointerMove);
-    canvas.removeEventListener('pointerup', pointerUp);
-    canvas.removeEventListener('pointercancel', pointerCancel);
+    canvas.removeEventListener('pointerdown', pointerDown, true);
+    canvas.removeEventListener('pointermove', pointerMove, true);
+    canvas.removeEventListener('pointerup', pointerUp, true);
+    canvas.removeEventListener('pointercancel', pointerCancel, true);
+    canvas.removeEventListener('lostpointercapture', lostCapture);
+    window.removeEventListener('keydown', cancelKey, true);
+    activePointers.clear();
     canvas.removeEventListener('webglcontextlost', contextLost);
     motionQuery.removeEventListener('change', motionChanged);
     disposeTree(world); disposeTree(stage);

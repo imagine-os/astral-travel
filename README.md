@@ -14,7 +14,7 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.3.2](https://img.shields.io/badge/version-0.3.2-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.4.0](https://img.shields.io/badge/version-0.4.0-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
@@ -101,7 +101,7 @@ The website starts in light mode. Use the appearance switch to change the comple
 
 ## Recognize your memories. Arrange them your way.
 
-The [memory explorer](https://imagine-os.github.io/astral-travel/#lab) opens as **real 3D document objects**, with previews of the text you actually saved. Sources look like page stacks. Interpretations use violet tablets. Select either to read the full content and follow its references.
+The [memory explorer](https://imagine-os.github.io/astral-travel/#lab) opens as **real 3D document objects**, with previews of the text you actually saved. Sources take recognizable forms: books, conversations, photo frames, video slates, audio cassettes, code terminals, notebooks, experiment boards, and original document stacks. Interpretations use violet tablets. Select either to read the full content and follow its references.
 
 | Choose the view | Choose the arrangement |
 | --- | --- |
@@ -111,6 +111,8 @@ The [memory explorer](https://imagine-os.github.io/astral-travel/#lab) opens as 
 | Your view preference is saved on this device. | **Grid** — scan an even arrangement |
 
 ![Card lanes separate original sources from processed knowledge, with actual saved-text previews](docs/assets/cards-light.jpg)
+
+**Drag an object to move it; drag empty space to orbit.** Your positions are saved separately for each arrangement on this device. Undo, reset, and keyboard movement controls are built in. Use **Add examples** to bring eight new fictional sources and two sourced proposals into an existing workspace.
 
 Every view uses the same records. Arranging a memory does not change its evidence or review status. The current previews show saved text; PDF page rendering, image attachments, video posters, and audio waveforms are future work. [How the explorer works →](docs/explorer.md)
 
@@ -276,6 +278,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.3.2
+[MIT licensed](LICENSE) · Made in the open · v0.4.0
 
 </div>

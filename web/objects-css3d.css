@@ -2,7 +2,7 @@
 .compatibility-3d{--c3d-floor:#f5f3fb;--c3d-grid:#ded8ea;--c3d-ink:#30283e;--c3d-muted:#726580;--c3d-label:#ffffff;--c3d-line:#afa0ca;--c3d-accent:#7856ba;--c3d-room:rgba(146,118,196,.045);position:relative;width:100%;height:100%;background:radial-gradient(ellipse at 50% 35%,#fff 0,#f2eff9 78%);touch-action:none;cursor:grab;user-select:none;isolation:isolate}
 .compatibility-3d:active{cursor:grabbing}
 .compatibility-3d[data-theme=dark]{--c3d-floor:#171729;--c3d-grid:#353047;--c3d-ink:#f1eafb;--c3d-muted:#beb0d2;--c3d-label:#272338;--c3d-line:#7e6b9a;--c3d-accent:#c3a1ff;--c3d-room:rgba(180,150,231,.045);background:radial-gradient(ellipse at 50% 30%,#272239 0,#121322 80%)}
-.c3d-ground{width:5000px;height:5000px;background-color:var(--c3d-floor);background-image:linear-gradient(var(--c3d-grid) 1px,transparent 1px),linear-gradient(90deg,var(--c3d-grid) 1px,transparent 1px);background-size:200px 200px;backface-visibility:hidden;pointer-events:none!important}
+.c3d-ground{width:25000px;height:25000px;background-color:var(--c3d-floor);background-image:linear-gradient(var(--c3d-grid) 1px,transparent 1px),linear-gradient(90deg,var(--c3d-grid) 1px,transparent 1px);background-size:200px 200px;backface-visibility:hidden;pointer-events:none!important}
 .c3d-room{box-sizing:border-box;border:2px solid var(--c3d-grid);border-radius:24px;background:var(--c3d-room);backface-visibility:hidden;pointer-events:none!important}
 .c3d-room-label{position:absolute;left:20px;top:12px;max-width:calc(100% - 40px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--c3d-muted);font:600 23px/1.4 system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase}
 .c3d-object{position:relative;width:205px;height:260px;box-sizing:border-box;padding:0;border:0;background:transparent;transform-style:preserve-3d;cursor:pointer;font-family:system-ui,sans-serif;outline:none;overflow:visible;color:#30283e}
@@ -38,3 +38,101 @@
 .c3d-edge.is-muted{opacity:.3}
 .c3d-fallback-title{display:block;font-size:23px;line-height:1.3;margin:16px 10px 14px;text-align:left}
 .c3d-fallback-text{display:block;font-size:15px;line-height:1.5;margin:0 10px;text-align:left;color:#70647a}
+/* Object form is a presentation of the source kind; every preview is saved text. */
+.c3d-object,.c3d-label{cursor:grab;touch-action:none}
+.compatibility-3d.is-dragging,.compatibility-3d.is-dragging .c3d-object,.compatibility-3d.is-dragging .c3d-label{cursor:grabbing}
+.c3d-object.is-moving .c3d-front{outline:3px solid var(--c3d-accent);outline-offset:7px;box-shadow:4px 14px 25px #3d245a44}
+.c3d-label.is-moving{outline:2px solid var(--c3d-accent);outline-offset:3px}
+.c3d-type-badge{position:absolute;left:-14px;top:-13px;display:grid;place-items:center;width:42px;height:42px;border:2px solid #fff;border-radius:12px;color:#fff;background:#776286;box-shadow:0 3px 8px #30204030;transform:translateZ(7px);pointer-events:none}
+.c3d-type-badge svg{width:27px;height:27px}
+.c3d-type-caption{position:absolute;bottom:9px;left:15px;right:15px;font:750 9px/1.2 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.14em;text-align:left;color:#736481;pointer-events:none;transform:translateZ(3px)}
+.c3d-kind-document .c3d-front{padding-bottom:25px}
+.c3d-label{position:relative;padding-left:47px}
+.c3d-label-icon{position:absolute;left:11px;top:18px;width:27px;height:27px;color:var(--c3d-accent)}
+.c3d-label-icon svg{width:100%;height:100%}
+.c3d-object:not(.c3d-kind-document) .c3d-clip{display:none}
+.c3d-kind-claim .c3d-type-badge{background:#8459b6}
+.c3d-kind-claim .c3d-type-caption{color:#503268;bottom:5px;font-size:7px}
+/* A bound book with a deep colored spine and a paper block. */
+.c3d-kind-book{width:205px;height:263px}
+.c3d-kind-book .c3d-sheet{background:#f2ebd8;border-color:#b2a188;border-radius:3px 9px 9px 3px}
+.c3d-kind-book .c3d-layer-2{transform:translate3d(10px,2px,-18px) rotate(0);background:repeating-linear-gradient(#f9f5e9 0 3px,#d3c8b0 3px 4px)}
+.c3d-kind-book .c3d-layer-1{transform:translate3d(6px,1px,-9px) rotate(0)}
+.c3d-kind-book .c3d-front{padding:18px 13px 34px 27px;border:2px solid #347777;border-left:19px solid #276061;border-radius:3px 9px 9px 3px;background:#67a0a0}
+.c3d-kind-book .c3d-preview{object-fit:contain;background:#fffefb;border-radius:3px}
+.c3d-kind-book .c3d-spine{position:absolute;left:-9px;top:0;bottom:0;width:19px;background:linear-gradient(90deg,#245455,#438788);transform:translateZ(-5px);border-radius:6px 0 0 6px}
+.c3d-kind-book .c3d-type-caption{left:37px;color:#fff6d9;bottom:12px}
+.c3d-kind-book .c3d-type-badge{background:#317c7b}
+/* Photo-frame notes have a broad white mount, never a fabricated image thumbnail. */
+.c3d-kind-image{width:262px;height:232px}
+.c3d-kind-image .c3d-sheet{border-radius:3px;background:#c7ad8e;border-color:#a48b6d}
+.c3d-kind-image .c3d-layer-2{transform:translate3d(5px,3px,-13px) rotate(0)}
+.c3d-kind-image .c3d-layer-1{transform:translate3d(2px,1px,-6px) rotate(0)}
+.c3d-kind-image .c3d-front{padding:14px 13px 37px;border:8px solid #cfb795;border-radius:4px;background:#fffdf6}
+.c3d-kind-image .c3d-preview{object-fit:contain;background:#eae6df}
+.c3d-kind-image .c3d-type-caption{bottom:17px;left:25px;color:#9d6d36}
+.c3d-kind-image .c3d-type-badge{background:#b98446}
+/* A rounded dialogue panel with its unmistakable speech tail. */
+.c3d-kind-chat{width:253px;height:208px}
+.c3d-kind-chat .c3d-sheet{border-radius:28px;background:#81b4d1;border-color:#669bb9}
+.c3d-kind-chat .c3d-layer-2{transform:translate3d(3px,3px,-12px) rotate(0)}
+.c3d-kind-chat .c3d-layer-1{transform:translate3d(1px,1px,-5px) rotate(0)}
+.c3d-kind-chat .c3d-front{padding:16px 16px 28px;border:4px solid #a2cbe2;border-radius:27px;background:#d0e5f3}
+.c3d-kind-chat .c3d-preview{object-fit:contain;border-radius:12px;background:#fffefa}
+.c3d-kind-chat .c3d-chat-tail{position:absolute;bottom:-20px;left:31px;width:30px;height:38px;clip-path:polygon(0 0,100% 0,0 100%);background:#a2cbe2;transform:translateZ(-2px)}
+.c3d-kind-chat .c3d-type-caption{left:25px;bottom:10px;color:#326782}
+.c3d-kind-chat .c3d-type-badge{background:#4e95bd}
+/* Audio notes live on a cassette, with two visible reels and no playback affordance. */
+.c3d-kind-audio{width:274px;height:193px}
+.c3d-kind-audio .c3d-sheet{border-radius:15px;background:#bc7658;border-color:#96573f}
+.c3d-kind-audio .c3d-layer-2{transform:translate3d(2px,3px,-14px) rotate(0)}
+.c3d-kind-audio .c3d-layer-1{transform:translate3d(1px,1px,-7px) rotate(0)}
+.c3d-kind-audio .c3d-front{padding:13px 19px 88px;border:5px solid #cc9373;border-radius:15px;background:linear-gradient(135deg,#f5d9bc,#d7aa86)}
+.c3d-kind-audio .c3d-preview{object-fit:contain;background:#fffef8;border-radius:5px}
+.c3d-kind-audio .c3d-cassette-reels{position:absolute;display:flex;justify-content:space-between;align-items:center;left:39px;right:39px;bottom:40px;height:36px;border:3px solid #8e6950;border-radius:22px;background:linear-gradient(#6a5244,#ad8765);transform:translateZ(2px)}
+.c3d-kind-audio .c3d-reel{width:35px;height:35px;margin:-2px;border:6px solid #eadfca;box-sizing:border-box;border-radius:50%;background:repeating-conic-gradient(#54483e 0deg 30deg,#f6ebd5 30deg 60deg);box-shadow:inset 0 0 0 7px #66533f}
+.c3d-kind-audio .c3d-cassette-base{position:absolute;left:68px;right:68px;bottom:4px;height:21px;border:2px solid #ad7a57;clip-path:polygon(10% 0,90% 0,100% 100%,0 100%);background:#e2ba95}
+.c3d-kind-audio .c3d-type-caption{bottom:27px;left:25px;font-size:7px;color:#78563c}
+.c3d-kind-audio .c3d-type-badge{background:#b8724b}
+/* A striped production slate makes video notes clear without implying a player. */
+.c3d-kind-video{width:260px;height:225px}
+.c3d-kind-video .c3d-sheet{border-radius:5px;background:#4b5670;border-color:#313f55}
+.c3d-kind-video .c3d-layer-2{transform:translate3d(2px,2px,-12px) rotate(0)}
+.c3d-kind-video .c3d-layer-1{transform:translate3d(1px,1px,-6px) rotate(0)}
+.c3d-kind-video .c3d-front{padding:21px 14px 26px;border:5px solid #45536a;border-radius:5px;background:#53647c}
+.c3d-kind-video .c3d-preview{object-fit:contain;background:#fffefb;border-radius:2px}
+.c3d-kind-video .c3d-clapper{position:absolute;top:-23px;left:-2px;right:-2px;height:26px;border:2px solid #334253;border-radius:4px;background:repeating-linear-gradient(125deg,#eef0e8 0 22px,#354257 22px 44px);transform:translateZ(4px) rotate(-5deg);transform-origin:4px 24px;box-shadow:1px 3px 3px #20283444}
+.c3d-kind-video .c3d-type-badge{top:21px;left:-14px;background:#627c9e}
+.c3d-kind-video .c3d-type-caption{bottom:9px;left:19px;color:#e3e9f2}
+/* A monitor silhouette and stand distinguish code from ordinary documents. */
+.c3d-kind-code{width:278px;height:216px}
+.c3d-kind-code .c3d-sheet{background:#426d66;border-color:#2a514b;border-radius:10px}
+.c3d-kind-code .c3d-layer-2{transform:translate3d(2px,3px,-15px) rotate(0)}
+.c3d-kind-code .c3d-layer-1{transform:translate3d(1px,1px,-7px) rotate(0)}
+.c3d-kind-code .c3d-front{padding:23px 12px 23px;border:7px solid #406b62;border-radius:10px;background:#d4e3d8}
+.c3d-kind-code .c3d-preview{object-fit:contain;background:#fffefa;border-radius:2px}
+.c3d-kind-code .c3d-terminal-bar{position:absolute;top:8px;left:16px;color:#79bca5;letter-spacing:4px;font:10px/1.1 system-ui;transform:translateZ(2px)}
+.c3d-kind-code .c3d-terminal-stand{position:absolute;width:88px;height:27px;left:95px;bottom:-25px;background:linear-gradient(90deg,#45655e,#779b8b,#45655e);clip-path:polygon(34% 0,66% 0,72% 72%,100% 82%,100% 100%,0 100%,0 82%,28% 72%);transform:translateZ(-8px)}
+.c3d-kind-code .c3d-type-caption{bottom:10px;left:20px;color:#30604f;font-size:8px}
+.c3d-kind-code .c3d-type-badge{background:#418671}
+/* Research spiral and experiment clipboard are physically different source containers. */
+.c3d-kind-research{width:206px;height:259px}
+.c3d-kind-research .c3d-sheet{background:#d8d1b4;border-color:#b1a779;border-radius:4px 10px 10px 4px}
+.c3d-kind-research .c3d-layer-2{transform:translate3d(4px,1px,-12px) rotate(0)}
+.c3d-kind-research .c3d-layer-1{transform:translate3d(2px,0,-6px) rotate(0)}
+.c3d-kind-research .c3d-front{padding:11px 10px 29px 21px;border:3px solid #b6a676;border-radius:4px 10px 10px 4px;background:#e6dcb2}
+.c3d-kind-research .c3d-preview{object-fit:contain;background:#fffef8}
+.c3d-kind-research .c3d-binding{position:absolute;left:-8px;width:19px;height:8px;border:2px solid #8f8570;border-radius:5px;background:linear-gradient(#d5cdb7,#ada387);transform:translateZ(5px)}
+.c3d-kind-research .c3d-spine{position:absolute;top:0;bottom:0;left:6px;width:3px;background:#b3a575}
+.c3d-kind-research .c3d-type-caption{left:26px;bottom:10px;color:#796c43}
+.c3d-kind-research .c3d-type-badge{left:auto;right:-15px;background:#9c8b45}
+.c3d-kind-experiment{width:222px;height:273px}
+.c3d-kind-experiment .c3d-sheet{background:#a66b42;border-color:#815433;border-radius:9px}
+.c3d-kind-experiment .c3d-layer-2{transform:translate3d(1px,2px,-13px) rotate(0)}
+.c3d-kind-experiment .c3d-layer-1{transform:translate3d(0,1px,-6px) rotate(0)}
+.c3d-kind-experiment .c3d-front{padding:22px 13px 29px;border:3px solid #ac784e;border-radius:9px;background:linear-gradient(95deg,#cb9b67,#deb68a,#c59563)}
+.c3d-kind-experiment .c3d-preview{object-fit:contain;background:#fffef8;box-shadow:1px 2px 3px #765b4933}
+.c3d-kind-experiment .c3d-clipboard-clip{position:absolute;top:-9px;left:68px;width:86px;height:24px;border:3px solid #858c8d;border-radius:8px 8px 4px 4px;background:linear-gradient(#dbe1dc,#959e9e);box-shadow:1px 3px 4px #49372833;transform:translateZ(5px)}
+.c3d-kind-experiment .c3d-type-caption{left:19px;bottom:10px;color:#734929}
+.c3d-kind-experiment .c3d-type-badge{top:22px;background:#ab794f}
+.compatibility-3d[data-move-enabled=false] .c3d-object,.compatibility-3d[data-move-enabled=false] .c3d-label{cursor:pointer}

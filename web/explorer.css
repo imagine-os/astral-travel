@@ -365,3 +365,8 @@ body.workspace-is-expanded{overflow:hidden}body.workspace-is-expanded::before{co
  .workspace-expanded .memory-list{flex:1;min-height:0;max-height:none;overflow:auto}
  .workspace-expanded .workspace-footer{flex-shrink:0;padding:9px 20px}
 }
+
+.examples-button{flex-shrink:0;align-self:stretch;border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:var(--surface);color:var(--violet);font-size:11px;font-weight:600;white-space:nowrap}.examples-button:hover{background:var(--surface-2)}
+.object-controls{clear:both;border:1px solid var(--line);border-radius:8px;padding:11px;margin:0 0 18px;background:var(--bg)}.object-controls>label{display:block;font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:6px}.object-controls>select{width:100%;min-width:0;font:12px var(--font);color:var(--text);background:var(--surface);padding:7px;border:1px solid var(--line);border-radius:5px}.object-controls>select:disabled{opacity:.8}.object-position{margin-top:9px;display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted)}.object-position small{display:block;font-size:9px;font-variant-numeric:tabular-nums}.object-position>div{display:flex;gap:3px}.object-position button{width:27px;height:30px;border-radius:4px;background:var(--surface-2);color:var(--text);border:1px solid var(--line)}.object-position button:hover{color:var(--violet);border-color:var(--violet)}
+.camera-tools button:disabled{cursor:default;opacity:.35}.cards-space{margin:12px auto}
+@media(max-width:700px){.search-row{flex-wrap:wrap}.search-row .search-field{flex-basis:calc(100% - 10px);order:-1}.examples-button{font-size:11px;flex:1}.object-position button{height:34px;width:30px}}

@@ -1,6 +1,6 @@
 {
   "name": "astral-travel",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "A local-first memory and dreaming playground with traceable knowledge and isolated simulations.",
@@ -15,7 +15,7 @@
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check web/app.mjs && node --check web/theme.mjs && node --check web/explorer.mjs && node --check web/objects-3d.mjs && node --check web/objects-css3d.mjs && node --check web/memory-model.mjs && node --check lib/core.mjs",
+    "check": "node --check web/app.mjs && node --check web/theme.mjs && node --check web/explorer.mjs && node --check web/objects-3d.mjs && node --check web/objects-css3d.mjs && node --check web/memory-model.mjs && node --check web/spatial-state.mjs && node --check lib/examples.mjs && node --check lib/core.mjs",
     "demo": "node bin/astral.mjs init --demo"
   },
   "repository": {

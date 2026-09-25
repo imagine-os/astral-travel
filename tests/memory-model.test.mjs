@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { describeMemory, memoryEdges, arrangeMemories } from '../web/memory-model.mjs';
+import { describeMemory, memoryEdges, arrangeMemories, OBJECT_TYPES } from '../web/memory-model.mjs';
 
 function sample(count) {
   return Array.from({ length: count }, (_, index) => ({
@@ -22,7 +22,7 @@ function freeze(value) {
 test('display metadata preserves evidence status and keeps its own tag array', () => {
   const original = freeze({ id: 'a', title: 'Studio interview', text: 'A direct quote.', tags: ['studio'], status: 'untrusted' });
   const shown = describeMemory(original, 'raw');
-  assert.deepEqual(shown, { id: 'a', title: 'Studio interview', text: 'A direct quote.', type: 'raw', status: 'original', tags: ['studio'], category: 'Studio', icon: 'chat', color: '#558bcc' });
+  assert.deepEqual(shown, { id: 'a', title: 'Studio interview', text: 'A direct quote.', type: 'raw', objectType: 'chat', status: 'original', tags: ['studio'], category: 'Studio', icon: 'chat', color: '#558bcc' });
   shown.tags.push('presentation only');
   assert.deepEqual(original.tags, ['studio']);
   const claim = freeze({ id: 'b', title: 'A possible link', text: 'An inference.', tags: ['memory'], status: 'inferred', kind: 'connection' });
@@ -119,4 +119,37 @@ test('empty views have usable finite bounds and no phantom nodes', () => {
     assert.equal(result.groups.length, 0);
     assert.ok(result.bounds.width > 0 && result.bounds.depth > 0);
   }
+});
+
+
+test('object types are presentation metadata, including explicit media formats', () => {
+  const examples = [
+    ['Plain plan', [], 'document'],
+    ['Customer feedback', [], 'chat'],
+    ['Reading notes', [], 'book'],
+    ['Moodboard description', [], 'image'],
+    ['Film storyboard', [], 'video'],
+    ['Listening notes', [], 'audio'],
+    ['Saved JavaScript snippet', [], 'code'],
+    ['A source review', [], 'research'],
+    ['Prototype test', [], 'experiment'],
+    ['An interview transcript', ['audio'], 'audio'],
+    ['A book about image processing', ['code'], 'code'],
+  ];
+  for (const [title, tags, expected] of examples) {
+    const raw = freeze({ id: expected, title, text: 'Unchanged source bytes.', tags });
+    const shown = describeMemory(raw, 'raw');
+    assert.equal(shown.objectType, expected);
+    assert.equal(shown.type, 'raw');
+    assert.equal(shown.text, raw.text);
+    assert.ok(OBJECT_TYPES.some(item => item.id === shown.objectType));
+    assert.match(shown.color, /^#[a-f0-9]{6}$/u);
+  }
+  for (const objectType of OBJECT_TYPES) {
+    const claim = describeMemory({ id: 'claim', title: objectType.label, tags: [objectType.id], status: 'proposed' }, 'claim');
+    assert.equal(claim.objectType, 'claim', 'a format hint must never hide the interpretation boundary');
+    assert.equal(claim.status, 'proposed');
+  }
+  assert.equal(new Set(OBJECT_TYPES.map(item => item.id)).size, 10);
+  assert.ok(OBJECT_TYPES.every(item => item.label && item.icon && item.description));
 });

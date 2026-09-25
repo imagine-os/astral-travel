@@ -7,6 +7,7 @@ const ROOM_PADDING = 3;
 const palette = Object.freeze({
   chat: '#558bcc', experiment: '#cf9636', document: '#7b72c4',
   research: '#3c9a9b', media: '#b774ad', connection: '#9070d0',
+  book: '#bc8554', image: '#b774ad', video: '#c76d70', audio: '#459e99', code: '#5278b4', claim: '#9070d0',
 });
 
 function compare(a, b) {
@@ -31,13 +32,38 @@ function displayCategory(tags) {
   return first ? first.charAt(0).toUpperCase() + first.slice(1) : 'Notes';
 }
 
-function displayIcon(record, type, tags) {
-  if (type === 'claim' && record.kind === 'connection') return 'connection';
+/** Object shapes describe the saved material; they do not imply an attachment. */
+export const OBJECT_TYPES = Object.freeze([
+  { id: 'document', label: 'Document', icon: '▤', description: 'Notes, plans, and checklists' },
+  { id: 'chat', label: 'Conversation', icon: '❞', description: 'Interviews, messages, and feedback' },
+  { id: 'book', label: 'Book', icon: '▥', description: 'Reading notes and chapter summaries' },
+  { id: 'image', label: 'Image notes', icon: '▧', description: 'Written image and moodboard descriptions' },
+  { id: 'video', label: 'Video notes', icon: '▶', description: 'Storyboards and video transcripts' },
+  { id: 'audio', label: 'Audio notes', icon: '♫', description: 'Transcripts and listening notes' },
+  { id: 'code', label: 'Code', icon: '⌘', description: 'Saved snippets and implementation notes' },
+  { id: 'research', label: 'Research', icon: '⌕', description: 'Research briefs and source reviews' },
+  { id: 'experiment', label: 'Experiment', icon: '△', description: 'Test plans and recorded observations' },
+  { id: 'claim', label: 'Interpretation', icon: '✧', description: 'Source-backed proposals and inferences' },
+].map(value => Object.freeze(value)));
+
+function objectTypeFor(record, type, tags) {
+  // Evidence type wins over any topical title or tag: a claim stays a claim.
+  if (type === 'claim') return 'claim';
   const heading = `${record.title ?? ''} ${tags.join(' ')}`.toLowerCase();
+  // Explicit format tags win over descriptive language in a title. For example,
+  // an audio transcript of an interview should be an audio object, not a chat.
+  const tagSet = new Set(tags.map(tag => tag.toLowerCase()));
+  for (const format of ['code', 'book', 'image', 'video', 'audio']) {
+    if (tagSet.has(format)) return format;
+  }
+  if (/\b(code|javascript|typescript|python|snippet|function)\b/u.test(heading)) return 'code';
+  if (/\b(book|reading|chapter|novel)\b/u.test(heading)) return 'book';
+  if (/\b(image|photo|photograph|moodboard|illustration)\b/u.test(heading)) return 'image';
+  if (/\b(video|film|storyboard|movie)\b/u.test(heading)) return 'video';
+  if (/\b(audio|podcast|listening|sound|voice)\b/u.test(heading)) return 'audio';
   if (/\b(interview|conversation|chat|feedback|email)\b/u.test(heading)) return 'chat';
   if (/\b(experiment|prototype|test|pilot)\b/u.test(heading)) return 'experiment';
-  if (/\b(media|video|audio|image|photo)\b/u.test(heading)) return 'media';
-  if (/\b(research|freshness|review|study)\b/u.test(heading)) return 'research';
+  if (/\b(research|freshness|review|study|bookmark)\b/u.test(heading)) return 'research';
   return 'document';
 }
 
@@ -45,12 +71,14 @@ function displayIcon(record, type, tags) {
 export function describeMemory(record, type) {
   const memoryType = type === 'claim' ? 'claim' : 'raw';
   const tags = (record.tags ?? []).filter(tag => typeof tag === 'string').slice();
-  const icon = displayIcon(record, memoryType, tags);
+  const objectType = objectTypeFor(record, memoryType, tags);
+  const icon = memoryType === 'claim' && record.kind === 'connection' ? 'connection' : objectType;
   return {
     id: record.id,
     title: record.title ?? 'Untitled memory',
     text: record.text ?? '',
     type: memoryType,
+    objectType,
     status: memoryType === 'raw' ? 'original' : (record.status ?? 'proposed'),
     tags,
     category: displayCategory(tags),

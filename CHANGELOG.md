@@ -2,6 +2,13 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.4.0 — 2026-09-25
+
+- Add distinct document, conversation, book, photo-frame, video-slate, audio-cassette, code-terminal, research-notebook, and experiment-board presentations, alongside interpretation tablets.
+- Drag objects on the 3D floor; background dragging continues to orbit. Connected references follow each move. Escape cancels an active drag.
+- Save placement per arrangement on this device, separately from memory content. Add undo, reset, keyboard movement controls, and a source-object form selector.
+- Add an optional collection of fictional examples without replacing existing memories. Fresh sample workspaces include the collection. Media examples are text notes, transcripts, and storyboards, not uploaded or playable attachments.
+
 ## 0.3.2 — 2026-09-25
 
 - Fit cameras to projected object bounds so previews make better use of the available stage.
