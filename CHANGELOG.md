@@ -4,6 +4,7 @@ The history of saved project releases. Features listed under a release describe 
 
 ## 0.1.1 — 2026-09-25
 
+- Version static asset URLs so browser caches keep the interface and Version History on the same release.
 - Rank pending dream suggestions by shared evidence signals so stronger connections appear first.
 - Preserve engine errors instead of overwriting them with an unrelated dream-success message.
 - Add actual homepage and explorer screenshots, release verification notes, and a second visible Version History entry.

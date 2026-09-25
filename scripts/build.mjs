@@ -1,6 +1,14 @@
-import { cp, mkdir, rm } from 'node:fs/promises';
+import { cp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
+const { version } = JSON.parse(await readFile('package.json', 'utf8'));
 await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });
 await cp('web', 'dist', { recursive: true });
 await cp('lib', 'dist/lib', { recursive: true });
-console.log('Built static site in dist/');
+// Keep each release's HTML, styles, app, and engine in sync through CDN/browser caches.
+const html = (await readFile('dist/index.html', 'utf8'))
+  .replace('href="./style.css"', `href="./style.css?v=${version}"`)
+  .replace('src="./app.mjs"', `src="./app.mjs?v=${version}"`);
+await writeFile('dist/index.html', html);
+const app = (await readFile('dist/app.mjs', 'utf8')).replace("from './lib/core.mjs'", `from './lib/core.mjs?v=${version}'`);
+await writeFile('dist/app.mjs', app);
+console.log(`Built static site v${version} in dist/`);
