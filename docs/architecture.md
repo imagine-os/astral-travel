@@ -4,12 +4,13 @@
 
 Astral Travel is designed around a simple distinction: what was recorded, what was learned, and what was imagined should remain distinguishable. A beautiful graph is useful only if you can inspect its sources, understand a connection, and see when a claim has changed.
 
-This document separates the **working v0.1 alpha** from the **proposed architecture**. The alpha is a small local playground, not a production memory service or a verified improvement over established systems. See the [roadmap](roadmap.md) for acceptance criteria and the [research notes](research.md) for comparisons.
+This document separates the **working v0.3 alpha** from the **proposed architecture**. The alpha is a small local playground, not a production memory service or a verified improvement over established systems. See the [roadmap](roadmap.md) for acceptance criteria and the [research notes](research.md) for comparisons.
 
-## What exists in v0.1
+## What exists in the alpha
 
 | Capability | Current implementation | Boundary |
 | --- | --- | --- |
+| Visual explorer | 3D document objects, exact-text preview cards, and a list over the same memory records; four arrangements | Presentation groups and spatial coordinates do not change evidence or ontology |
 | Memory engine | A zero-dependency JavaScript core shared by the browser lab, Node CLI, and local MCP server | No model or external memory service is required |
 | Source capture | Original text is preserved separately from processed records | This is not a tamper-proof archive, encrypted vault, or backup system |
 | Processed memory | Explicit claims, source references, and backlinks make relationships inspectable | New claims begin as proposals; no model extracts or verifies them |

@@ -14,7 +14,7 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.2.0](https://img.shields.io/badge/version-0.2.0-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.3.0](https://img.shields.io/badge/version-0.3.0-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
@@ -93,6 +93,19 @@ Turn an idea into an experiment. Measure the outcome. Carry what worked into the
 The website starts in light mode. Use the appearance switch to change the complete interface to dark; your choice is saved on your device.
 
 </details>
+
+## Recognize your memories. Arrange them your way.
+
+The [memory explorer](https://imagine-os.github.io/astral-travel/#lab) opens as **real 3D document objects**, with previews of the text you actually saved. Sources look like page stacks. Interpretations use violet tablets. Select either to read the full content and follow its references.
+
+| Choose the view | Choose the arrangement |
+| --- | --- |
+| **Objects 3D** — orbit, pan, zoom, and inspect | **Rooms** — group memories by topic |
+| **Cards** — browse visual document previews | **Lanes** — separate sources and interpretations |
+| **List** — scan titles and excerpts with the keyboard | **Radial** — put the selected memory at the center |
+| Your view preference is saved on this device. | **Grid** — scan an even arrangement |
+
+Every view uses the same records. Arranging a memory does not change its evidence or review status. The current previews show saved text; PDF page rendering, image attachments, video posters, and audio waveforms are future work. [How the explorer works →](docs/explorer.md)
 
 ## Follow the idea back home
 
@@ -256,6 +269,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.2.0
+[MIT licensed](LICENSE) · Made in the open · v0.3.0
 
 </div>

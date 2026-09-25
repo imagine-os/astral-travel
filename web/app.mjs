@@ -1,12 +1,15 @@
 import {createDemoWorkspace,ingest,addClaim,verifyClaim,dream,review,search,createScenario,backlinks,scheduleResearch,getResearchQueue,completeResearch,exportWorkspace,importWorkspace,validateWorkspace,LIMITS} from './lib/core.mjs';
 
+import {createMemoryExplorer,readExplorerPreference,saveExplorerPreference} from './explorer.mjs';
+
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const short=(v,n=38)=>String(v).length>n?String(v).slice(0,n-1)+'…':String(v);
 const KEY='astral-travel.workspace.v0.1';
 let ws, storageMessage='Stored locally', loadError='', storageBlocked=false;
 try{const saved=localStorage.getItem(KEY);ws=saved?validateWorkspace(saved):createDemoWorkspace();if(!saved)localStorage.setItem(KEY,exportWorkspace(ws));}catch(error){ws=createDemoWorkspace();storageBlocked=true;storageMessage='Recovery mode · export to keep';loadError='Saved workspace could not be loaded. The sample is open in a temporary session. Your stored file remains untouched until you explicitly import or reset.';}
-let mode='memory',view='graph',filter='all',query='',selected=ws.claims[0]?.id||ws.raw[0]?.id,toastTimer;
+const appearance=readExplorerPreference();
+let mode='memory',view=appearance.view,layout=appearance.layout,filter='all',query='',selected=ws.claims[0]?.id||ws.raw[0]?.id,toastTimer,explorer;
 const content=$('#workspace-content');
 const modes={memory:['Memory palace','Every idea has a place. Every insight has a source.'],dreams:['The dream room','Discover possible connections. Keep the useful ones.'],research:['The next question','A queue for knowledge that deserves another look.'],scenarios:['Lucid Lab','Explore possibilities in a space of their own.'],activity:['The trail behind you','A readable history of what changed.']};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4200);}
@@ -16,6 +19,7 @@ function record(id){return ws.raw.find(r=>r.id===id)||ws.claims.find(r=>r.id===i
 function kind(r){return ws.raw.some(item=>item.id===r.id)?'raw':ws.scenarios.some(item=>item.id===r.id)?'scenario':'claim';}
 function navigate(next,scroll=false){mode=next;render();if(scroll)$('#lab').scrollIntoView({behavior:'smooth'});}
 function render(){
+ if(mode!=='memory'){explorer?.destroy();explorer=null;}
  $('#view-title').textContent=modes[mode][0];$('#view-subtitle').textContent=modes[mode][1];$('#view-toggle').hidden=mode!=='memory';
  $('#mode-nav').querySelectorAll('button').forEach(b=>{b.classList.toggle('active',b.dataset.mode===mode);b.setAttribute('aria-pressed',String(b.dataset.mode===mode));});
  $('#memory-count').textContent=ws.raw.length+ws.claims.length;$('#dream-count').textContent=ws.dreams.filter(d=>d.status==='proposed').length;
@@ -24,29 +28,27 @@ function render(){
 }
 function memoryRecords(){const types=filter==='all'?['raw','claim']:[filter];return query.trim()?search(ws,query,{types,limit:1000}).map(r=>r.record):[...(types.includes('raw')?ws.raw:[]),...(types.includes('claim')?ws.claims:[])];}
 function renderMemory(){
+ explorer?.destroy();explorer=null;
  const records=memoryRecords();if(!records.some(r=>r.id===selected))selected=records[0]?.id;
  content.innerHTML=`<div class="search-row"><label class="search-field"><span aria-hidden="true">⌕</span><input id="memory-search" aria-label="Search memories" placeholder="Search ideas, sources, and connections…" value="${esc(query)}" maxlength="10000"></label><select id="memory-filter" class="filter-select" aria-label="Memory layer"><option value="all" ${filter==='all'?'selected':''}>All memory</option><option value="raw" ${filter==='raw'?'selected':''}>Raw sources</option><option value="claim" ${filter==='claim'?'selected':''}>Processed</option></select></div><div id="memory-results"></div>`;
+ explorer=createMemoryExplorer($('#memory-results'),{onSelect:selectMemory,onLayout:next=>{layout=next;saveExplorerPreference(view,layout);renderMemoryResults();},onView:setMemoryView,detailsHtml:details});
  renderMemoryResults(records);
+}
+function setMemoryView(next){
+ if(!['objects','cards','list'].includes(next))return;
+ view=next;saveExplorerPreference(view,layout);renderMemoryResults();
+}
+function selectMemory(id){
+ if(!record(id))return;
+ selected=id;
+ if(mode!=='memory'){mode='memory';query='';filter='all';render();return;}
+ if(!memoryRecords().some(r=>r.id===id)){query='';filter='all';renderMemory();return;}
+ renderMemoryResults();
 }
 function renderMemoryResults(records=memoryRecords()){
  if(!records.some(r=>r.id===selected))selected=records[0]?.id;
- if(!records.length){$('#memory-results').innerHTML='<div class="empty-state"><span>⌕</span><h4>No memories found</h4><p>Try another word, choose a different layer, or add your first memory.</p></div>';return;}
- const side=`<aside class="detail-panel" aria-label="Selected memory">${details(record(selected))}</aside>`;
- if(view==='list'){
-  $('#memory-results').innerHTML=`<div class="list-layout"><div class="memory-list">${records.map(r=>`<button class="memory-item ${r.id===selected?'selected':''}" data-record="${esc(r.id)}"><span>${kind(r)==='raw'?'◈':'✧'}</span><div><h4>${esc(r.title)}</h4><p>${esc(r.text)}</p><small>${kind(r)==='raw'?'Raw source':`${esc(r.status)} interpretation`}</small></div></button>`).join('')}</div>${side}</div>`;
- }else{
-  $('#memory-results').innerHTML=`<div class="graph-layout"><div class="graph-area"><div class="graph-caption">${records.length>18?'SHOWING FIRST 18 · USE SEARCH OR LIST':'A MAP OF YOUR MEMORY · SELECT A NODE'}</div>${graph(records.slice(0,18))}<div class="graph-legend"><span><i style="background:var(--graph-node-raw-color)"></i> Raw sources</span><span><i style="background:var(--graph-node-claim-color)"></i> Processed</span><span>Lines = references</span></div></div>${side}</div>`;
- }
-}
-function graph(records){
- const width=560,height=385;const positions=new Map();
- const raw=records.filter(r=>kind(r)==='raw'),claims=records.filter(r=>kind(r)==='claim');
- raw.forEach((r,i)=>{const angle=2*Math.PI*i/Math.max(raw.length,1)-Math.PI/2;positions.set(r.id,{x:width/2+Math.cos(angle)*185,y:height/2+Math.sin(angle)*133});});
- claims.forEach((r,i)=>{const angle=2*Math.PI*i/Math.max(claims.length,1)-Math.PI/2;positions.set(r.id,{x:width/2+Math.cos(angle)*(claims.length===1?0:70),y:height/2+Math.sin(angle)*(claims.length===1?0:65)});});
- const edges=[];for(const r of claims)for(const rawId of r.rawIds||[])edges.push({from:r.id,to:rawId});for(const l of ws.links)edges.push({from:l.fromId,to:l.toId});
- const lines=edges.filter(e=>positions.has(e.from)&&positions.has(e.to)).map(e=>{const a=positions.get(e.from),b=positions.get(e.to);return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${e.from===selected||e.to===selected?'var(--graph-edge-active)':'var(--graph-edge)'}" stroke-width="${e.from===selected||e.to===selected?1.5:1}"/>`;}).join('');
- const nodes=records.map(r=>{const p=positions.get(r.id),isRaw=kind(r)==='raw',nodeType=isRaw?'raw':'claim',color=`var(--graph-node-${nodeType}-color)`;return `<g class="graph-node ${r.id===selected?'selected':''}" role="button" tabindex="0" aria-label="Inspect ${esc(r.title)}" data-record="${esc(r.id)}" transform="translate(${p.x} ${p.y})"><circle r="23" fill="var(--graph-node-${nodeType}-halo)"/><circle class="node-ring" r="15" fill="var(--graph-node-${nodeType}-fill)" stroke="var(--graph-node-ring)" stroke-width="1"/><circle r="4" fill="${color}"/><text text-anchor="middle" y="36">${esc(short(r.title,27))}</text><text class="node-kind" text-anchor="middle" y="50">${isRaw?'SOURCE':esc(r.status)}</text></g>`;}).join('');
- return `<svg class="knowledge-graph" viewBox="0 0 ${width} ${height}" aria-label="Knowledge graph; each node can be selected">${lines}${nodes}</svg>`;
+ $('#view-toggle').querySelectorAll('button').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);b.setAttribute('aria-pressed',String(b.dataset.view===view));});
+ explorer?.update({records,allRecords:[...ws.raw,...ws.claims],links:ws.links,rawIds:new Set(ws.raw.map(r=>r.id)),selectedId:selected,view,layout});
 }
 function details(r){
  if(!r)return '<p class="empty-detail">Select a memory to inspect its sources.</p>';
@@ -75,18 +77,19 @@ const actions={
  'verify':el=>openModal('Review this claim',`<form id="verify-form" data-id="${esc(el.dataset.id)}"><p class="modal-copy">Read the original sources first. This records your review; it does not establish independent truth.</p><label class="form-label" for="reviewer">Your name</label><input class="form-input" id="reviewer" name="reviewer" required maxlength="200"><label class="form-label" for="review-note">Review note</label><textarea class="form-input" id="review-note" name="note" rows="3" maxlength="10000"></textarea><div class="form-error" role="alert"></div><div class="modal-actions"><button class="button primary" type="submit">Record my review</button></div></form>`),
  'add-research':()=>openModal('A question worth following',`<form id="research-form"><label class="form-label" for="research-title">Question title</label><input class="form-input" id="research-title" name="title" required maxlength="300"><label class="form-label" for="research-query">What will you check?</label><textarea class="form-input" id="research-query" name="query" rows="3" required maxlength="10000" placeholder="Look for evidence, including anything that might change your mind."></textarea><label class="form-label" for="research-date">Review date</label><input type="date" class="form-input" id="research-date" name="date" value="${new Date().toLocaleDateString('en-CA')}"><div class="form-error" role="alert"></div><div class="modal-actions"><button class="button primary" type="submit">Add to queue</button></div></form>`),
  'complete-research':el=>openModal('Record the review',`<form id="complete-form" data-id="${esc(el.dataset.id)}"><p class="modal-copy">What did you check? Add any original evidence separately as a memory.</p><label class="form-label" for="complete-note">Review note</label><textarea class="form-input" id="complete-note" name="note" required rows="4" maxlength="10000"></textarea><div class="form-error" role="alert"></div><div class="modal-actions"><button class="button primary" type="submit">Mark reviewed</button></div></form>`),
- 'versions':()=>openModal('Version history',`<div class="release"><span>SEPTEMBER 25, 2026 · A VISUAL STORY</span><h3>v0.2.0 — In the light</h3><p>Light by default, with a complete dark theme and a saved appearance switch. Six original illustrations tell the story from capture to improvement. The website and repository now share the same visual guide, with clear labels for what works today and what comes next.</p></div><div class="release"><span>SEPTEMBER 25, 2026 · LAUNCH REFINEMENT</span><h3>v0.1.1 — A clearer first dream</h3><p>Dream proposals now show the strongest matches first. Added real product screenshots and the release verification record.</p><a href="https://github.com/imagine-os/astral-travel/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">View release notes ↗</a></div><div class="release" style="margin-top:14px"><span>SEPTEMBER 25, 2026 · FOUNDATION RELEASE</span><h3>v0.1.0 — First light</h3><p>The first working Astral Travel release.</p><ul><li>Local memory engine and CLI</li><li>Source records, interpretations, and backlinks</li><li>Reviewable connection suggestions</li><li>Research queue and isolated scenario templates</li><li>Browser playground, import, and export</li><li>MCP tools for local AI clients</li><li>Open research, architecture, and roadmap</li></ul><a href="https://github.com/imagine-os/astral-travel/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">Read the full changelog ↗</a><a href="https://github.com/imagine-os/astral-travel/commits/main/" target="_blank" rel="noreferrer">Browse every saved change ↗</a></div>`),
- 'help':()=>openModal('Your first minute in Astral',`<div class="modal-copy"><ol><li><strong>Explore Memory.</strong> Select a node to see the original text and the interpretations that reference it. Switch between raw and processed layers.</li><li><strong>Add a thought.</strong> Try a note about design or customer feedback. Give it a related tag.</li><li><strong>Run a dream cycle.</strong> Open Dreams. Check the sources, then keep or dismiss a suggested connection.</li><li><strong>Imagine a possibility.</strong> Open Lucid Lab. Write a “what if” and choose grounded or speculative.</li><li><strong>Take it with you.</strong> Export your workspace. Or clone the repo and use the CLI or MCP server.</li></ol><p>Everything in this playground stays in this browser. Clearing site data removes the local copy. There are no model calls or web research jobs in this alpha.</p></div>`),
+ 'versions':()=>openModal('Version history',`<div class="release"><span>SEPTEMBER 25, 2026 · RECOGNIZABLE MEMORIES</span><h3>v0.3.0 — Give ideas a shape</h3><p>Real 3D document objects with previews of your saved text. Switch between Objects 3D, Cards, and List, and arrange the same records into Rooms, Lanes, Radial, or Grid. Orbit, zoom, fit, inspect source trails, and keep your preferred view. Light and dark throughout.</p></div><div class="release"><span>SEPTEMBER 25, 2026 · A VISUAL STORY</span><h3>v0.2.0 — In the light</h3><p>Light by default, with a complete dark theme and a saved appearance switch. Six original illustrations tell the story from capture to improvement. The website and repository now share the same visual guide, with clear labels for what works today and what comes next.</p></div><div class="release"><span>SEPTEMBER 25, 2026 · LAUNCH REFINEMENT</span><h3>v0.1.1 — A clearer first dream</h3><p>Dream proposals now show the strongest matches first. Added real product screenshots and the release verification record.</p><a href="https://github.com/imagine-os/astral-travel/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">View release notes ↗</a></div><div class="release" style="margin-top:14px"><span>SEPTEMBER 25, 2026 · FOUNDATION RELEASE</span><h3>v0.1.0 — First light</h3><p>The first working Astral Travel release.</p><ul><li>Local memory engine and CLI</li><li>Source records, interpretations, and backlinks</li><li>Reviewable connection suggestions</li><li>Research queue and isolated scenario templates</li><li>Browser playground, import, and export</li><li>MCP tools for local AI clients</li><li>Open research, architecture, and roadmap</li></ul><a href="https://github.com/imagine-os/astral-travel/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">Read the full changelog ↗</a><a href="https://github.com/imagine-os/astral-travel/commits/main/" target="_blank" rel="noreferrer">Browse every saved change ↗</a></div>`),
+ 'expand-workspace':async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('#workspace').requestFullscreen();}catch{toast('Full view is unavailable in this browser. You can still use every view below.');}},
+ 'help':()=>openModal('Your first minute in Astral',`<div class="modal-copy"><ol><li><strong>Explore Memory.</strong> Start with 3D document objects, or choose Cards or List. Arrange the same memories into Rooms, Lanes, Radial, or Grid. Select an object to inspect its original text and source trail; Fit restores an overview.</li><li><strong>Add a thought.</strong> Try a note about design or customer feedback. Give it a related tag.</li><li><strong>Run a dream cycle.</strong> Open Dreams. Check the sources, then keep or dismiss a suggested connection.</li><li><strong>Imagine a possibility.</strong> Open Lucid Lab. Write a “what if” and choose grounded or speculative.</li><li><strong>Take it with you.</strong> Export your workspace. Or clone the repo and use the CLI or MCP server.</li></ol><p>Everything in this playground stays in this browser. Clearing site data removes the local copy. There are no model calls or web research jobs in this alpha.</p></div>`),
  'copy-install':async()=>{const command='git clone https://github.com/imagine-os/astral-travel.git\ncd astral-travel\nnode bin/astral.mjs init --demo\nnode bin/astral.mjs dream\nnpm start';try{await navigator.clipboard.writeText(command);toast('Quick-start commands copied.');}catch{openModal('Quick-start commands',`<textarea class="form-input" rows="7" readonly>${esc(command)}</textarea>`);}}
 };
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(button){const action=actions[button.dataset.action];if(action)action(button);return;}
  const modeButton=event.target.closest('[data-mode]');if(modeButton){navigate(modeButton.dataset.mode,!modeButton.closest('#mode-nav'));return;}
- const viewButton=event.target.closest('[data-view]');if(viewButton){view=viewButton.dataset.view;$('#view-toggle').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===viewButton));renderMemoryResults();return;}
- const recordButton=event.target.closest('[data-record]');if(recordButton){selected=recordButton.dataset.record;query='';filter='all';mode='memory';render();return;}
+ const viewButton=event.target.closest('[data-view]');if(viewButton){setMemoryView(viewButton.dataset.view);return;}
+ const recordButton=event.target.closest('[data-record]');if(recordButton){selectMemory(recordButton.dataset.record);return;}
  const personaButton=event.target.closest('[data-persona]');if(personaButton)renderPersona(personaButton.dataset.persona);
 });
-document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('.graph-node')){event.preventDefault();selected=event.target.dataset.record;renderMemoryResults();}if(event.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('#modal').open){event.preventDefault();navigate('memory',true);$('#memory-search').focus();}});
+document.addEventListener('keydown',event=>{if(event.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('#modal').open){event.preventDefault();navigate('memory',true);$('#memory-search').focus();}});
 content.addEventListener('input',event=>{if(event.target.id==='memory-search'){query=event.target.value;renderMemoryResults();}});
 content.addEventListener('change',event=>{if(event.target.id==='memory-filter'){filter=event.target.value;renderMemoryResults();}});
 document.addEventListener('submit',event=>{
@@ -111,3 +114,5 @@ const personas={
 };
 function renderPersona(key){const p=personas[key];document.querySelectorAll('[data-persona]').forEach(b=>{b.classList.toggle('active',b.dataset.persona===key);b.setAttribute('aria-selected',String(b.dataset.persona===key));});$('#persona-panel').innerHTML=`<small>${p.label}</small><h3>${p.title}</h3><p>${p.body}</p><a class="inline-link" ${key==='curious'?'data-mode="scenarios"':''} href="${p.url}" ${p.url.startsWith('https')?'target="_blank" rel="noreferrer"':''}>${p.link} ↗</a>`;}
 render();renderPersona('builders');if(loadError)toast(loadError);
+
+document.addEventListener('fullscreenchange',()=>{const button=document.querySelector('[data-action=expand-workspace]');button.setAttribute('aria-label',document.fullscreenElement?'Exit full view':'Expand workspace');button.innerHTML=document.fullscreenElement?'↙ <span>Exit full view</span>':'⛶ <span>Full view</span>';});

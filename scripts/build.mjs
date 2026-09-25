@@ -9,9 +9,15 @@ const html = (await readFile('dist/index.html', 'utf8'))
   .replace('href="./style.css"', `href="./style.css?v=${version}"`)
   .replace('href="./themes.css"', `href="./themes.css?v=${version}"`)
   .replace('href="./story.css"', `href="./story.css?v=${version}"`)
+  .replace('href="./explorer.css"', `href="./explorer.css?v=${version}"`)
   .replace('src="./theme.mjs"', `src="./theme.mjs?v=${version}"`)
   .replace('src="./app.mjs"', `src="./app.mjs?v=${version}"`);
 await writeFile('dist/index.html', html);
-const app = (await readFile('dist/app.mjs', 'utf8')).replace("from './lib/core.mjs'", `from './lib/core.mjs?v=${version}'`);
-await writeFile('dist/app.mjs', app);
+for (const file of ['app.mjs', 'explorer.mjs']) {
+  let source = await readFile(`dist/${file}`, 'utf8');
+  for (const dependency of ['lib/core.mjs', 'explorer.mjs', 'memory-model.mjs', 'objects-3d.mjs']) {
+    source = source.replaceAll(`'./${dependency}'`, `'./${dependency}?v=${version}'`);
+  }
+  await writeFile(`dist/${file}`, source);
+}
 console.log(`Built static site v${version} in dist/`);

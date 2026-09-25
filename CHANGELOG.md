@@ -2,6 +2,18 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.3.0 — 2026-09-25
+
+- Open memory in a real 3D object view: original notes are physical page stacks; processed interpretations are violet tablets.
+- Paint each object with a preview of its actual saved title and text. Cards, lists, and the source inspector use the same previews.
+- Add independent Objects 3D / Cards / List presentations and Rooms / Lanes / Radial / Grid arrangements, with saved preferences.
+- Add orbit, pan, zoom, focus, fit, a keyboard-accessible memory picker, and a full-view control where the browser supports fullscreen.
+- Preserve the current search, layer filter, and selected record when changing arrangements or selecting a visible memory.
+- Show recorded source relationships and page larger result sets in groups of 30.
+- Keep geometry and coordinates separate from memory, provenance, and review state.
+- Bundle Three.js locally with its MIT license; the core engine remains dependency-free. Provide a card fallback when 3D graphics are unavailable.
+- Add layout/relationship tests covering identity, immutability, spacing, and source-edge deduplication.
+
 ## 0.2.0 — 2026-09-25
 
 - Make light the default appearance and add a persistent, accessible light/dark switch across the complete website and playground.
