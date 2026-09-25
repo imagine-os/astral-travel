@@ -2,6 +2,16 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.2.0 — 2026-09-25
+
+- Make light the default appearance and add a persistent, accessible light/dark switch across the complete website and playground.
+- Add a white-background observatory hero, preserving the original dark artwork for dark mode.
+- Explain capture, organization, dreaming, research, imagination, and future improvement in six original transparent illustrations.
+- Give the website a numbered visual journey with examples and links into the working playground.
+- Rebuild the README introduction around the same illustrations and a theme-aware banner.
+- Keep future capabilities explicitly labeled: research uses review reminders, scenarios use worksheets, and outcome-driven improvement is planned.
+- Adapt graph edges, node colors, labels, controls, forms, and dialogs to both appearances.
+
 ## 0.1.1 — 2026-09-25
 
 - Version static asset URLs so browser caches keep the interface and Version History on the same release.

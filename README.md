@@ -1,6 +1,12 @@
 <div align="center">
 
-[![Astral Travel — your second brain, beyond remembering](docs/assets/astral-banner.webp)](https://imagine-os.github.io/astral-travel/)
+<a href="https://imagine-os.github.io/astral-travel/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="web/assets/observatory.webp">
+    <source media="(prefers-color-scheme: light)" srcset="web/assets/observatory-light.webp">
+    <img src="web/assets/observatory-light.webp" alt="A glass observatory: a place for your knowledge and imagination to meet." width="100%">
+  </picture>
+</a>
 
 # Astral Travel
 
@@ -8,7 +14,7 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.1.1](https://img.shields.io/badge/version-0.1.1-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.2.0](https://img.shields.io/badge/version-0.2.0-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
@@ -18,31 +24,75 @@ Turn what you collect into connections you can inspect, questions worth research
 
 ---
 
-## A memory should lead somewhere.
+## One thought. A world of possibilities.
 
-Your notes remember what happened. Your bookmarks remember what looked interesting. Your research folder remembers what you meant to read.
+**Keep what you know. Find what connects. Explore what could happen.**
 
-**Astral Travel asks what those things could become together.**
+Follow one small studio from a customer note to a new possibility. Six steps explain the idea; the [browser playground](https://imagine-os.github.io/astral-travel/#lab) lets you try the working foundation.
 
-Keep original material intact. Give ideas an address. Find a surprising connection. Check what needs updating. Explore a possible future. Bring a useful decision back to the present.
+<table>
+<tr>
+<td width="50%" valign="top">
+<a href="https://imagine-os.github.io/astral-travel/#capture"><img src="web/assets/story/01-capture.webp" width="100%" alt="Notes and chat cards settling into a clear archive tray."></a>
+<h3>1. Keep the original.</h3>
+Save a note, an observation, or a piece of feedback. Its original words stay intact.
+<p><em>“Our project handoffs are confusing.”</em></p>
+<strong>CAPTURE</strong> · <a href="https://imagine-os.github.io/astral-travel/#lab">Try the memory explorer ↗</a>
+</td>
+<td width="50%" valign="top">
+<a href="https://imagine-os.github.io/astral-travel/#organize"><img src="web/assets/story/02-organize.webp" width="100%" alt="Separate linked archive compartments for original documents and processed knowledge."></a>
+<h3>2. Make sense of it.</h3>
+Add your interpretation beside the source. Search either one. Follow the link back.
+<p><em>Customers need a clearer handoff.</em></p>
+<strong>ORGANIZE</strong> · Raw and processed stay distinct.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<a href="https://imagine-os.github.io/astral-travel/#connect"><img src="web/assets/story/03-connect.webp" width="100%" alt="A lavender bridge joins two source cards and reveals an amber idea."></a>
+<h3>3. Find the connection.</h3>
+A customer note meets a roadmap idea. Dreaming suggests a link; you decide what to keep.
+<p><em>Could a shared checklist help?</em></p>
+<strong>DREAM</strong> · A suggestion you can inspect.
+</td>
+<td width="50%" valign="top">
+<a href="https://imagine-os.github.io/astral-travel/#research-story"><img src="web/assets/story/04-research.webp" width="100%" alt="A magnifier, calendar, and fresh source card show knowledge being checked again."></a>
+<h3>4. Check what’s changed.</h3>
+Put knowledge on a review schedule. Revisit the source and bring back fresh evidence.
+<p><em>Are customers still getting stuck?</em></p>
+<strong>RESEARCH</strong> · Review reminders now; automated research planned.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<a href="https://imagine-os.github.io/astral-travel/#imagine"><img src="web/assets/story/05-imagine.webp" width="100%" alt="Overlapping portals open to a realistic workroom and an imaginary floating island."></a>
+<h3>5. Ask “what if?”</h3>
+Explore a realistic change or an impossible world. Possibilities stay separate from facts.
+<p><em>A one-step handoff. Or a studio in the sky.</em></p>
+<strong>IMAGINE</strong> · Scenario worksheets now; model-powered simulation planned.
+</td>
+<td width="50%" valign="top">
+<a href="https://imagine-os.github.io/astral-travel/#improve"><img src="web/assets/story/06-improve.webp" width="100%" alt="An experiment returns to reusable cards beside a green check mark."></a>
+<h3>6. Learn. Try. Improve.</h3>
+Turn an idea into an experiment. Measure the outcome. Carry what worked into the next loop.
+<p><em>Try the checklist. Did handoffs get easier?</em></p>
+<strong>IMPROVE · PLANNED</strong> · <a href="docs/roadmap.md">Explore the roadmap ↗</a>
+</td>
+</tr>
+</table>
 
-The first release is a small, working foundation: a browser lab, a local JavaScript engine, and a local MCP connection for compatible agents. The suggestions are deterministic and reviewable; no model key is required.
+*Concept illustrations, with captions kept as readable text. Transparent artwork belongs naturally on both light and dark pages.*
 
-## Five ways to move beyond a pile of notes
+> **A working alpha.** Local memory, traceable knowledge, reviewable connections, research reminders, and isolated scenario worksheets. No account or API key required. Model calls, autonomous research, predictive simulation, and outcome-driven improvement are future work.
 
-| Mode | The question | What v0.1 does |
-| --- | --- | --- |
-| **Memory** | “What do I know, and where did it come from?” | Separate original sources from derived knowledge, retain provenance, and search locally. |
-| **Dreaming** | “What belongs together that I haven’t connected?” | Suggest connections from shared tags and keywords. You decide what to keep. |
-| **Research** | “What might need another look?” | Build a review queue for knowledge that needs checking. You supply the research. |
-| **Lucid Lab** | “What if things were different?” | Organize grounded and speculative scenarios in separate templates. |
-| **Improvement** | “What is worth changing?” | Review suggestions and proposed next steps before incorporating them. |
+<details>
+<summary><strong>See the actual working playground</strong></summary>
 
-> **Alpha, with a clear boundary.** This release does not run language models, browse the web, predict outcomes, or make changes to your other tools. Autonomous research, model providers, remote hosting, and execution integrations are roadmap work.
+[![The Astral Travel memory explorer](docs/assets/playground.jpg)](https://imagine-os.github.io/astral-travel/#lab)
 
-[![The working Astral Travel memory explorer](docs/assets/playground.jpg)](https://imagine-os.github.io/astral-travel/#lab)
+The website starts in light mode. Use the appearance switch to change the complete interface to dark; your choice is saved on your device.
 
-*Actual v0.1 playground: original sources, processed interpretations, and traceable references.*
+</details>
 
 ## Follow the idea back home
 
@@ -206,6 +256,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.1.0
+[MIT licensed](LICENSE) · Made in the open · v0.2.0
 
 </div>

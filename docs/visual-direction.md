@@ -1,6 +1,27 @@
 # A world worth entering
 
-The identity is an optical-glass observatory suspended in navy space: cold blue evidence, violet interpretation, and amber imagination. The hero is symbolic artwork, not a rendering of an implemented spatial engine.
+The identity is an optical-glass observatory: blue evidence, violet interpretation, and amber imagination. Light mode is the website default; a saved appearance switch enables a complete dark version. The hero is symbolic artwork, not a rendering of an implemented spatial engine.
+
+## A story in six pictures — v0.2.0
+
+Make the idea understandable before asking someone to learn its vocabulary. Each illustration communicates one action. Native text supplies the number, meaning, example, and current implementation boundary.
+
+| Step | Picture | Plain-language meaning | Asset |
+| --- | --- | --- | --- |
+| 1 · Capture | Notes entering a clear tray | Keep the original. | `web/assets/story/01-capture.webp` |
+| 2 · Organize | Two connected archive compartments | Keep interpretation beside its source. | `web/assets/story/02-organize.webp` |
+| 3 · Connect | Two source cards meet through a glass bridge | Find a connection worth reviewing. | `web/assets/story/03-connect.webp` |
+| 4 · Research | Magnifier, calendar, and fresh card | Check what has changed. | `web/assets/story/04-research.webp` |
+| 5 · Imagine | Realistic and fantastical portals | Explore a possibility without turning it into a fact. | `web/assets/story/05-imagine.webp` |
+| 6 · Improve | An experiment returns to reusable cards | Carry measured learning into the next loop. Planned. | `web/assets/story/06-improve.webp` |
+
+Art direction: white porcelain, translucent lavender/cobalt optical glass, selective amber accents, soft studio light, readable silhouettes, generous negative space, no lettering or logos. Scenes have genuine transparent backgrounds so they sit naturally on white or navy. The website places a faint rotated frame behind the object; the object extends beyond it. The README uses the same files, with readable captions rather than text baked into images.
+
+Built-in image generation produced one capture style reference and five matching scene illustrations, plus a white-background edit of the original observatory. Each scene was generated at 1536×1024 and optimized to 1000×667 WebP with alpha. The new hero retains its original 1672×941 composition. The six illustrations explain concepts, not actual 3D app views. Their exact prompts are recorded in [the artwork manifest](assets/story-prompts.json).
+
+The README banner uses GitHub's supported `picture`/`prefers-color-scheme` approach ([GitHub documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)). GitHub controls its own interface appearance; the website switch controls the website. Source/processed/imagined labels always remain textual as well as colored.
+
+Future motion should follow this sequence: a note lands, separates into source and interpretation, reveals a reviewed link, invites a recheck, opens two possibilities, returns a measured result. Keep each shot focused on one action and keep capability labels in native HTML. Do not animate unimplemented automation as an actual product demonstration.
 
 ## Original artwork
 

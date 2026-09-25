@@ -1,0 +1,99 @@
+{
+  "assets": [
+    {
+      "key": "capture",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent website storytelling illustration, first in a coordinated six-scene series for AI memory software. Landscape 3:2. Create one clean, elegant, minimal 3D editorial product illustration: three simple rounded white porcelain note/document/chat cards are dropping gently into one open archival tray made of clear glass with translucent lavender and cobalt edges. The cards overlap tangibly, separate readable silhouettes: one card has a simple raised chat bubble pictogram, one has subtle embossed horizontal document strokes, one a small amber dot motif; NO lettering. The tray visibly retains the original sheets. Scene centered, camera three-quarter angle, generous empty padding all around, entire object group fully within frame. White porcelain plus translucent lavender/cobalt optical glass, small warm amber details, soft studio lighting, tasteful soft contact shadows only. Style: sophisticated physical stationery and clear glass memory objects, calm and tactile, easily understood. Background: genuinely transparent alpha, no opaque backdrop, no floor plane, no colored background. No text, no lettering, no numerals, no logos, no watermark, no UI screenshots. One scene only; never a contact sheet. Make white objects crisply legible by shaded porcelain surfaces and softly defined cool edges so the illustration works on either light or dark webpages.",
+      "method": "built-in image_gen",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "asset": "web/assets/story/01-capture.webp"
+    },
+    {
+      "key": "hero-light",
+      "transparent_background": false,
+      "referenced_image_paths": [
+        "Capture style reference or original observatory (see generation prompt)."
+      ],
+      "prompt": "Use case: lighting-weather. Edit target: the supplied optical-glass orbital observatory. Create a LIGHT edition of this exact magnificent observatory composition, preserving the overlapping ring/torus architecture, optical glass details, interior miniatures and warm luminous core. Landscape 16:9 website hero. Replace the dark star field with PURE WHITE #FFFFFF. Remove stars and all background speckles; high-key white studio atmosphere. Observatory centered-right, shifted right enough that the entire left third is truly empty pure white for a dark headline. Preserve strong crisp separation of lavender and cobalt glass edges against white; do not overexpose the glass away. Give the core subtle warm-white luminosity and keep a few elegant amber accents. The torus should remain richly legible, dimensional, intricate and magnificent, with delicate reflections and restrained soft studio shadows. Do not add text, logos, numbers or captions. Background is opaque white, not transparent.",
+      "method": "built-in image_gen",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "asset": "web/assets/observatory-light.webp"
+    },
+    {
+      "key": "organize",
+      "prompt": "Use case: stylized-concept. Asset type: transparent website storytelling illustration for an AI memory product. Input image is a STYLE REFERENCE ONLY: match its sophisticated white porcelain note cards, translucent lavender/cobalt optical glass, small amber glass details, soft studio lighting, tangible overlapping forms and legible silhouettes. Create a NEW SINGLE SCENE described below, not the reference scene. Landscape 3:2. One centered clean minimal 3D editorial product illustration, three-quarter view, generous empty padding around whole composition, all objects fit inside image. Truly transparent alpha background, no opaque backdrop, no floor plane; tasteful soft contact shadows only. White objects shaded with cool softly defined edges so they work on light and dark webpages. No text, no lettering, no numerals, no logos, no watermark, no UI screenshots, no contact sheet. Scene: an elegant transparent two-bay desktop archive cabinet. The left bay contains intact layered white porcelain source sheets with understated raised document lines; the right bay contains three smaller violet translucent summary cards, each visibly linked back to original sheets with delicate amber threads. Keep the source pages clearly distinct from smaller summary cards, no new extraneous objects. One unambiguous source-to-understanding metaphor. Compact cabinet with rounded clear glass walls and rich lavender/cobalt glass edge highlights.",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "Capture style reference or original observatory (see generation prompt)."
+      ],
+      "method": "built-in image_gen",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "asset": "web/assets/story/02-organize.webp"
+    },
+    {
+      "key": "connect",
+      "prompt": "Use case: stylized-concept. Asset type: transparent website storytelling illustration for an AI memory product. Input image is a STYLE REFERENCE ONLY: match its sophisticated white porcelain note cards, translucent lavender/cobalt optical glass, small amber glass details, soft studio lighting, tangible overlapping forms and legible silhouettes. Create a NEW SINGLE SCENE described below, not the reference scene. Landscape 3:2. One centered clean minimal 3D editorial product illustration, three-quarter view, generous empty padding around whole composition, all objects fit inside image. Truly transparent alpha background, no opaque backdrop, no floor plane; tasteful soft contact shadows only. White objects shaded with cool softly defined edges so they work on light and dark webpages. No text, no lettering, no numerals, no logos, no watermark, no UI screenshots, no contact sheet. Scene: two separate white source cards, one with a raised customer-chat bubble pictogram and one with an embossed project checklist pictogram. A sculptural violet glass magnifying bridge spans between them. Each source card has one amber glass dot; delicate connecting threads converge their shared amber detail into one small elevated white idea card above the bridge with a single warm amber lightbulb-shaped inset. Obvious discovery of a new connection between two existing pieces. Minimal, three physical note cards total, readable at small size, not an abstract orb scene.",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "Capture style reference or original observatory (see generation prompt)."
+      ],
+      "method": "built-in image_gen",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "asset": "web/assets/story/03-connect.webp"
+    },
+    {
+      "key": "research",
+      "prompt": "Use case: stylized-concept. Asset type: transparent website storytelling illustration for an AI memory product. Input image is a STYLE REFERENCE ONLY: match its sophisticated white porcelain note cards, translucent lavender/cobalt optical glass, small amber glass details, soft studio lighting, tangible overlapping forms and legible silhouettes. Create a NEW SINGLE SCENE described below, not the reference scene. Landscape 3:2. One centered clean minimal 3D editorial product illustration, three-quarter view, generous empty padding around whole composition, all objects fit inside image. Truly transparent alpha background, no opaque backdrop, no floor plane; tasteful soft contact shadows only. White objects shaded with cool softly defined edges so they work on light and dark webpages. No text, no lettering, no numerals, no logos, no watermark, no UI screenshots, no contact sheet. Scene: a large clear glass magnifying lens with lavender/cobalt edge and handle rests tilted over one white porcelain source card, magnifying its simple embossed document strokes and a tiny amber detail. Next to it sits one small white calendar tile containing a sculptural clock face without numbers, and one fresh cobalt blue note card arriving just above the group. The metaphor is inspecting and revisiting information. Very few objects and strong readable silhouette, no other props.",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "Capture style reference or original observatory (see generation prompt)."
+      ],
+      "method": "built-in image_gen",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "asset": "web/assets/story/04-research.webp"
+    },
+    {
+      "key": "imagine",
+      "prompt": "Use case: stylized-concept. Asset type: transparent website storytelling illustration for an AI memory product. Input image is a STYLE REFERENCE ONLY: match its sophisticated white porcelain note cards, translucent lavender/cobalt optical glass, small amber glass details, soft studio lighting, tangible overlapping forms and legible silhouettes. Create a NEW SINGLE SCENE described below, not the reference scene. Landscape 3:2. One centered clean minimal 3D editorial product illustration, three-quarter view, generous empty padding around whole composition, all objects fit inside image. Truly transparent alpha background, no opaque backdrop, no floor plane; tasteful soft contact shadows only. White objects shaded with cool softly defined edges so they work on light and dark webpages. No text, no lettering, no numerals, no logos, no watermark, no UI screenshots, no contact sheet. Scene: two distinct overlapping upright translucent lavender and cobalt portal frames stand on a small white porcelain stage. Within the first frame is a tiny realistic creative studio worktable with an angled lamp and one simple chair. Within the second frame is a fantastical tiny floating island with an elegant curving stairway. A common original white note card with small amber dot lies in the foreground. Warm amber possibility accents. Clearly separate possible worlds, both portals readable and contained within the compact sculpture. Strong contrast and complete transparent cutout around all edges. This is a tangible imaginative product sculpture, no background environment.",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "Capture style reference or original observatory (see generation prompt)."
+      ],
+      "method": "built-in image_gen",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "asset": "web/assets/story/05-imagine.webp"
+    },
+    {
+      "key": "improve",
+      "prompt": "Use case: stylized-concept. Asset type: transparent website storytelling illustration for an AI memory product. Input image is a STYLE REFERENCE ONLY: match its sophisticated white porcelain note cards, translucent lavender/cobalt optical glass, small amber glass details, soft studio lighting, tangible overlapping forms and legible silhouettes. Create a NEW SINGLE SCENE described below, not the reference scene. Landscape 3:2. One centered clean minimal 3D editorial product illustration, three-quarter view, generous empty padding around whole composition, all objects fit inside image. Truly transparent alpha background, no opaque backdrop, no floor plane; tasteful soft contact shadows only. White objects shaded with cool softly defined edges so they work on light and dark webpages. No text, no lettering, no numerals, no logos, no watermark, no UI screenshots, no contact sheet. Scene: a small stack of reusable white porcelain note cards and one amber glass experiment tile return beside one carefully selected violet translucent card. A sculptural green check mark stands directly on the selected violet card to clearly show what worked. A single subtle thin lavender glass arc behind the group suggests a learning and review loop; do not add arrows. A few large tactile objects only, thoughtful simple readable composition, elegant rounded corners.",
+      "transparent_background": true,
+      "referenced_image_paths": [
+        "Capture style reference or original observatory (see generation prompt)."
+      ],
+      "method": "built-in image_gen",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "asset": "web/assets/story/06-improve.webp"
+    }
+  ]
+}
