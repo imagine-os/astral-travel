@@ -1,0 +1,12 @@
+# Astral Travel
+> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.1.0.
+
+- [Repository](https://github.com/imagine-os/astral-travel)
+- [README](https://github.com/imagine-os/astral-travel/blob/main/README.md)
+- [Engine API](https://github.com/imagine-os/astral-travel/blob/main/docs/engine.md)
+- [Local MCP setup](https://github.com/imagine-os/astral-travel/blob/main/docs/mcp.md)
+- [Architecture](https://github.com/imagine-os/astral-travel/blob/main/docs/architecture.md)
+- [Roadmap](https://github.com/imagine-os/astral-travel/blob/main/docs/roadmap.md)
+- [Comparative research](https://github.com/imagine-os/astral-travel/blob/main/docs/research.md)
+
+The alpha uses deterministic keyword/tag matching and scenario templates. No model, autonomous research, remote MCP, or terabyte backend is included. Evidence sources, inferred claims, and simulations remain separate.

@@ -1,0 +1,31 @@
+name: Teach us a memory workflow
+description: Share a fictional example of a useful or misleading connection.
+title: "[Workflow] "
+body:
+  - type: markdown
+    attributes:
+      value: "A small realistic example can improve the system more than a large feature request. Please use fictional material only."
+  - type: textarea
+    id: sources
+    attributes:
+      label: The source material
+      description: Two or three short fictional notes are enough.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: The useful connection or search result
+      description: What should the system help someone notice or find?
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: What would be misleading?
+      description: What should the system avoid concluding from these sources?
+  - type: textarea
+    id: value
+    attributes:
+      label: Why does this matter?
+      description: What decision or next step becomes easier?

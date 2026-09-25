@@ -1,0 +1,12 @@
+{
+  "name": "astral-travel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A local-first memory and dreaming playground with traceable knowledge and isolated simulations.",
+  "license": "MIT",
+  "engines": {"node": ">=22"},
+  "bin": {"astral": "./bin/astral.mjs"},
+  "scripts": {"start": "node scripts/serve.mjs", "build": "node scripts/build.mjs", "test": "node --test tests/*.test.mjs", "check": "node --check web/app.mjs && node --check lib/core.mjs", "demo": "node bin/astral.mjs init --demo"},
+  "repository": {"type": "git", "url": "https://github.com/imagine-os/astral-travel.git"}
+}

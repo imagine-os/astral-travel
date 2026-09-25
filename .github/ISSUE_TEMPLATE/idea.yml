@@ -1,0 +1,37 @@
+name: A possibility worth exploring
+description: Propose an improvement with a real use case.
+title: "[Idea] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Start with the person and the task, not the feature name.
+      placeholder: "When I revisit research after a month, I need to…"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would a useful result look like?
+      description: A concrete example is especially helpful.
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which part of the system does this improve?
+      options:
+        - Memory / provenance / search
+        - Dreaming / connections
+        - Research / freshness
+        - Lucid Lab / scenarios
+        - Improvement / review
+        - Navigation / accessibility / visual design
+        - Integrations / portability / infrastructure
+        - Something new
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: What should we consider?
+      description: Alternatives, costs, privacy implications, dependencies, or a small first version.

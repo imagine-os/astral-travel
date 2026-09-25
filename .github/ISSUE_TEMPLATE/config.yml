@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Try the Lucid Lab
+    url: https://imagine-os.github.io/astral-travel/#lab
+    about: Explore the working browser demo before opening an issue.
+  - name: Security reporting
+    url: https://github.com/imagine-os/astral-travel/blob/main/SECURITY.md
+    about: Read the reporting policy before sharing a security concern.

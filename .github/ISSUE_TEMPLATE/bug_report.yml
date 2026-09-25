@@ -1,0 +1,44 @@
+name: Something broke
+description: Help us reproduce a problem with the lab, CLI, or documentation.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for helping. Use fictional data and remove private information. For security issues, read SECURITY.md."
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      options:
+        - Browser lab
+        - CLI / local engine
+        - Website
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it?
+      description: Include the smallest useful steps, commands, or fictional example.
+    validations:
+      required: true
+  - type: textarea
+    id: expectation
+    attributes:
+      label: What did you expect, and what happened?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Version and environment
+      placeholder: "v0.1.0 · Firefox / macOS, or Node version / OS"
+    validations:
+      required: true
+  - type: textarea
+    id: supporting
+    attributes:
+      label: Screenshots or logs
+      description: Optional. Check for personal data before attaching.
