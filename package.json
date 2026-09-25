@@ -1,6 +1,6 @@
 {
   "name": "astral-travel",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "type": "module",
   "description": "A local-first memory and dreaming playground with traceable knowledge and isolated simulations.",

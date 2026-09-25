@@ -14,7 +14,7 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.3.1](https://img.shields.io/badge/version-0.3.1-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.3.2](https://img.shields.io/badge/version-0.3.2-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
@@ -269,6 +269,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.3.1
+[MIT licensed](LICENSE) · Made in the open · v0.3.2
 
 </div>

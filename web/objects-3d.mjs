@@ -397,15 +397,46 @@ export function mountObjects3D(host, options = {}) {
   function fit() {
     if (disposed || !nodeObjects.size) return;
     const bounds = new THREE.Box3();
-    for (const { group } of nodeObjects.values()) bounds.expandByPoint(group.position);
+    for (const item of nodeObjects.values()) bounds.expandByPoint(item.group.position);
     const center = bounds.getCenter(new THREE.Vector3()); center.y = 1.1;
-    const size = bounds.getSize(new THREE.Vector3());
-    const radius = Math.max(4.3, Math.sqrt((size.x + 4) ** 2 + (size.z + 4) ** 2) / 2);
-    const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-    const effectiveFov = Math.min(verticalFov, 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect));
-    const distance = Math.min(116, radius / Math.sin(effectiveFov / 2) * 1.05);
+    const direction = new THREE.Vector3(.32, .65, 1).normalize();
+    camera.position.copy(center).addScaledVector(direction, 20);
+    camera.lookAt(center); camera.updateMatrixWorld(true);
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+    const corners = [];
+    for (const item of nodeObjects.values()) {
+      const point = item.group.position;
+      // The tilted page/tablet body, including its thickness and paper offsets.
+      for (const x of [-1.23, 1.23]) for (const y of [0, 2.8]) for (const z of [-.78, .78]) {
+        corners.push(point.clone().add(new THREE.Vector3(x, y, z)));
+      }
+      // The selection footprint and the title sprite are also visible objects.
+      for (const x of [-1.56, 1.56]) for (const z of [-1.46, 1.46]) {
+        corners.push(point.clone().add(new THREE.Vector3(x, -.02, z)));
+      }
+      const labelCenter = point.clone().add(new THREE.Vector3(0, 3.08, .08));
+      for (const x of [-1.56, 1.56]) for (const y of [-.39, .39]) {
+        corners.push(labelCenter.clone().addScaledVector(right, x).addScaledVector(up, y));
+      }
+    }
+    const projected = new THREE.Vector3();
+    function fits(distance) {
+      camera.position.copy(center).addScaledVector(direction, distance);
+      camera.updateMatrixWorld(true);
+      return corners.every(corner => {
+        projected.copy(corner).project(camera);
+        return Math.abs(projected.x) <= .85 && Math.abs(projected.y) <= .85 && projected.z >= -1 && projected.z <= 1;
+      });
+    }
+    let near = controls.minDistance, far = controls.maxDistance;
+    if (fits(near)) far = near;
+    else for (let iteration = 0; iteration < 30; iteration++) {
+      const middle = (near + far) / 2;
+      if (fits(middle)) far = middle; else near = middle;
+    }
     controls.target.copy(center);
-    camera.position.copy(center).add(new THREE.Vector3(.38, .78, 1).normalize().multiplyScalar(distance));
+    camera.position.copy(center).addScaledVector(direction, far);
     controls.update(); requestRender();
   }
 

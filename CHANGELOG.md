@@ -2,6 +2,12 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.3.2 — 2026-09-25
+
+- Fit cameras to projected object bounds so previews make better use of the available stage.
+- Keep the expanded desktop workspace within the window, with an independently scrolling source inspector.
+- Preserve keyboard focus when 3D objects are rearranged and bring focused labels into view.
+
 ## 0.3.1 — 2026-09-25
 
 - Automatically use DOM-backed 3D objects if WebGL cannot start; preserve previews, layout choices, camera controls, themes, and selection.

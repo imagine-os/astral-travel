@@ -14,7 +14,7 @@ const make = (tag, className, text) => {
 export function mountCompatibility3D(host, options = {}) {
   let disposed = false, frame = 0, generation = 0, ready = false, fitted = false;
   let data = { nodes: [], edges: [], positions: new Map(), groups: [], selectedId: null, ...options };
-  let nodes = new Map(), edges = [];
+  let nodes = new Map(), edges = [], pendingFocus = null;
   const renderer = new CSS3DRenderer();
   const viewport = renderer.domElement;
   viewport.className = 'compatibility-3d';
@@ -39,6 +39,12 @@ export function mountCompatibility3D(host, options = {}) {
     frame = 0; if (disposed) return;
     try {
       controls.update(); renderer.render(scene, camera);
+      if (pendingFocus) {
+        const restore = pendingFocus; pendingFocus = null;
+        const item = nodes.get(restore.id);
+        const target = item?.[restore.kind] || nodes.values().next().value?.label;
+        target?.focus({ preventScroll: true });
+      }
       if (ready) { ready = false; options.onReady?.(); }
     } catch (error) { fail(error); }
   }
@@ -83,7 +89,7 @@ export function mountCompatibility3D(host, options = {}) {
     const point = position(node.id, index);
     const raw = node.type === 'raw';
     const button = make('button', `c3d-object ${raw ? 'c3d-source' : 'c3d-claim'}`);
-    button.type = 'button'; button.dataset.c3dId = node.id;
+    button.type = 'button'; button.tabIndex = -1; button.dataset.c3dId = node.id;
     button.setAttribute('aria-label', `Inspect ${raw ? 'original source' : 'processed knowledge'}: ${node.title}`);
     button.title = node.title || 'Untitled memory';
     for (let layer = 2; layer >= 0; layer--) button.append(make('span', `c3d-sheet c3d-layer-${layer}`));
@@ -142,6 +148,10 @@ export function mountCompatibility3D(host, options = {}) {
     requestRender();
   }
   function rebuild() {
+    const active = document.activeElement;
+    if (viewport.contains(active) && active?.dataset?.c3dId) {
+      pendingFocus = { id: active.dataset.c3dId, kind: active.classList.contains('c3d-label') ? 'label' : 'button' };
+    }
     const ticket = ++generation; ready = false; resetScene(); addGround();
     const loads = data.nodes.slice(0, 30).map(addNode); addEdges(); selection();
     if (!fitted && nodes.size) { fit(); fitted = true; }
@@ -155,17 +165,50 @@ export function mountCompatibility3D(host, options = {}) {
   }
   function fit() {
     if (disposed || !nodes.size) return;
-    const bounds = new THREE.Box3(); nodes.forEach(item => bounds.expandByPoint(item.point));
+    const bounds = new THREE.Box3();
+    for (const item of nodes.values()) bounds.expandByPoint(item.point);
     const center = bounds.getCenter(new THREE.Vector3()); center.y = 1.2;
-    const size = bounds.getSize(new THREE.Vector3());
-    const radius = Math.max(4.1, Math.sqrt((size.x + 4) ** 2 + (size.z + 4) ** 2) / 2);
-    const fov = THREE.MathUtils.degToRad(camera.fov);
-    const effectiveFov = Math.min(fov, 2 * Math.atan(Math.tan(fov / 2) * camera.aspect));
-    const distance = Math.min(116, radius / Math.sin(effectiveFov / 2));
+    const direction = new THREE.Vector3(.32, .65, 1).normalize();
+    camera.position.copy(center).addScaledVector(direction, 20);
+    camera.lookAt(center); camera.updateMatrixWorld(true);
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+    const corners = [];
+    for (const item of nodes.values()) {
+      const point = item.point;
+      // The tilted page/tablet body, including its thickness and paper offsets.
+      for (const x of [-1.23, 1.23]) for (const y of [0, 2.8]) for (const z of [-.78, .78]) {
+        corners.push(point.clone().add(new THREE.Vector3(x, y, z)));
+      }
+      // The selection footprint and the title sprite are also visible objects.
+      for (const x of [-1.56, 1.56]) for (const z of [-1.46, 1.46]) {
+        corners.push(point.clone().add(new THREE.Vector3(x, -.02, z)));
+      }
+      const labelCenter = point.clone().add(new THREE.Vector3(0, 3.05, 0));
+      for (const x of [-1.49, 1.49]) for (const y of [-.36, .36]) {
+        corners.push(labelCenter.clone().addScaledVector(right, x).addScaledVector(up, y));
+      }
+    }
+    const projected = new THREE.Vector3();
+    function fits(distance) {
+      camera.position.copy(center).addScaledVector(direction, distance);
+      camera.updateMatrixWorld(true);
+      return corners.every(corner => {
+        projected.copy(corner).project(camera);
+        return Math.abs(projected.x) <= .85 && Math.abs(projected.y) <= .85 && projected.z >= -1 && projected.z <= 1;
+      });
+    }
+    let near = controls.minDistance, far = controls.maxDistance;
+    if (fits(near)) far = near;
+    else for (let iteration = 0; iteration < 30; iteration++) {
+      const middle = (near + far) / 2;
+      if (fits(middle)) far = middle; else near = middle;
+    }
     controls.target.copy(center);
-    camera.position.copy(center).add(new THREE.Vector3(.32, .65, 1).normalize().multiplyScalar(distance));
+    camera.position.copy(center).addScaledVector(direction, far);
     controls.update(); requestRender();
   }
+
   function focus(id) {
     if (disposed || !nodes.has(id)) return;
     const center = nodes.get(id).point.clone().add(new THREE.Vector3(0, 1.3, 0));
@@ -193,12 +236,17 @@ export function mountCompatibility3D(host, options = {}) {
   }
   function pointerCancel(event) { pointers.delete(event.pointerId); pointerStart = null; }
   function keyClick(event) { if (event.detail === 0) { const id = event.target.closest('[data-c3d-id]')?.dataset.c3dId; if (id) options.onSelect?.(id); } }
+  function keyboardFocus(event) {
+    const label = event.target.closest('.c3d-label');
+    if (label && !pointers.size && label.matches(':focus-visible')) focus(label.dataset.c3dId);
+  }
   function motionChanged(event) { controls.enableDamping = !event.matches; requestRender(); }
   viewport.addEventListener('pointerdown', pointerDown);
   viewport.addEventListener('pointermove', pointerMove);
   viewport.addEventListener('pointerup', pointerUp);
   viewport.addEventListener('pointercancel', pointerCancel);
   viewport.addEventListener('click', keyClick);
+  viewport.addEventListener('focusin', keyboardFocus);
   motionQuery.addEventListener('change', motionChanged);
 
   function destroy() {
@@ -207,7 +255,8 @@ export function mountCompatibility3D(host, options = {}) {
     observer.disconnect(); controls.removeEventListener('change', requestRender); controls.dispose();
     viewport.removeEventListener('pointerdown', pointerDown); viewport.removeEventListener('pointermove', pointerMove);
     viewport.removeEventListener('pointerup', pointerUp); viewport.removeEventListener('pointercancel', pointerCancel);
-    viewport.removeEventListener('click', keyClick); motionQuery.removeEventListener('change', motionChanged);
+    viewport.removeEventListener('click', keyClick); viewport.removeEventListener('focusin', keyboardFocus);
+    motionQuery.removeEventListener('change', motionChanged);
     resetScene(); viewport.remove();
   }
   try { resize(); setTheme(document.documentElement.dataset.theme || 'light'); rebuild(); }

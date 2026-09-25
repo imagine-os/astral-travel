@@ -1,6 +1,6 @@
 # A memory you can recognize
 
-Astral Travel v0.3.1 gives the same source records and interpretations several presentations. Your first view is Objects 3D; Cards and List offer direct, keyboard-accessible alternatives. The appearance and arrangement are saved separately from workspace memory on this browser.
+Astral Travel v0.3.2 gives the same source records and interpretations several presentations. Your first view is Objects 3D; Cards and List offer direct, keyboard-accessible alternatives. The appearance and arrangement are saved separately from workspace memory on this browser.
 
 ## Views and arrangements
 
@@ -33,7 +33,8 @@ All views page through 30 records at a time. Search narrows the set before layou
 - `web/memory-model.mjs`: pure presentation metadata, deduplicated source edges, and deterministic layouts.
 - `web/explorer.mjs`: accessible view controls, paged result sets, exact-text preview canvases, and inspector integration.
 - `web/objects-3d.mjs`: local Three.js scene, object picking, cameras, themes, and graphics-resource disposal.
-- `web/vendor/three/`: pinned Three.js 0.186.0 and OrbitControls, distributed with their MIT license.
+- `web/objects-css3d.mjs`: GPU-independent object presentation using the same camera and selection API.
+- `web/vendor/three/`: pinned Three.js 0.186.0, OrbitControls, and CSS3DRenderer, distributed with their MIT license.
 
 The browser loads these libraries from this site. Preview generation does not fetch source pages or send record content to a service. Preview work is bounded independently of source length. Rendering is requested on interaction or a data change, rather than running an idle scene forever. If WebGL is unavailable, a labeled compatibility view uses Three camera transforms over CSS 3D document objects. If that also fails, Cards remains available.
 
