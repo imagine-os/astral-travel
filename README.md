@@ -8,7 +8,7 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.1.1](https://img.shields.io/badge/version-0.1.1-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
@@ -39,6 +39,10 @@ The first release is a small, working foundation: a browser lab, a local JavaScr
 | **Improvement** | “What is worth changing?” | Review suggestions and proposed next steps before incorporating them. |
 
 > **Alpha, with a clear boundary.** This release does not run language models, browse the web, predict outcomes, or make changes to your other tools. Autonomous research, model providers, remote hosting, and execution integrations are roadmap work.
+
+[![The working Astral Travel memory explorer](docs/assets/playground.jpg)](https://imagine-os.github.io/astral-travel/#lab)
+
+*Actual v0.1 playground: original sources, processed interpretations, and traceable references.*
 
 ## Follow the idea back home
 

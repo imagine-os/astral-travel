@@ -2,6 +2,12 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.1.1 — 2026-09-25
+
+- Rank pending dream suggestions by shared evidence signals so stronger connections appear first.
+- Preserve engine errors instead of overwriting them with an unrelated dream-success message.
+- Add actual homepage and explorer screenshots, release verification notes, and a second visible Version History entry.
+
 ## 0.1.0 — 2026-09-25
 
 First public alpha: the Astral Travel concept, a working browser lab, a local JavaScript memory engine, and a local MCP server.
