@@ -208,3 +208,6 @@
 .c3d-character-glasses{position:absolute;left:8px;top:0;width:54px;height:19px;background:linear-gradient(#514752,#514752) center 7px/14px 2px no-repeat;transform:translateZ(1px)}
 .c3d-character-glasses::before,.c3d-character-glasses::after{content:"";position:absolute;top:0;width:22px;height:19px;border:2px solid #514752;border-radius:6px;box-sizing:border-box}
 .c3d-character-glasses::before{left:0}.c3d-character-glasses::after{right:0}
+
+/* A bounded compatibility budget: four rounded surfaces per orb, rather than a mesh. */
+.c3d-orb-disc{display:block;position:absolute;left:0;top:0;border-radius:50%;pointer-events:none;backface-visibility:visible;background:radial-gradient(circle at 32% 25%,color-mix(in srgb,var(--body-color) 62%,white) 0,var(--body-color) 45%,color-mix(in srgb,var(--body-color) 77%,#293249) 100%);box-shadow:inset -2px -2px 3px #28334915}

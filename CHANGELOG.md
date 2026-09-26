@@ -2,6 +2,10 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.5.1 — 2026-09-26
+
+- Reduce compatibility-renderer sphere and cylinder surfaces for responsive software rendering of the larger example collection.
+
 ## 0.5.0 — 2026-09-26
 
 - Add seven distinct object forms: open folders, network hubs, friendly characters, stacked databases, server services, clouds, and portal rings. The collection now has 17 forms, with saved-text previews and the existing drag/placement controls.

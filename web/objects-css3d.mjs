@@ -69,7 +69,7 @@ function boxSolid(parent, className, width, height, depth, x = 0, y = 0, z = 0, 
   return root;
 }
 function cylinderSolid(parent, className, radius, height, x = 0, y = 0, z = 0) {
-  const root = solidRoot(parent, className, x, y, z), sides = 16;
+  const root = solidRoot(parent, className, x, y, z), sides = 8;
   for (let i = 0; i < sides; i++) {
     const angle = i * Math.PI * 2 / sides, face = make('span', 'c3d-cylinder-side');
     face.style.width = `${2 * radius * Math.tan(Math.PI / sides) + .6}px`; face.style.height = `${height}px`;
@@ -84,24 +84,12 @@ function cylinderSolid(parent, className, radius, height, x = 0, y = 0, z = 0) {
   return root;
 }
 function orbSolid(parent, className, radius, x = 0, y = 0, z = 0) {
-  const root = solidRoot(parent, className, x, y, z), sectors = 10, bands = 6;
-  for (let ring = 0; ring < bands; ring++) {
-    const a = -Math.PI / 2 + ring * Math.PI / bands, b = a + Math.PI / bands;
-    const r1 = radius * Math.cos(a), r2 = radius * Math.cos(b), y1 = radius * Math.sin(a), y2 = radius * Math.sin(b);
-    const dr = (r2 - r1) * Math.cos(Math.PI / sectors), dy = y2 - y1, height = Math.hypot(dr, dy);
-    const w1 = 2 * r1 * Math.sin(Math.PI / sectors), w2 = 2 * r2 * Math.sin(Math.PI / sectors), width = Math.max(w1, w2) + .4;
-    for (let segment = 0; segment < sectors; segment++) {
-      const angle = segment * Math.PI * 2 / sectors, s = Math.sin(angle), c = Math.cos(angle);
-      const rad = (r1 + r2) / 2 * Math.cos(Math.PI / sectors);
-      const matrix = [c,0,-s,0, s*dr/height,dy/height,c*dr/height,0, s*dy/height,-dr/height,c*dy/height,0, s*rad,(y1+y2)/2,c*rad,1];
-      const face = make('span', 'c3d-orb-facet');
-      face.style.width = `${width}px`; face.style.height = `${height + .45}px`;
-      const top = (1 - w1 / width) * 50, bottom = (1 - w2 / width) * 50;
-      face.style.clipPath = `polygon(${top}% 0,${100-top}% 0,${100-bottom}% 100%,${bottom}% 100%)`;
-      face.style.transform = `translate(-50%,-50%) matrix3d(${matrix.join(',')})`;
-      face.style.setProperty('--face-shade', `${Math.round(71 + 17*c + 12*(-Math.sin((a+b)/2)))}%`);
-      root.append(face);
-    }
+  // Intersecting shaded discs retain a rounded silhouette without hundreds of compositor layers.
+  const root = solidRoot(parent, className, x, y, z);
+  for (const rotation of ['', 'rotateY(60deg)', 'rotateY(120deg)', 'rotateX(90deg)']) {
+    const face = make('span', 'c3d-orb-disc');
+    face.style.width = face.style.height = `${radius * 2}px`;
+    face.style.transform = `translate(-50%,-50%) ${rotation}`; root.append(face);
   }
   return root;
 }
