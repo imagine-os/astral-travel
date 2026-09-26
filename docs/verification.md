@@ -8,6 +8,8 @@ September 26, 2026.
 
 Spatial-storage checks preserve the legacy personal arrangement, isolate example resets and forms, restore each collection after reload, and retain separate session state when browser storage is unavailable. Reading corrupt example preferences leaves the stored bytes and personal state intact. Native GPU and mobile-device visual verification remain outside the automated coverage.
 
+Live desktop checks confirmed the direct 144-node link, all 144 records in the 3D, Skill Tree, Radial Tree, Cards, and List DOM, and all 17 object forms in compatibility 3D. Search showed 16 matches out of 144; switching collections cleared filters. A new note in Research survived reload at 97 records while My memories remained 48; resetting that example restored 96. Studio opened 48 records. Light/dark switching and full-view controls were checked. Larger compatibility-scene paint performance is being checked separately before the final release handoff.
+
 ## v0.5.0–v0.5.1 — A world of objects
 
 The example upgrade preserves all original v0.4 source text, identities, tags, and review decisions. Fresh samples contain **48 records, 68 recorded relationships, and 17 object forms**. **59 tests pass**, covering additive upgrades, connectivity, presentation classification, object-band spacing, placement persistence, and graph layouts with cycles and disconnected nodes. The 48-node sample has no overlapping tree-view cards in the layout checks. Syntax checks and the static build pass.

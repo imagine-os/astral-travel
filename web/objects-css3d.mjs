@@ -45,6 +45,7 @@ const make = (tag, className, text) => {
 // Small CSS solids retain their depth as the camera orbits, including on non-GPU browsers.
 // Shapes are original constructions; their typed-object vocabulary follows Graph Gallery.
 const SCULPTURE_TYPES = new Set(['folder', 'network', 'character', 'database', 'service', 'cloud', 'portal']);
+const HIDDEN_PREVIEW_TYPES = new Set(['network', 'character', 'cloud', 'portal']);
 const TYPE_COLORS = { folder: '#efbb55', network: '#39ada9', character: '#759bdd', database: '#aa89d9', service: '#5c9dbf', cloud: '#9cc9df', portal: '#c09bea' };
 function solidRoot(parent, className, x = 0, y = 0, z = 0, rotation = '') {
   const root = make('span', `c3d-solid ${className}`);
@@ -67,6 +68,13 @@ function boxSolid(parent, className, width, height, depth, x = 0, y = 0, z = 0, 
     face.style.transform = `translate(-50%,-50%) ${transform}`; root.append(face);
   }
   return root;
+}
+function planeSolid(parent, className, width, height, x = 0, y = 0, z = 0, rotation = '') {
+  const root = solidRoot(parent, className, x, y, z, rotation);
+  const face = make('span', 'c3d-solid-face c3d-face-front');
+  face.style.width = `${width}px`; face.style.height = `${height}px`;
+  face.style.transform = 'translate(-50%,-50%)'; face.style.backfaceVisibility = 'visible';
+  root.append(face); return root;
 }
 function cylinderSolid(parent, className, radius, height, x = 0, y = 0, z = 0) {
   const root = solidRoot(parent, className, x, y, z), sides = 8;
@@ -92,24 +100,31 @@ function orbSolid(parent, className, radius, x = 0, y = 0, z = 0) {
   face.style.transform = 'translate(-50%,-50%)';
   root.append(face); return root;
 }
-function rodSolid(parent, start, end, color) {
+function rodSolid(parent, start, end, color, compact = false) {
   const delta = new THREE.Vector3(...end).sub(new THREE.Vector3(...start));
   const center = new THREE.Vector3(...start).addScaledVector(delta, .5);
-  const rod = boxSolid(parent, 'c3d-network-rod', 7, delta.length(), 7);
+  const rod = compact ? planeSolid(parent, 'c3d-network-rod', 7, delta.length()) : boxSolid(parent, 'c3d-network-rod', 7, delta.length(), 7);
+  if (compact) {
+    const cross = rod.firstElementChild.cloneNode();
+    cross.style.transform += ' rotateY(90deg)'; rod.append(cross);
+  }
   const matrix = new THREE.Matrix4().compose(center, new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), delta.normalize()), new THREE.Vector3(1,1,1));
   rod.style.transform = `matrix3d(${matrix.elements.join(',')})`; rod.style.setProperty('--body-color', color); return rod;
 }
-function buildSculpture(button, type, node) {
+function buildSculpture(button, type, node, compact = false) {
   button.classList.add('c3d-sculpture'); button.style.setProperty('--body-color', TYPE_COLORS[type]);
   const stage = make('span', 'c3d-sculpture-stage'); stage.setAttribute('aria-hidden', 'true'); button.append(stage);
   if (type === 'folder') {
     boxSolid(stage, 'c3d-folder-back', 252, 172, 14, 0, 14, -35);
     boxSolid(stage, 'c3d-folder-tab', 92, 35, 14, -80, -84, -35);
-    for (let i = 0; i < 3; i++) boxSolid(stage, 'c3d-folder-paper', 220-i*7, 174, 3, i*5, -5+i*5, -18+i*12, `rotateZ(${i*3-3}deg)`);
+    for (let i = 0; i < 3; i++) {
+      if (compact) planeSolid(stage, 'c3d-folder-paper', 220-i*7, 174, i*5, -5+i*5, -18+i*12, `rotateZ(${i*3-3}deg)`);
+      else boxSolid(stage, 'c3d-folder-paper', 220-i*7, 174, 3, i*5, -5+i*5, -18+i*12, `rotateZ(${i*3-3}deg)`);
+    }
     boxSolid(stage, 'c3d-folder-flap', 252, 136, 10, 0, 45, 28, 'rotateX(-12deg)');
   } else if (type === 'network') {
     const points = [[-100,-78,0],[99,-58,15],[-95,65,-5],[95,73,-12],[0,-111,-52]];
-    points.forEach(point => rodSolid(stage, [0,0,0], point, '#63a6a4'));
+    points.forEach(point => rodSolid(stage, [0,0,0], point, '#63a6a4', compact));
     orbSolid(stage, 'c3d-network-core', 49);
     points.forEach((point,i) => { const orb = orbSolid(stage, 'c3d-network-node', i === 4 ? 22 : 29, ...point); orb.style.setProperty('--body-color', ['#7cc9c0','#f2b866','#85aadd','#bba3df','#ecaaa7'][i]); });
     const emblem = make('span', 'c3d-network-emblem'); emblem.append(objectIcon('network')); stage.append(emblem);
@@ -137,14 +152,15 @@ function buildSculpture(button, type, node) {
   } else if (type === 'database') {
     for (let i = 0; i < 3; i++) {
       cylinderSolid(stage, 'c3d-database-drum', 81, 57, 0, -72+i*67);
-      cylinderSolid(stage, 'c3d-database-rim', 83, 9, 0, -103+i*67);
+      if (!compact) cylinderSolid(stage, 'c3d-database-rim', 83, 9, 0, -103+i*67);
     }
     for (let i = 0; i < 3; i++) { const lamp = make('span', 'c3d-data-led'); lamp.style.top = `${-73+i*67}px`; stage.append(lamp); }
   } else if (type === 'service') {
     boxSolid(stage, 'c3d-service-chassis', 169, 212, 105, 0, 0, -7);
     boxSolid(stage, 'c3d-service-base', 193, 14, 127, 0, 113, -7);
     for (let i = 0; i < 4; i++) {
-      const unit = boxSolid(stage, 'c3d-service-unit', 149, 38, 11, 0, -78+i*50, 52);
+      const unit = compact ? planeSolid(stage, 'c3d-service-unit', 149, 38, 0, -78+i*50, 58)
+        : boxSolid(stage, 'c3d-service-unit', 149, 38, 11, 0, -78+i*50, 52);
       const vent = make('span', 'c3d-service-vent'), led = make('span', 'c3d-service-led');
       unit.append(vent, led);
     }
@@ -154,7 +170,8 @@ function buildSculpture(button, type, node) {
     const mark = make('span', 'c3d-cloud-mark'); mark.append(objectIcon('cloud')); stage.append(mark);
   } else if (type === 'portal') {
     const rim = make('span', 'c3d-portal-rim'); stage.append(rim);
-    for (let i = 0; i < 16; i++) {
+    if (compact) stage.append(make('span', 'c3d-portal-rim c3d-portal-rim-front'));
+    for (let i = 0; i < (compact ? 0 : 16); i++) {
       const angle = i * Math.PI / 8;
       const gem = boxSolid(stage, 'c3d-portal-segment', 43, 30, 33, 96*Math.sin(angle), 96*Math.cos(angle)-10, 0, `rotateZ(${-angle}rad)`);
       gem.style.setProperty('--body-color', i % 2 ? '#a884d4' : '#ccb5e6');
@@ -224,8 +241,8 @@ export function mountCompatibility3D(host, options = {}) {
     object.position.copy(location); object.scale.setScalar(scale); scene.add(object);
     return object;
   }
-  function floorElement(element, location) {
-    const object = attach(element, location); object.rotation.x = -Math.PI / 2;
+  function floorElement(element, location, scale = UNIT) {
+    const object = attach(element, location, scale); object.rotation.x = -Math.PI / 2;
     element.style.pointerEvents = 'none'; return object;
   }
   function resetScene() {
@@ -238,16 +255,19 @@ export function mountCompatibility3D(host, options = {}) {
     const points = data.nodes.slice(0, 160).map((node, index) => position(node.id, index));
     const bounds = points.length ? new THREE.Box3().setFromPoints(points) : new THREE.Box3(new THREE.Vector3(-5,0,-5), new THREE.Vector3(5,0,5));
     const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
+    // Large boards keep the same world footprint with a quarter of the raster area.
+    const rasterScale = data.nodes.length > 80 ? .5 : 1;
     const floor = make('div', 'c3d-ground');
-    floor.style.width = `${THREE.MathUtils.clamp((size.x + 10) / UNIT, 1600, 6000)}px`;
-    floor.style.height = `${THREE.MathUtils.clamp((size.z + 10) / UNIT, 1600, 6000)}px`;
-    floorElement(floor, new THREE.Vector3(center.x, -.075, center.z));
+    floor.style.width = `${THREE.MathUtils.clamp((size.x + 10) / UNIT, 1600, 6000) * rasterScale}px`;
+    floor.style.height = `${THREE.MathUtils.clamp((size.z + 10) / UNIT, 1600, 6000) * rasterScale}px`;
+    floor.style.backgroundSize = `${200 * rasterScale}px ${200 * rasterScale}px`;
+    floorElement(floor, new THREE.Vector3(center.x, -.075, center.z), UNIT / rasterScale);
     for (const group of data.groups || []) {
       if (![group.x, group.z, group.width, group.depth].every(Number.isFinite)) continue;
       const box = make('div', 'c3d-room');
-      box.style.width = `${group.width / UNIT}px`; box.style.height = `${group.depth / UNIT}px`;
+      box.style.width = `${group.width / UNIT * rasterScale}px`; box.style.height = `${group.depth / UNIT * rasterScale}px`;
       box.append(make('span', 'c3d-room-label', group.label || 'Memories'));
-      floorElement(box, new THREE.Vector3(group.x, -.045, group.z));
+      floorElement(box, new THREE.Vector3(group.x, -.045, group.z), UNIT / rasterScale);
     }
   }
   function addNode(node, index) {
@@ -258,11 +278,13 @@ export function mountCompatibility3D(host, options = {}) {
     button.type = 'button'; button.tabIndex = -1; button.dataset.c3dId = node.id; button.dataset.objectType = objectType;
     button.setAttribute('aria-label', `Inspect ${raw ? TYPE_LABELS[objectType].toLowerCase() + ' source' : 'processed knowledge'}: ${node.title}`);
     button.title = `${node.title || 'Untitled memory'} · ${TYPE_LABELS[objectType]} · Drag to move`;
-    if (SCULPTURE_TYPES.has(objectType)) buildSculpture(button, objectType, node);
+    if (SCULPTURE_TYPES.has(objectType)) buildSculpture(button, objectType, node, data.nodes.length > 80);
     else for (let layer = 2; layer >= 0; layer--) button.append(make('span', `c3d-sheet c3d-layer-${layer}`));
     const front = make('span', 'c3d-front');
     let decoded = Promise.resolve();
-    if (SAFE_PREVIEW.test(node.previewUrl || '')) {
+    if (HIDDEN_PREVIEW_TYPES.has(objectType)) {
+      // These silhouettes have no front plaque; the full preview remains in the inspector.
+    } else if (SAFE_PREVIEW.test(node.previewUrl || '')) {
       const image = make('img', 'c3d-preview'); image.alt = ''; image.draggable = false;
       image.src = node.previewUrl; front.append(image);
       decoded = image.decode().catch(() => { image.remove(); front.append(make('strong', 'c3d-fallback-title', node.title)); front.append(make('span', 'c3d-fallback-text', String(node.text || '').slice(0, 280))); });
@@ -296,7 +318,7 @@ export function mountCompatibility3D(host, options = {}) {
     label.append(make('small', '', raw ? `SOURCE · ${TYPE_LABELS[objectType].toUpperCase()}` : 'PROCESSED KNOWLEDGE'), make('strong', '', node.title || 'Untitled memory'));
     const labelIcon = make('span', 'c3d-label-icon'); labelIcon.append(objectIcon(objectType)); label.prepend(labelIcon);
     const labelObject = attach(label, point.clone().add(new THREE.Vector3(0, 3.05, 0)), UNIT, true);
-    nodes.set(node.id, { node, point, object, button, label, ring, labelObject, shadowObject, ringObject });
+    nodes.set(node.id, { node, point, object, button, label, ring, shadow, labelObject, shadowObject, ringObject });
     return decoded;
   }
   function addEdges() {
@@ -333,6 +355,7 @@ export function mountCompatibility3D(host, options = {}) {
       item.button.setAttribute('aria-pressed', String(selected));
       item.label.setAttribute('aria-pressed', String(selected));
       item.ring.classList.toggle('is-selected', selected);
+      item.shadow.classList.toggle('is-selected', selected);
     }
     for (const { edge, line } of edges) {
       line.classList.toggle('is-active', data.selectedId === edge.from || data.selectedId === edge.to);
@@ -347,6 +370,7 @@ export function mountCompatibility3D(host, options = {}) {
     }
     controls.enableDamping = false;
     viewport.dataset.density = data.nodes.length > 30 ? 'dense' : 'normal';
+    viewport.dataset.detail = data.nodes.length > 80 ? 'compact' : 'full';
     const ticket = ++generation; ready = false; resetScene(); addGround();
     const loads = data.nodes.slice(0, 160).map(addNode); addEdges(); selection();
     if (!fitted && nodes.size) { fit(); fitted = true; }

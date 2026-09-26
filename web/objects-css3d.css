@@ -218,5 +218,13 @@
 .compatibility-3d[data-density=dense] .c3d-portal-surface{box-shadow:none}
 .compatibility-3d[data-density=dense] .c3d-room{background:transparent}
 
+/* Large software-rendered scenes retain their object silhouettes with fewer layers. */
+.compatibility-3d[data-detail=compact] .c3d-shadow:not(.is-selected){display:none}
+.compatibility-3d[data-detail=compact] .c3d-room{border-width:1px;border-radius:12px}
+.compatibility-3d[data-detail=compact] .c3d-room-label{left:10px;top:6px;font-size:11.5px;max-width:calc(100% - 20px)}
+.compatibility-3d[data-detail=compact] .c3d-portal-rim{border:36px solid #b698d5;background:transparent}
+.compatibility-3d[data-detail=compact] .c3d-portal-rim-front{border-color:#d1b8e8;transform:translateZ(18px)}
+.compatibility-3d[data-detail=compact] .c3d-portal-star{text-shadow:none}
+
 /* Lit round surfaces keep the software fallback readable and inexpensive. */
 .c3d-orb-disc{display:block;position:absolute;left:0;top:0;border-radius:50%;pointer-events:none;backface-visibility:visible;background:radial-gradient(circle at 32% 25%,color-mix(in srgb,var(--body-color) 62%,white) 0,var(--body-color) 48%,color-mix(in srgb,var(--body-color) 70%,#293249) 100%)}
