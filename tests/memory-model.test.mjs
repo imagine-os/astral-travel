@@ -95,6 +95,36 @@ test('radial view centers the selection and places its direct neighbors before u
   assert.ok(Math.max(...neighbors.map(radius)) < Math.min(...outer.map(node => radius(node.id))));
 });
 
+test('large radial collections fit inside the drag bounds with spaced, stable neighbor-first rings', () => {
+  for (const count of [144, 160]) {
+    for (const neighborCount of [0, 5, 80, count - 1]) {
+      const nodes = freeze(sample(count));
+      const selected = nodes[0].id;
+      const neighbors = nodes.slice(1, neighborCount + 1);
+      const edges = freeze(neighbors.map(node => ({ from: selected, to: node.id, type: 'related' })));
+      const before = JSON.stringify({ nodes, edges });
+      const result = arrangeMemories(nodes, edges, 'radial', selected);
+      assert.equal(result.positions.size, count);
+      assert.deepEqual(result.positions.get(selected), { x: 0, y: 0, z: 0 });
+      assert.deepEqual(result, arrangeMemories([...nodes].reverse(), edges, 'radial', selected));
+      assert.equal(JSON.stringify({ nodes, edges }), before);
+      const points = [...result.positions.values()];
+      points.forEach((point, index) => {
+        assert.ok(Number.isFinite(point.x) && Number.isFinite(point.z));
+        assert.ok(Math.abs(point.x) <= 95 && Math.abs(point.z) <= 95, 'automatic positions must stay inside the draggable floor');
+        for (const other of points.slice(index + 1)) {
+          assert.ok(Math.hypot(point.x - other.x, point.z - other.z) >= 4 - 1e-8, 'objects need four units of separation');
+        }
+      });
+      const unrelated = nodes.slice(neighborCount + 1);
+      if (neighbors.length && unrelated.length) {
+        const radius = node => Math.hypot(result.positions.get(node.id).x, result.positions.get(node.id).z);
+        assert.ok(Math.max(...neighbors.map(radius)) < Math.min(...unrelated.map(radius)), 'direct neighbors occupy the inner rings');
+      }
+    }
+  }
+});
+
 test('room categories are capped without losing overflow records', () => {
   const nodes = sample(30);
   const { positions, groups } = arrangeMemories(nodes);

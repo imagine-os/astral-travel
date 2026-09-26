@@ -2,6 +2,12 @@
 
 September 26, 2026.
 
+## v0.6.0 — Larger example worlds
+
+**75 automated tests pass**, plus syntax checks and the static build. The new collections contain **48/96/144** records with **68/148/223** recorded connections. Tests check all 17 forms, connected graphs, source-backed proposed interpretations, exact counts, independent creation, and unchanged source content. Both tree views preserve every node and real edge across overview, source focus, and interpretation focus, with finite bounds and separated cards. Dense 3D radial arrangements remain inside placement bounds at 144/160 nodes.
+
+Spatial-storage checks preserve the legacy personal arrangement, isolate example resets and forms, restore each collection after reload, and retain separate session state when browser storage is unavailable. Reading corrupt example preferences leaves the stored bytes and personal state intact. Native GPU and mobile-device visual verification remain outside the automated coverage.
+
 ## v0.5.0–v0.5.1 — A world of objects
 
 The example upgrade preserves all original v0.4 source text, identities, tags, and review decisions. Fresh samples contain **48 records, 68 recorded relationships, and 17 object forms**. **59 tests pass**, covering additive upgrades, connectivity, presentation classification, object-band spacing, placement persistence, and graph layouts with cycles and disconnected nodes. The 48-node sample has no overlapping tree-view cards in the layout checks. Syntax checks and the static build pass.

@@ -8,8 +8,33 @@ const graphViews = ['skilltree','radialtree'];
 const allViews = ['objects',...graphViews,'cards','list'];
 const layouts = [['bands','▱','Object bands'],['rooms','◫','Rooms'],['lanes','☷','Lanes'],['radial','◎','Radial'],['grid','▦','Grid']];
 const previewCache = new Map();
-const PAGE_SIZE = 60;
-let sessionSpatial;
+const PAGE_SIZE = 160;
+const PERSONAL_WORKSPACE_KEY = 'astral-travel.workspace.v0.1';
+const PERSONAL_SPATIAL_KEY = 'astral-travel.spatial.v1';
+
+/** Keep each workspace's placements isolated, including when storage is unavailable. */
+export function createSpatialSessions(storage) {
+  const sessions = new Map();
+  const keyFor = workspaceKey => workspaceKey === PERSONAL_WORKSPACE_KEY
+    ? PERSONAL_SPATIAL_KEY : `${PERSONAL_SPATIAL_KEY}.workspace.${workspaceKey}`;
+  return {
+    read(workspaceKey = PERSONAL_WORKSPACE_KEY) {
+      const key = keyFor(workspaceKey);
+      if (!sessions.has(key)) {
+        let state = createSpatialState();
+        try { state = normalizeSpatialState(JSON.parse(storage.getItem(key) || 'null')); } catch {}
+        sessions.set(key, state);
+      }
+      return normalizeSpatialState(sessions.get(key));
+    },
+    write(workspaceKey = PERSONAL_WORKSPACE_KEY, state) {
+      const key = keyFor(workspaceKey), normalized = normalizeSpatialState(state);
+      sessions.set(key, normalized);
+      try { storage.setItem(key, JSON.stringify(normalized)); return true; } catch { return false; }
+    },
+  };
+}
+const spatialSessions = createSpatialSessions({getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)});
 
 function wrappedLines(ctx, text, width, maxLines) {
   // A thumbnail is bounded work even when a captured note is very large.
@@ -51,7 +76,7 @@ export function previewFor(node) {
   ctx.fillStyle = accent; ctx.fillRect(32,545,416,1);
   ctx.font = 'bold 16px Arial'; ctx.fillText(node.type === 'raw' ? 'PRESERVED SOURCE' : String(node.status || 'proposed').toUpperCase(),32,575);
   const url = canvas.toDataURL('image/png');
-  if(previewCache.size > 120) previewCache.clear(); previewCache.set(key,url); return url;
+  if(previewCache.size > PAGE_SIZE * 2) previewCache.clear(); previewCache.set(key,url); return url;
 }
 
 export function readExplorerPreference() {
@@ -62,16 +87,12 @@ export function saveExplorerPreference(view,layout) {
   try {localStorage.setItem('astral-travel.explorer',JSON.stringify({view,layout}));} catch { /* Appearance still works in this session. */ }
 }
 
-export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml,onNotice=()=>{}}) {
+export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml,onNotice=()=>{},workspaceKey=PERSONAL_WORKSPACE_KEY}) {
   let data, renderer = null, generation = 0, destroyed = false, page = 0, contentKey = '', arrangementKey = '', currentView = '', cardZoom = 1, board = null;
   let visibleNodes = [], visibleEdges = [], allEdges = [], arrangement, rendererMode = '', inspectedId = '', graphFormKey = '';
-  const SPATIAL_KEY='astral-travel.spatial.v1';
-  let spatial=createSpatialState(),history=[];
-  if(sessionSpatial)spatial=normalizeSpatialState(sessionSpatial);
-  else{try{spatial=normalizeSpatialState(JSON.parse(localStorage.getItem(SPATIAL_KEY)||'null'));}catch{}}
-  sessionSpatial=spatial;
+  let spatial=spatialSessions.read(workspaceKey),history=[];
   function saveSpatial(next){history.push(spatial);if(history.length>30)history.shift();spatial=next;persistSpatial();}
-  function persistSpatial(){sessionSpatial=spatial;try{localStorage.setItem(SPATIAL_KEY,JSON.stringify(spatial));}catch{onNotice('Placement is session-only because browser storage is unavailable.');}}
+  function persistSpatial(){if(!spatialSessions.write(workspaceKey,spatial))onNotice('Placement is session-only because browser storage is unavailable.');}
   function customPositions(){return visibleNodes.some(r=>Object.hasOwn(spatial.layouts[data.layout]||{},r.id));}
   function describe(record){const node=describeMemory(record,data.rawIds.has(record.id)?'raw':'claim');const custom=spatial.objects[node.id];return {...node,objectType:node.type==='raw'&&custom?custom:node.objectType,icon:node.type==='raw'&&custom?custom:node.icon};}
   function moveObject(id,point){
@@ -128,7 +149,7 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml,
   }
   function footer(total) {
     const ids=new Set(visibleNodes.map(n=>n.id));const outside=allEdges.filter(e=>ids.has(e.from)!==ids.has(e.to)).length;
-    return `<div class="stage-footer"><div class="stage-legend"><span><i class="raw-dot"></i> Raw sources</span><span><i class="claim-dot"></i> Processed</span><span>Lines = recorded references</span>${outside?`<span class="outside-connections">${outside} connection${outside===1?'':'s'} outside this view · follow the source trail</span>`:''}</div><div class="explorer-pagination"><span>${page*PAGE_SIZE+1}–${Math.min((page+1)*PAGE_SIZE,total)} of ${total}</span>${total>PAGE_SIZE?`<button class="scene-control" data-explorer-action="previous" ${page===0?'disabled':''} aria-label="Previous memories">←</button><button class="scene-control" data-explorer-action="next" ${(page+1)*PAGE_SIZE>=total?'disabled':''} aria-label="Next memories">→</button>`:''}</div></div>`;
+    return `<div class="stage-footer"><div class="stage-legend"><span><i class="raw-dot"></i> Raw sources</span><span><i class="claim-dot"></i> Processed</span><span>Lines = recorded references</span>${outside?`<span class="outside-connections">${outside} connection${outside===1?'':'s'} outside this view · follow the source trail</span>`:''}</div><div class="explorer-pagination"><span>${visibleNodes.length} shown · ${total} total${total>PAGE_SIZE?` · ${page*PAGE_SIZE+1}–${Math.min((page+1)*PAGE_SIZE,total)}`:''}</span>${total>PAGE_SIZE?`<button class="scene-control" data-explorer-action="previous" ${page===0?'disabled':''} aria-label="Previous memories">←</button><button class="scene-control" data-explorer-action="next" ${(page+1)*PAGE_SIZE>=total?'disabled':''} aria-label="Next memories">→</button>`:''}</div></div>`;
   }
   function toolbar() {
     const graph=graphViews.includes(data.view);

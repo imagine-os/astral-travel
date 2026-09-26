@@ -1,5 +1,5 @@
 # Astral Travel
-> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.5.1.
+> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.6.0.
 
 - [Repository](https://github.com/imagine-os/astral-travel)
 - [README](https://github.com/imagine-os/astral-travel/blob/main/README.md)
@@ -9,9 +9,14 @@
 - [Architecture](https://github.com/imagine-os/astral-travel/blob/main/docs/architecture.md)
 - [Roadmap](https://github.com/imagine-os/astral-travel/blob/main/docs/roadmap.md)
 - [Comparative research](https://github.com/imagine-os/astral-travel/blob/main/docs/research.md)
+- [Creative studio: 48 nodes](https://imagine-os.github.io/astral-travel/?example=studio#lab)
+- [Research observatory: 96 nodes](https://imagine-os.github.io/astral-travel/?example=research#lab)
+- [Lucid world atlas: 144 nodes](https://imagine-os.github.io/astral-travel/?example=dreamworld#lab)
 
 The alpha uses deterministic keyword/tag matching and scenario templates. No model, autonomous research, remote MCP, or terabyte backend is included. Evidence sources, inferred claims, and simulations remain separate.
 
 The playground has Objects 3D, Skill tree, Radial tree, Cards, and List views over the same local records. Objects use 17 forms, including folders, networks, characters, databases, services, clouds, and portals. Object arrangements include Object bands (fresh default), Rooms, Lanes, Radial, and Grid. Graph views show supplied links and keep disconnected records separate. Dragged placements and appearance preferences are stored separately from evidence.
 
-Fresh examples contain 48 fictional text records (38 sources, 10 interpretations) and 68 recorded connections. Add examples adds missing records without overwriting user memory; a complete v0.4 sample gains 30 nodes. Views page through up to 60 records. Character, media, and infrastructure forms do not imply live agents, playable attachments, or provisioned services.
+The collection switcher opens Creative studio (48 nodes, 68 connections), Research observatory (96 nodes, 148 connections), or Lucid world atlas (144 nodes, 223 connections). Each example saves separately in the browser; switching never merges it into My memories. Earlier saved workspaces, including the original eight-node sample, remain intact. Choose My memories to return to them. Add examples is an explicit additive action in My memories; it adds missing studio records without replacing existing content or reviews.
+
+All five views page through up to 160 records. All three example collections include 17 object forms, recorded relationships, original source notes, and proposed interpretations. Atlas notes are authored fictional worldbuilding, not simulation output or evidence of real events. Research notes are plans, not completed searches or experiments. Character, media, and infrastructure forms do not imply live agents, playable attachments, or provisioned services.

@@ -621,7 +621,7 @@ export function mountObjects3D(host, options = {}) {
     disposeTree(world);
     nodeObjects = new Map(); edgeObjects = []; targets = [];
     makeGroups();
-    const loads = data.nodes.slice(0, 60).map((node, index) => makeObject(node, index, currentGeneration));
+    const loads = data.nodes.slice(0, 160).map((node, index) => makeObject(node, index, currentGeneration));
     makeEdges(); refreshSelection(); updateShadows();
     if (!fitted && nodeObjects.size) { fit(); fitted = true; }
     requestRender();

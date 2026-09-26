@@ -1,6 +1,22 @@
 # A memory you can recognize
 
-Astral Travel v0.5.0 presents the same records as a world of objects, two branching graphs, visual cards, or a searchable list. Fresh preferences open **Objects 3D → Object bands**. Existing appearance and arrangement choices stay saved separately from workspace memory on this browser.
+Astral Travel v0.6.0 presents the same records as a world of objects, two branching graphs, visual cards, or a searchable list. Fresh preferences open **Objects 3D → Object bands**. Existing appearance and arrangement choices stay saved separately from workspace memory on this browser.
+
+## Choose a collection
+
+The collection switcher opens three fictional examples without replacing your saved workspace:
+
+| Collection | Original sources | Interpretations | Total nodes | Connections |
+| --- | ---: | ---: | ---: | ---: |
+| **[Creative studio](https://imagine-os.github.io/astral-travel/?example=studio#lab)** | 38 | 10 | 48 | 68 |
+| **[Research observatory](https://imagine-os.github.io/astral-travel/?example=research#lab)** | 84 | 12 | 96 | 148 |
+| **[Lucid world atlas](https://imagine-os.github.io/astral-travel/?example=dreamworld#lab)** | 126 | 18 | 144 | 223 |
+
+The observatory has six connected research rooms; the atlas has nine imaginative districts. Every collection includes all 17 object forms and works in all five views. Connections come from recorded associations and interpretation source references.
+
+**If you still see eight nodes, your earlier workspace is being preserved.** Select a larger example in the switcher, then select **My memories** to return. Each example saves separately in this browser. Switching collections does not merge, overwrite, or delete your memories. Export downloads the active collection.
+
+**Add examples** is available in My memories. It adds missing studio example records without replacing existing content, duplicating the collection, or resetting a review decision. An original eight-node sample grows to 48; a complete v0.4 example workspace gains 30 nodes.
 
 ## Five views of the same knowledge
 
@@ -34,9 +50,9 @@ Changing a view, camera, or arrangement does not change a record, verify an inte
 
 The new native 3D forms have distinct volume: open tabbed folders, a friendly standing figure, a hub with connected satellites, stacked data cylinders, a server tower, clustered cloud spheres, and an open portal ring. Small plaques carry the actual saved-text preview. The inspector’s **Object form** selector changes a source’s appearance without rewriting the record. Interpretations keep their tablet form and review state.
 
-A fresh example workspace contains **48 nodes: 38 original sources and 10 interpretations, with 68 recorded connections**. **Add examples** brings 30 additional nodes into a complete v0.4 example workspace. The operation fills missing examples without replacing memories, duplicating the collection, or resetting an existing review decision.
-
 All public examples are fictional, text-only records. Characters describe people or roles; they are not running agents. Folders and networks describe collections and relationships; they do not provision storage or services. Audio, image, and video examples are transcripts, descriptions, and storyboards rather than uploaded or playable media.
+
+The atlas contains authored worldbuilding source notes and proposed interpretations of those notes. It does not contain generated scenario output or treat imagined events as real-world evidence. Research rooms contain written plans, not completed searches or measured experiments.
 
 ## Arrange by hand
 
@@ -60,7 +76,7 @@ PDF rendering, uploaded image previews, video posters, audio waveforms, custom t
 
 **Fit** returns to an overview; **Focus** brings the selection closer. The memory picker and Cards/List controls provide a keyboard route to the same inspector. **Full view** expands the workspace across the browser window; Escape exits it without a fullscreen permission prompt.
 
-All views page through **60 records** at a time. Search narrows the set before layout. Edges connect records visible on the current page; the inspector retains the full source trail. Three-dimensional selection highlights references without resetting the camera. Switching an object arrangement fits the new layout.
+All views page through **160 records** at a time, so all three example collections fit on one page. Search narrows the set before layout. Edges connect records visible on the current page; the inspector retains the full source trail. Three-dimensional selection highlights references without resetting the camera. Switching an object arrangement fits the new layout. This display bound is not a claim of production-scale performance.
 
 ## Implementation and bounds
 
@@ -72,6 +88,7 @@ All views page through **60 records** at a time. Search narrows the set before l
 - `web/objects-css3d.mjs`: GPU-independent object presentation using the same camera and selection API.
 - `web/spatial-state.mjs`: validated placement and form preferences kept outside the evidence schema.
 - `lib/examples.mjs`: repeatable, additive fictional example collection.
+- `lib/example-packs.mjs`: immutable example catalogue and isolated 48-, 96-, and 144-node workspace factories.
 - `web/vendor/three/`: pinned Three.js 0.186.0, OrbitControls, and CSS3DRenderer, distributed with their MIT license.
 
 The browser loads these libraries from this site. Preview generation does not fetch source pages or send record content to a service. Preview work is bounded independently of source length. The 3D scene renders on interaction or a data change. If WebGL is unavailable, a labeled CSS 3D compatibility view preserves object recognition and navigation. Cards remains available if that also fails.

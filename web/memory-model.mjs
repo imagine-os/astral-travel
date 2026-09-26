@@ -260,6 +260,19 @@ function ringPoints(count, radius, offset = 0, stretch = 1) {
 
 function circleRadius(count) { return count > 1 ? Math.max(SPACING, SPACING / (2 * Math.sin(Math.PI / count))) : SPACING; }
 
+function putRadialRings(nodes, positions, startRadius) {
+  let offset = 0, radius = startRadius;
+  while (offset < nodes.length) {
+    // Bound each ring by its chord spacing; adjacent rings remain four units apart.
+    const capacity = Math.max(1, Math.floor(Math.PI / Math.asin(SPACING / (2 * radius)) + 1e-9));
+    const count = Math.min(capacity, nodes.length - offset);
+    ringPoints(count, radius).forEach((point, index) => positions.set(nodes[offset + index].id, point));
+    offset += count;
+    radius += SPACING;
+  }
+  return radius;
+}
+
 function radial(nodes, edges, positions, selectedId) {
   const visible = new Set(nodes.map(node => node.id));
   const adjacency = new Map(nodes.map(node => [node.id, new Set()]));
@@ -273,6 +286,13 @@ function radial(nodes, edges, positions, selectedId) {
   positions.set(center.id, { x: 0, y: 0, z: 0 });
   const neighbors = nodes.filter(node => adjacency.get(center.id).has(node.id));
   const outer = nodes.filter(node => node.id !== center.id && !adjacency.get(center.id).has(node.id));
+  if (nodes.length > 60) {
+    // Larger collections use compact rings instead of a single distant ellipse.
+    // Finish the direct-neighbor rings before placing any unrelated record.
+    const outerRadius = putRadialRings(neighbors, positions, SPACING);
+    putRadialRings(outer, positions, outerRadius);
+    return [];
+  }
   const innerRadius = circleRadius(neighbors.length);
   ringPoints(neighbors.length, innerRadius).forEach((point, index) => positions.set(neighbors[index].id, point));
   if (!outer.length) return [];

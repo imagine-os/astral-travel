@@ -146,7 +146,11 @@ export function radialTreeLayout(nodes, edges, selectedId) {
   // Small label collision pass preserves radial neighborhoods without forcing
   // unusually sparse rings just because one branch has many descendants.
   const placed = [...positions.entries()];
-  for (let pass = 0; pass < 48; pass++) {
+  // Dense collections can propagate a tiny displacement through many siblings.
+  // Scale the bounded relaxation budget with the visible population; increasing
+  // ring radii instead would shrink every card in the fitted overview.
+  const maxCollisionPasses = Math.min(160, Math.max(48, placed.length));
+  for (let pass = 0; pass < maxCollisionPasses; pass++) {
     let moved = false;
     for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) {
       const [idA, a] = placed[i], [idB, b] = placed[j];

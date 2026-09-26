@@ -14,11 +14,13 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.5.1](https://img.shields.io/badge/version-0.5.1-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.6.0](https://img.shields.io/badge/version-0.6.0-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
 **[Explore the website](https://imagine-os.github.io/astral-travel/) · [Try the Lucid Lab](https://imagine-os.github.io/astral-travel/#lab) · [Run locally](#two-minutes-to-your-first-dream) · [Connect an agent](docs/mcp.md)**
+
+**Open an example: [Creative studio · 48 nodes](https://imagine-os.github.io/astral-travel/?example=studio#lab) · [Research observatory · 96 nodes](https://imagine-os.github.io/astral-travel/?example=research#lab) · [Lucid world atlas · 144 nodes](https://imagine-os.github.io/astral-travel/?example=dreamworld#lab)**
 
 </div>
 
@@ -121,7 +123,15 @@ Inspired by your favorites in [Graph Gallery](https://github.com/imagine-os/grap
 
 **Drag an object to move it; drag empty space to orbit.** Positions save per arrangement on this device, with Undo, Reset, and keyboard movement controls. Every view opens the same source inspector.
 
-Start with **48 fictional nodes and 68 connections**: 38 original sources and 10 interpretations. Already have the v0.4 examples? Click **Add examples** for 30 more nodes without replacing your memories. Larger workspaces show up to 60 records per page.
+Choose a collection in the playground, or open one directly:
+
+| Example | Nodes | Connections | Explore |
+| --- | ---: | ---: | --- |
+| **[Creative studio](https://imagine-os.github.io/astral-travel/?example=studio#lab)** | 48 | 68 | People, projects, and a shared knowledge library |
+| **[Research observatory](https://imagine-os.github.io/astral-travel/?example=research#lab)** | 96 | 148 | Six rooms for sources, provenance, freshness, search, evaluation, and media |
+| **[Lucid world atlas](https://imagine-os.github.io/astral-travel/?example=dreamworld#lab)** | 144 | 223 | Nine imaginative districts with characters, portals, archives, and story plans |
+
+**Still seeing eight nodes?** That is your earlier saved workspace, preserved across updates. Use the collection switcher to open a larger example, then choose **My memories** to return. Each example saves separately in this browser; switching never merges it into your memories. **Add examples** remains available in My memories to add missing studio records without replacing existing content or reviews. Every collection works in all five views, with up to **160 records per page**.
 
 Forms are visual cues for text records. Characters are role profiles; clouds and services are architecture notes; media objects hold written descriptions or transcripts. Live agents, uploaded media, and playable recordings are future work. Arranging a memory does not change its evidence or review status. [How the explorer works →](docs/explorer.md)
 
@@ -145,7 +155,7 @@ Provenance is the route back: **an idea → its supporting material → the orig
 
 ### Open it
 
-Visit the **[Lucid Lab](https://imagine-os.github.io/astral-travel/#lab)**. Explore the sample material, inspect connections, and try the memory workflow. Demo data is stored in your browser; use export to keep a portable copy.
+Visit the **[Lucid Lab](https://imagine-os.github.io/astral-travel/#lab)**. Choose a 48-, 96-, or 144-node example, inspect connections, and try the memory workflow. **My memories** returns to your saved workspace. Collections save separately in your browser; use export to keep a portable copy of the active collection.
 
 ### Run it
 
@@ -287,6 +297,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.5.1
+[MIT licensed](LICENSE) · Made in the open · v0.6.0
 
 </div>

@@ -179,7 +179,7 @@ export function mountGraphStyle(host, options = {}) {
     if (disposed) return;
     const focusedId = nodeElements.has(document.activeElement?.dataset.graphMemory) ? document.activeElement.dataset.graphMemory : null;
     for (const element of nodeElements.values()) element.remove(); nodeElements.clear();
-    const nodes = current.nodes.slice(0, 60);
+    const nodes = current.nodes.slice(0, 160);
     layout = (current.style === 'radialtree' ? radialTreeLayout : skillTreeLayout)(nodes, current.edges, rootId);
     viewport.dataset.graphStyle = current.style;
     const b = layout.bounds;

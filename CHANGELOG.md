@@ -2,6 +2,15 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.6.0 — 2026-09-26
+
+- Add a visible collection switcher with Creative studio (48 nodes), Research observatory (96 nodes), and Lucid world atlas (144 nodes), plus My memories for the existing saved workspace.
+- Provide direct example links using `?example=studio#lab`, `?example=research#lab`, and `?example=dreamworld#lab`. Example collections save separately in the browser and are never silently merged into personal memory.
+- Preserve earlier saved workspaces, including the original eight-node sample. Add examples remains an explicit, additive action in My memories.
+- Add six connected research rooms and nine imaginative atlas districts, with distinct titles, all 17 object forms, recorded associations, and source-backed proposed interpretations. Examples remain fictional text notes, not live research, generated simulations, agents, or media attachments.
+- Keep example placements and object forms separate from personal arrangements; scope Reset to the open workspace. Compact dense 3D radial rings and resolve dense Radial Tree card collisions.
+- Increase the visible page limit to 160 records across Objects 3D, Skill tree, Radial tree, Cards, and List so all three example collections fit on one page.
+
 ## 0.5.1 — 2026-09-26
 
 - Reduce compatibility-renderer sphere and cylinder surfaces, bound the floor to visible records, and avoid camera damping and costly decorative shadows in dense scenes.

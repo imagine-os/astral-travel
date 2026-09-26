@@ -235,7 +235,7 @@ export function mountCompatibility3D(host, options = {}) {
   }
   function addGround() {
     // Raster only the occupied board, not a 625-million-pixel endless floor.
-    const points = data.nodes.slice(0, 60).map((node, index) => position(node.id, index));
+    const points = data.nodes.slice(0, 160).map((node, index) => position(node.id, index));
     const bounds = points.length ? new THREE.Box3().setFromPoints(points) : new THREE.Box3(new THREE.Vector3(-5,0,-5), new THREE.Vector3(5,0,5));
     const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
     const floor = make('div', 'c3d-ground');
@@ -348,7 +348,7 @@ export function mountCompatibility3D(host, options = {}) {
     controls.enableDamping = false;
     viewport.dataset.density = data.nodes.length > 30 ? 'dense' : 'normal';
     const ticket = ++generation; ready = false; resetScene(); addGround();
-    const loads = data.nodes.slice(0, 60).map(addNode); addEdges(); selection();
+    const loads = data.nodes.slice(0, 160).map(addNode); addEdges(); selection();
     if (!fitted && nodes.size) { fit(); fitted = true; }
     requestRender();
     Promise.all(loads).then(() => { if (!disposed && ticket === generation) { ready = true; requestRender(); } }).catch(fail);
