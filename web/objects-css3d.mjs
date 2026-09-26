@@ -179,14 +179,18 @@ export function mountCompatibility3D(host, options = {}) {
   camera.position.set(12, 16, 22);
   const controls = new OrbitControls(camera, viewport);
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  controls.enableDamping = !motionQuery.matches && data.nodes.length <= 30; controls.dampingFactor = .09;
+  controls.enableDamping = false; controls.dampingFactor = .09;
   controls.minDistance = 5; controls.maxDistance = 800;
   controls.minPolarAngle = .22; controls.maxPolarAngle = Math.PI / 2 - .10;
   controls.screenSpacePanning = false;
   controls.rotateSpeed = .65; controls.zoomSpeed = .8; controls.panSpeed = .8;
   controls.target.set(0, 1, 0);
 
-  function requestRender() { if (!disposed && !frame) frame = requestAnimationFrame(render); }
+  function requestRender() {
+    // CSS objects are event-driven. Commit their DOM before the next paint,
+    // including when a browser suspends animation frames in a background tab.
+    if (!disposed && !frame) { frame = 1; queueMicrotask(render); }
+  }
   function fail(error) { if (disposed) return; destroy(); options.onError?.(error); }
   function render() {
     frame = 0; if (disposed) return;
@@ -341,7 +345,7 @@ export function mountCompatibility3D(host, options = {}) {
     if (viewport.contains(active) && active?.dataset?.c3dId) {
       pendingFocus = { id: active.dataset.c3dId, kind: active.classList.contains('c3d-label') ? 'label' : 'button' };
     }
-    controls.enableDamping = !motionQuery.matches && data.nodes.length <= 30;
+    controls.enableDamping = false;
     viewport.dataset.density = data.nodes.length > 30 ? 'dense' : 'normal';
     const ticket = ++generation; ready = false; resetScene(); addGround();
     const loads = data.nodes.slice(0, 60).map(addNode); addEdges(); selection();
@@ -496,7 +500,7 @@ export function mountCompatibility3D(host, options = {}) {
     const label = event.target.closest('.c3d-label');
     if (label && !drag && !pointers.size && label.matches(':focus-visible')) focus(label.dataset.c3dId);
   }
-  function motionChanged(event) { controls.enableDamping = !event.matches && data.nodes.length <= 30; requestRender(); }
+  function motionChanged(event) { controls.enableDamping = false; requestRender(); }
   viewport.addEventListener('pointerdown', pointerDown, true);
   viewport.addEventListener('pointermove', pointerMove, true);
   viewport.addEventListener('pointerup', pointerUp, true);
@@ -509,7 +513,7 @@ export function mountCompatibility3D(host, options = {}) {
 
   function destroy() {
     if (disposed) return; cancelDrag(); disposed = true; generation++;
-    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
     observer.disconnect(); controls.removeEventListener('change', requestRender); controls.dispose();
     viewport.removeEventListener('pointerdown', pointerDown, true); viewport.removeEventListener('pointermove', pointerMove, true);
     viewport.removeEventListener('pointerup', pointerUp, true); viewport.removeEventListener('pointercancel', pointerCancel, true);
