@@ -2,9 +2,9 @@
 
 September 26, 2026.
 
-## v0.5.0 — A world of objects
+## v0.5.0–v0.5.1 — A world of objects
 
-The example upgrade preserves all original v0.4 source text, identities, tags, and review decisions. Fresh samples contain **48 records, 68 recorded relationships, and 17 object forms**. Automated checks cover additive upgrades, connectivity, presentation classification, object-band spacing, and placement persistence. Syntax checks and the static build pass.
+The example upgrade preserves all original v0.4 source text, identities, tags, and review decisions. Fresh samples contain **48 records, 68 recorded relationships, and 17 object forms**. **59 tests pass**, covering additive upgrades, connectivity, presentation classification, object-band spacing, placement persistence, and graph layouts with cycles and disconnected nodes. The 48-node sample has no overlapping tree-view cards in the layout checks. Syntax checks and the static build pass.
 
 A native geometry harness built all seventeen forms and checked finite vertices, floor clearance, model dimensions, and world-independent bounds. Native GPU visual verification still requires a hardware-accelerated browser. Public examples remain fictional text records; no live service, attachment playback, or agent capability is implied by their shapes.
 

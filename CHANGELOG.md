@@ -4,7 +4,8 @@ The history of saved project releases. Features listed under a release describe 
 
 ## 0.5.1 — 2026-09-26
 
-- Reduce compatibility-renderer sphere and cylinder surfaces for responsive software rendering of the larger example collection.
+- Reduce compatibility-renderer sphere and cylinder surfaces, bound the floor to visible records, and avoid camera damping and costly decorative shadows in dense scenes.
+- Fingerprint public scripts and styles so follow-up fixes load together through browser and CDN caches.
 
 ## 0.5.0 — 2026-09-26
 

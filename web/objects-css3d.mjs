@@ -180,7 +180,7 @@ export function mountCompatibility3D(host, options = {}) {
   camera.position.set(12, 16, 22);
   const controls = new OrbitControls(camera, viewport);
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  controls.enableDamping = !motionQuery.matches; controls.dampingFactor = .09;
+  controls.enableDamping = !motionQuery.matches && data.nodes.length <= 30; controls.dampingFactor = .09;
   controls.minDistance = 5; controls.maxDistance = 800;
   controls.minPolarAngle = .22; controls.maxPolarAngle = Math.PI / 2 - .10;
   controls.screenSpacePanning = false;
@@ -231,7 +231,14 @@ export function mountCompatibility3D(host, options = {}) {
     scene.clear(); nodes.clear(); edges = [];
   }
   function addGround() {
-    const floor = make('div', 'c3d-ground'); floorElement(floor, new THREE.Vector3(0, -.075, 0));
+    // Raster only the occupied board, not a 625-million-pixel endless floor.
+    const points = data.nodes.slice(0, 60).map((node, index) => position(node.id, index));
+    const bounds = points.length ? new THREE.Box3().setFromPoints(points) : new THREE.Box3(new THREE.Vector3(-5,0,-5), new THREE.Vector3(5,0,5));
+    const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
+    const floor = make('div', 'c3d-ground');
+    floor.style.width = `${THREE.MathUtils.clamp((size.x + 10) / UNIT, 1600, 6000)}px`;
+    floor.style.height = `${THREE.MathUtils.clamp((size.z + 10) / UNIT, 1600, 6000)}px`;
+    floorElement(floor, new THREE.Vector3(center.x, -.075, center.z));
     for (const group of data.groups || []) {
       if (![group.x, group.z, group.width, group.depth].every(Number.isFinite)) continue;
       const box = make('div', 'c3d-room');
@@ -335,6 +342,8 @@ export function mountCompatibility3D(host, options = {}) {
     if (viewport.contains(active) && active?.dataset?.c3dId) {
       pendingFocus = { id: active.dataset.c3dId, kind: active.classList.contains('c3d-label') ? 'label' : 'button' };
     }
+    controls.enableDamping = !motionQuery.matches && data.nodes.length <= 30;
+    viewport.dataset.density = data.nodes.length > 30 ? 'dense' : 'normal';
     const ticket = ++generation; ready = false; resetScene(); addGround();
     const loads = data.nodes.slice(0, 60).map(addNode); addEdges(); selection();
     if (!fitted && nodes.size) { fit(); fitted = true; }
@@ -488,7 +497,7 @@ export function mountCompatibility3D(host, options = {}) {
     const label = event.target.closest('.c3d-label');
     if (label && !drag && !pointers.size && label.matches(':focus-visible')) focus(label.dataset.c3dId);
   }
-  function motionChanged(event) { controls.enableDamping = !event.matches; requestRender(); }
+  function motionChanged(event) { controls.enableDamping = !event.matches && data.nodes.length <= 30; requestRender(); }
   viewport.addEventListener('pointerdown', pointerDown, true);
   viewport.addEventListener('pointermove', pointerMove, true);
   viewport.addEventListener('pointerup', pointerUp, true);
