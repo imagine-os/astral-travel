@@ -1,5 +1,18 @@
 # Release verification
 
+## v0.7.0 — Five lessons with Maya and Pip
+
+**78 tests pass**, including the independent fictional lesson fixture, original text and source references, connection review, and worksheet isolation. Syntax checks and the static Pages build pass. The initial live release deployed successfully from `f488c5d`.
+
+The published desktop page was checked in light and dark appearance. All six transparent illustrations decoded, all five lesson sections were present, and the page had no horizontal overflow at the checked desktop width. The first lesson is captured [here](assets/lesson-v07-light.jpg).
+
+The live guide was opened from the **96-note Research observatory**, in List view with a source filter and a search. Practice opened with three memories. Following an idea to its original updated Pip’s explanation; finding and keeping the suggested connection recorded an inference. A manual review was saved, and a realistic what-if worksheet was created only after its button was pressed. Returning to the previous workspace restored the search, filter, List view, and **84 matching of 96 memories**. Reopening practice retained the worksheet. Exiting and opening the **144-note Lucid world atlas** preserved that collection’s count. Import remained disabled during practice.
+
+Full view was exercised during the guide. The reading layout was then refined to use full-size cards and place original text and source links above decorative previews. Advanced object controls and graph arrangements return after exiting practice.
+
+Responsive rules and links were reviewed statically. Dedicated mobile-device, screen-reader, and short-height viewport checks remain outstanding. This release adds illustrated teaching and guided local practice; it does not add model calls, automatic research, notifications, or predictive simulations.
+
+
 September 26, 2026.
 
 ## v0.6.0 — Larger example worlds
