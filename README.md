@@ -1,91 +1,59 @@
 <div align="center">
 
-<a href="https://imagine-os.github.io/astral-travel/">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="web/assets/observatory.webp">
-    <source media="(prefers-color-scheme: light)" srcset="web/assets/observatory-light.webp">
-    <img src="web/assets/observatory-light.webp" alt="A glass observatory: a place for your knowledge and imagination to meet." width="100%">
-  </picture>
-</a>
+<a href="https://imagine-os.github.io/astral-travel/?lesson=1#lab"><img src="web/assets/lessons/00-welcome.webp" alt="Meet Maya and Pip, your guides to saved notes, connected ideas, and what-ifs." width="570"></a>
 
 # Astral Travel
 
-### Your second brain. Beyond remembering.
+### A visual notebook for notes, ideas, and what-ifs.
 
-Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
+Save what someone said. Keep your own ideas beside it. Find connections and explore what you could try next.
 
-[![Version 0.6.0](https://img.shields.io/badge/version-0.6.0-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.7.0](https://img.shields.io/badge/version-0.7.0-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
-**[Explore the website](https://imagine-os.github.io/astral-travel/) · [Try the Lucid Lab](https://imagine-os.github.io/astral-travel/#lab) · [Run locally](#two-minutes-to-your-first-dream) · [Connect an agent](docs/mcp.md)**
+**[Learn with Maya & Pip →](https://imagine-os.github.io/astral-travel/?lesson=1#lab)**
 
-**Open an example: [Creative studio · 48 nodes](https://imagine-os.github.io/astral-travel/?example=studio#lab) · [Research observatory · 96 nodes](https://imagine-os.github.io/astral-travel/?example=research#lab) · [Lucid world atlas · 144 nodes](https://imagine-os.github.io/astral-travel/?example=dreamworld#lab)**
+Five small lessons. One fictional workshop. No account or API key.
+
+[Explore the website](https://imagine-os.github.io/astral-travel/) · [Run locally](#two-minutes-to-your-first-dream) · [Connect an agent](docs/mcp.md)
 
 </div>
 
 ---
 
-## One thought. A world of possibilities.
+## Let’s help Maya plan a workshop.
 
-**Keep what you know. Find what connects. Explore what could happen.**
-
-Follow one small studio from a customer note to a new possibility. Six steps explain the idea; the [browser playground](https://imagine-os.github.io/astral-travel/#lab) lets you try the working foundation.
+People keep asking Maya when her workshop starts. She has two notes and an idea. Pip shows her what to do with them, one step at a time.
 
 <table>
 <tr>
-<td width="50%" valign="top">
-<a href="https://imagine-os.github.io/astral-travel/#capture"><img src="web/assets/story/01-capture.webp" width="100%" alt="Notes and chat cards settling into a clear archive tray."></a>
-<h3>1. Keep the original.</h3>
-Save a note, an observation, or a piece of feedback. Its original words stay intact.
-<p><em>“Our project handoffs are confusing.”</em></p>
-<strong>CAPTURE</strong> · <a href="https://imagine-os.github.io/astral-travel/#lab">Try the memory explorer ↗</a>
-</td>
-<td width="50%" valign="top">
-<a href="https://imagine-os.github.io/astral-travel/#organize"><img src="web/assets/story/02-organize.webp" width="100%" alt="Separate linked archive compartments for original documents and processed knowledge."></a>
-<h3>2. Make sense of it.</h3>
-Add your interpretation beside the source. Search either one. Follow the link back.
-<p><em>Customers need a clearer handoff.</em></p>
-<strong>ORGANIZE</strong> · Raw and processed stay distinct.
-</td>
+<td width="220"><a href="https://imagine-os.github.io/astral-travel/?lesson=1#lab"><img src="web/assets/lessons/01-save.webp" width="220" alt="Maya and Pip teach how to save an original note."></a></td>
+<td valign="middle"><h3>1. Save the original.</h3><p><em>“People keep asking what time the workshop starts.”</em></p><p>Keep the exact message. You can always return to what was actually written.</p><a href="https://imagine-os.github.io/astral-travel/?lesson=1#lab"><strong>Read Maya’s note →</strong></a></td>
 </tr>
 <tr>
-<td width="50%" valign="top">
-<a href="https://imagine-os.github.io/astral-travel/#connect"><img src="web/assets/story/03-connect.webp" width="100%" alt="A lavender bridge joins two source cards and reveals an amber idea."></a>
-<h3>3. Find the connection.</h3>
-A customer note meets a roadmap idea. Dreaming suggests a link; you decide what to keep.
-<p><em>Could a shared checklist help?</em></p>
-<strong>DREAM</strong> · A suggestion you can inspect.
-</td>
-<td width="50%" valign="top">
-<a href="https://imagine-os.github.io/astral-travel/#research-story"><img src="web/assets/story/04-research.webp" width="100%" alt="A magnifier, calendar, and fresh source card show knowledge being checked again."></a>
-<h3>4. Check what’s changed.</h3>
-Put knowledge on a review schedule. Revisit the source and bring back fresh evidence.
-<p><em>Are customers still getting stuck?</em></p>
-<strong>RESEARCH</strong> · Review reminders now; automated research planned.
-</td>
+<td width="220"><a href="https://imagine-os.github.io/astral-travel/?lesson=2#lab"><img src="web/assets/lessons/02-idea.webp" width="220" alt="Maya and Pip keep an idea separate from the original note."></a></td>
+<td valign="middle"><h3>2. Keep your idea beside it.</h3><p><em>“Put the start time where people can find it.”</em></p><p>That is Maya’s interpretation. It links back to her notes without changing their original words.</p><a href="https://imagine-os.github.io/astral-travel/?lesson=2#lab"><strong>Follow the idea to its source →</strong></a></td>
 </tr>
 <tr>
-<td width="50%" valign="top">
-<a href="https://imagine-os.github.io/astral-travel/#imagine"><img src="web/assets/story/05-imagine.webp" width="100%" alt="Overlapping portals open to a realistic workroom and an imaginary floating island."></a>
-<h3>5. Ask “what if?”</h3>
-Explore a realistic change or an impossible world. Possibilities stay separate from facts.
-<p><em>A one-step handoff. Or a studio in the sky.</em></p>
-<strong>IMAGINE</strong> · Scenario worksheets now; model-powered simulation planned.
-</td>
-<td width="50%" valign="top">
-<a href="https://imagine-os.github.io/astral-travel/#improve"><img src="web/assets/story/06-improve.webp" width="100%" alt="An experiment returns to reusable cards beside a green check mark."></a>
-<h3>6. Learn. Try. Improve.</h3>
-Turn an idea into an experiment. Measure the outcome. Carry what worked into the next loop.
-<p><em>Try the checklist. Did handoffs get easier?</em></p>
-<strong>IMPROVE · PLANNED</strong> · <a href="docs/roadmap.md">Explore the roadmap ↗</a>
-</td>
+<td width="220"><a href="https://imagine-os.github.io/astral-travel/?lesson=3#lab"><img src="web/assets/lessons/03-connect.webp" width="220" alt="Maya and Pip compare two notes and review a possible connection."></a></td>
+<td valign="middle"><h3>3. Spot a possible connection.</h3><p><em>“The invitation lists the place, but no start time.”</em></p><p>Shared words and tags help surface related notes. Read both sources, then choose what to keep.</p><a href="https://imagine-os.github.io/astral-travel/?lesson=3#lab"><strong>Find and review the connection →</strong></a></td>
+</tr>
+<tr>
+<td width="220"><a href="https://imagine-os.github.io/astral-travel/?lesson=4#lab"><img src="web/assets/lessons/04-check.webp" width="220" alt="Maya and Pip give a question a date to check again."></a></td>
+<td valign="middle"><h3>4. Come back and check.</h3><p><em>“Did fewer people ask about the start time?”</em></p><p>Save a question and a review date. Record what you found after checking. This is a list you manage, with no alerts or automatic web research.</p><a href="https://imagine-os.github.io/astral-travel/?lesson=4#lab"><strong>Open Maya’s question →</strong></a></td>
+</tr>
+<tr>
+<td width="220"><a href="https://imagine-os.github.io/astral-travel/?lesson=5#lab"><img src="web/assets/lessons/05-imagine.webp" width="220" alt="Maya and Pip explore a what-if in a separate thinking space."></a></td>
+<td valign="middle"><h3>5. Explore a what-if.</h3><p><em>“What if we put the start time at the top of the invitation?”</em></p><p>Create a worksheet for a realistic change or an imaginative possibility. It helps you think; it does not predict an outcome or turn imagination into evidence.</p><a href="https://imagine-os.github.io/astral-travel/?lesson=5#lab"><strong>Try Maya’s what-if →</strong></a></td>
 </tr>
 </table>
 
-*Concept illustrations, with captions kept as readable text. Transparent artwork belongs naturally on both light and dark pages. [See the website in light mode](docs/assets/homepage-light.jpg).*
+**Try the same story in the real interface.** The guide opens a small practice workspace with two original notes, one proposed idea, and one question. Your own memories and larger examples stay separate. Exit the guide to return to your workspace. [How the lessons work →](docs/learning.md)
 
-> **A working alpha.** Local memory, traceable knowledge, reviewable connections, research reminders, and isolated scenario worksheets. No account or API key required. Model calls, autonomous research, predictive simulation, and outcome-driven improvement are future work.
+*Maya and Pip are illustrated guides for a fictional example. They are not autonomous agents. The pictures teach each concept; the buttons open working features.*
+
+> **Available now:** saved notes, source links, search, connection suggestions, a review list, and what-if worksheets. **Planned:** model-powered thinking, automated research, measured improvement loops, and rich media memory. [See the roadmap →](docs/roadmap.md)
 
 ### See the actual working playground
 
@@ -155,7 +123,7 @@ Provenance is the route back: **an idea → its supporting material → the orig
 
 ### Open it
 
-Visit the **[Lucid Lab](https://imagine-os.github.io/astral-travel/#lab)**. Choose a 48-, 96-, or 144-node example, inspect connections, and try the memory workflow. **My memories** returns to your saved workspace. Collections save separately in your browser; use export to keep a portable copy of the active collection.
+Start with **[Maya and Pip’s five-step guide](https://imagine-os.github.io/astral-travel/?lesson=1#lab)**. Then choose a 48-, 96-, or 144-node example to explore a larger collection. **My memories** returns to your saved workspace. Collections save separately in your browser; use export to keep a portable copy of the active collection.
 
 ### Run it
 
@@ -215,27 +183,22 @@ MCP search excludes scenarios unless explicitly requested. General engine search
 | **A researcher or writer** | Sources and their derived knowledge | A path from an interesting idea back to its evidence. |
 | **A designer** | Dreaming and the Lucid Lab | New combinations with a visible boundary between evidence and imagination. |
 
-### A dream worth waking up for
+### Start with a useful question
 
-*An illustrative studio story, not a customer testimonial.*
+Maya’s workshop is small enough to understand at a glance. Your own project can follow the same pattern: save what happened, write what you think, inspect a connection, check an assumption, and explore a possibility.
 
-A tiny studio saves three things: a customer asking for an easier handoff, a support note about confusing permissions, and a roadmap idea for shared project spaces.
-
-Individually, they are ordinary notes. Together, they suggest a better question: **“Do customers need another dashboard—or a clearer way to work together?”**
-
-A dream connects the material. The team follows the sources, checks the assumption with customers, and tries two scenarios. A useful discovery becomes a decision with a history, rather than another orphaned paragraph.
-
-That is the direction: **collect → connect → question → explore → improve.**
+The original source, your interpretation, and an imagined outcome each keep their own place. You can revisit the reasoning as your project grows.
 
 ## What works today
 
 | Available in this alpha | What it means |
 | --- | --- |
+| Five-step guided practice | Learn with three fictional memories, saved separately from your own workspace. |
 | Original source records | The ingestion layer preserves sources separately from interpretation. |
 | Derived knowledge and provenance | Inspect how processed material relates to its sources. |
 | Local search | Lexical matching; no embedding service or vector database required. |
 | Reviewable dream suggestions | Tag and keyword overlap proposes connections; it does not establish truth. |
-| Research reminders | A queue for checking knowledge, not an autonomous web crawler. |
+| Check-later list | Questions with due dates and manual review notes; no alerts or autonomous web research. |
 | Scenario templates | Separate grounded exploration from deliberate speculation. These are not predictions. |
 | Browser persistence and import/export | Experiment locally and take your workspace with you. |
 | Local CLI | Work with a file-backed engine without a hosted account. |
@@ -280,6 +243,7 @@ For the product story and launch principles: **[Brand](docs/brand.md) · [Launch
 
 | Explore the repository | Start here |
 | --- | --- |
+| Learn the product in five steps | [Maya and Pip’s guide](docs/learning.md) |
 | How the pieces fit | [Architecture](docs/architecture.md) |
 | What ships next, and how we will verify it | [Roadmap](docs/roadmap.md) |
 | Existing systems worth learning from | [Research notes](docs/research.md) |
@@ -297,6 +261,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.6.0
+[MIT licensed](LICENSE) · Made in the open · v0.7.0
 
 </div>

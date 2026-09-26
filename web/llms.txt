@@ -1,8 +1,10 @@
 # Astral Travel
-> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.6.0.
+> An open-source, local-first visual notebook for notes, ideas, and what-ifs. Alpha v0.7.0.
 
 - [Repository](https://github.com/imagine-os/astral-travel)
 - [README](https://github.com/imagine-os/astral-travel/blob/main/README.md)
+- [Learn with Maya and Pip](https://imagine-os.github.io/astral-travel/?lesson=1#lab)
+- [Learning guide](https://github.com/imagine-os/astral-travel/blob/main/docs/learning.md)
 - [Memory explorer](https://github.com/imagine-os/astral-travel/blob/main/docs/explorer.md)
 - [Engine API](https://github.com/imagine-os/astral-travel/blob/main/docs/engine.md)
 - [Local MCP setup](https://github.com/imagine-os/astral-travel/blob/main/docs/mcp.md)
@@ -13,7 +15,9 @@
 - [Research observatory: 96 nodes](https://imagine-os.github.io/astral-travel/?example=research#lab)
 - [Lucid world atlas: 144 nodes](https://imagine-os.github.io/astral-travel/?example=dreamworld#lab)
 
-The alpha uses deterministic keyword/tag matching and scenario templates. No model, autonomous research, remote MCP, or terabyte backend is included. Evidence sources, inferred claims, and simulations remain separate.
+Maya and Pip teach five lessons through one fictional workshop: save an original note, keep an interpretation separate, review a possible connection, schedule a manual check, and explore a what-if worksheet. They are illustrated guides, not autonomous agents. The practice begins with two original notes, one source-backed proposed idea, and one dated question. It runs in a separate browser workspace and never merges into personal memories or larger examples. Exit restores the previous workspace and display state; reopening preserves practice changes.
+
+The alpha uses deterministic keyword/tag matching and scenario templates. Finding a connection and creating a worksheet require explicit actions. The review queue stores questions, due dates, and manual review notes; it does not send alerts or browse the web. No model calls, autonomous research, remote MCP, or terabyte backend is included. Evidence sources, inferred claims, and imagined worksheets remain separate.
 
 The playground has Objects 3D, Skill tree, Radial tree, Cards, and List views over the same local records. Objects use 17 forms, including folders, networks, characters, databases, services, clouds, and portals. Object arrangements include Object bands (fresh default), Rooms, Lanes, Radial, and Grid. Graph views show supplied links and keep disconnected records separate. Dragged placements and appearance preferences are stored separately from evidence.
 

@@ -2,6 +2,16 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.7.0 — 2026-09-26
+
+- Explain Astral Travel as a visual notebook for notes, ideas, and what-ifs. Replace the abstract introductory story with five illustrated lessons featuring Maya and Pip, using one fictional workshop throughout.
+- Add working lesson entry points with `?lesson=1#lab` through `?lesson=5#lab`. The small practice workspace begins with two original notes, one source-backed proposed idea, and one dated question.
+- Keep the tutorial in its own browser storage entry, separate from personal memory and the 48-, 96-, and 144-node examples. Reopening preserves practice changes; exit restores the previous workspace, mode, selected record, view, arrangement, search, and filter.
+- Teach one action at a time with numbered guide controls and contextual explanations. Connections run only when requested; what-if questions are prefilled but never submitted automatically.
+- Use plain-language workspace headings and controls, including Find possible connections, Check later, Realistic / Imaginative, and Create worksheet. Keep the current limits visible: keyword/tag matching, manual review lists, and thinking templates.
+- Scope reset to the open tutorial and disable workspace import during practice. Keep example switching, source inspection, export, and all existing graph views available.
+- Update the repository introduction, add the learning guide, and cover the fictional fixture, source references, independent workspaces, and scenario evidence boundary with automated tests.
+
 ## 0.6.0 — 2026-09-26
 
 - Add a visible collection switcher with Creative studio (48 nodes), Research observatory (96 nodes), and Lucid world atlas (144 nodes), plus My memories for the existing saved workspace.
