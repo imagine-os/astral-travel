@@ -195,7 +195,7 @@ export function mountCompatibility3D(host, options = {}) {
   function render() {
     frame = 0; if (disposed) return;
     try {
-      if (!drag) controls.update(); renderer.render(scene, camera);
+      renderer.render(scene, camera);
       if (pendingFocus) {
         const restore = pendingFocus; pendingFocus = null;
         const item = nodes.get(restore.id);
