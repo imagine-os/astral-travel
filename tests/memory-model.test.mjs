@@ -176,7 +176,7 @@ test('object bands keep forty-eight records separated, deterministic, and ordere
   assert.deepEqual(result, arrangeMemories([...nodes].reverse(), [], 'bands'));
   assert.equal(JSON.stringify(nodes), before);
   assert.deepEqual(result.groups.map(group => group.label), ['Clouds & portals', 'Networks & services', 'Datastores', 'Folders', 'Sources', 'Ideas', 'Characters']);
-  assert.ok(result.groups.every(group => group.width <= 23), 'at most six objects across each band');
+  assert.ok(result.groups.every(group => group.width <= 39), 'at most ten objects across each band');
   for (let index = 1; index < result.groups.length; index++) {
     const previous = result.groups[index - 1];
     const group = result.groups[index];

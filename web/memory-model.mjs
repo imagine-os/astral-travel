@@ -234,7 +234,7 @@ function bands(nodes, positions) {
   }
   const populated = definitions.map((definition, index) => {
     const members = buckets[index];
-    const columns = Math.min(6, Math.max(1, members.length));
+    const columns = Math.min(10, Math.max(1, members.length));
     const rows = Math.ceil(members.length / columns);
     return { label: definition.label, members, columns, rows, width: (columns - 1) * SPACING + ROOM_PADDING, depth: (rows - 1) * SPACING + ROOM_PADDING };
   }).filter(band => band.members.length);
