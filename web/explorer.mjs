@@ -159,7 +159,7 @@ export function createMemoryExplorer(host,{onSelect,onLayout,onView,detailsHtml,
   function stageCaption() {
     if(graphViews.includes(currentView))return `${currentView==='skilltree'?'Follow real connections through branching lanes':'Explore real connections around a central memory'} · Drag the background to pan · scroll to zoom · select an object to inspect`;
     const arrangementDescriptions={bands:'Clouds → networks → data → folders → sources → people',rooms:'Grouped by topic',lanes:'Sources → interpretations',radial:'Selected memory at the center',grid:'An even grid for scanning'};
-    return `${rendererMode==='compatibility'&&currentView==='objects'?'Compatibility 3D · ':''}${customPositions()?'Your arrangement · saved on this device':arrangementDescriptions[data.layout]} · ${currentView==='objects'?'Drag an object to move · drag empty space to orbit · scroll to zoom':'Select a preview to inspect it · zoom for larger cards'}`;
+    return `${rendererMode==='compatibility'&&currentView==='objects'?`Compatibility 3D · ${visibleNodes.length>80?'selected connections · ':''}`:''}${customPositions()?'Your arrangement · saved on this device':arrangementDescriptions[data.layout]} · ${currentView==='objects'?'Drag an object to move · drag empty space to orbit · scroll to zoom':'Select a preview to inspect it · zoom for larger cards'}`;
   }
   function renderList() {
     const oldTop=host.querySelector('.memory-list')?.scrollTop||0;const focusedId=document.activeElement?.dataset?.memorySelect;
