@@ -8,6 +8,7 @@ The history of saved project releases. Features listed under a release describe 
 - Provide direct example links using `?example=studio#lab`, `?example=research#lab`, and `?example=dreamworld#lab`. Example collections save separately in the browser and are never silently merged into personal memory.
 - Preserve earlier saved workspaces, including the original eight-node sample. Add examples remains an explicit, additive action in My memories.
 - Add six connected research rooms and nine imaginative atlas districts, with distinct titles, all 17 object forms, recorded associations, and source-backed proposed interpretations. Examples remain fictional text notes, not live research, generated simulations, agents, or media attachments.
+- Optimize large compatibility scenes with simpler decorative geometry, independent object compositing, and selected-record connections above 80 nodes. Native WebGL keeps full geometry and recorded edges.
 - Keep example placements and object forms separate from personal arrangements; scope Reset to the open workspace. Compact dense 3D radial rings and resolve dense Radial Tree card collisions.
 - Increase the visible page limit to 160 records across Objects 3D, Skill tree, Radial tree, Cards, and List so all three example collections fit on one page.
 

@@ -91,7 +91,7 @@ All views page through **160 records** at a time, so all three example collectio
 - `lib/example-packs.mjs`: immutable example catalogue and isolated 48-, 96-, and 144-node workspace factories.
 - `web/vendor/three/`: pinned Three.js 0.186.0, OrbitControls, and CSS3DRenderer, distributed with their MIT license.
 
-The browser loads these libraries from this site. Preview generation does not fetch source pages or send record content to a service. Preview work is bounded independently of source length. The 3D scene renders on interaction or a data change. If WebGL is unavailable, a labeled CSS 3D compatibility view preserves object recognition and navigation. Cards remains available if that also fails.
+The browser loads these libraries from this site. Preview generation does not fetch source pages or send record content to a service. Preview work is bounded independently of source length. The 3D scene renders on interaction or a data change. If WebGL is unavailable, a labeled CSS 3D compatibility view preserves object recognition and navigation. Above 80 visible objects, compatibility mode simplifies decorative surfaces and shows the selected object’s connections to keep the scene responsive. Every object remains available; selecting another object reveals its connections, and the inspector retains the full source trail. Native WebGL retains full geometry and all visible recorded edges. Cards remains available if compatibility rendering also fails.
 
 ## Design references
 
