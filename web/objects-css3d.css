@@ -219,6 +219,9 @@
 .compatibility-3d[data-density=dense] .c3d-room{background:transparent}
 
 /* Large software-rendered scenes retain their object silhouettes with fewer layers. */
+/* Group local faces before scene compositing; overflow stays visible for tabs and feet. */
+.compatibility-3d[data-detail=compact] .c3d-object{transform-style:flat;isolation:isolate;opacity:.999}
+.compatibility-3d[data-detail=compact] .c3d-sculpture-stage{transform:rotateX(10deg) rotateY(-14deg)}
 .compatibility-3d[data-detail=compact] .c3d-shadow:not(.is-selected){display:none}
 .compatibility-3d[data-detail=compact] .c3d-room{border-width:1px;border-radius:12px}
 .compatibility-3d[data-detail=compact] .c3d-room-label{left:10px;top:6px;font-size:11.5px;max-width:calc(100% - 20px)}
