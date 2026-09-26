@@ -5,8 +5,8 @@ import { CSS3DRenderer, CSS3DObject, CSS3DSprite } from './vendor/three/CSS3DRen
 
 const UNIT = .01;
 const SAFE_PREVIEW = /^data:image\/(png|jpeg|webp);base64,/i;
-const OBJECT_TYPES = new Set(['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment', 'claim']);
-const TYPE_LABELS = { document: 'Document', chat: 'Conversation', book: 'Book', image: 'Image notes', video: 'Video notes', audio: 'Audio notes', code: 'Code', research: 'Research', experiment: 'Experiment', claim: 'Knowledge' };
+const OBJECT_TYPES = new Set(['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment', 'claim', 'folder', 'network', 'character', 'database', 'service', 'cloud', 'portal']);
+const TYPE_LABELS = { document: 'Document', chat: 'Conversation', book: 'Book', image: 'Image notes', video: 'Video notes', audio: 'Audio notes', code: 'Code', research: 'Research', experiment: 'Experiment', claim: 'Knowledge', folder: 'Folder', network: 'Network', character: 'Character', database: 'Database', service: 'Service', cloud: 'Cloud', portal: 'Portal' };
 const ICON_PATHS = {
   document: ['M6 3h8l4 4v14H6z', 'M14 3v5h4', 'M9 12h6M9 16h6'],
   chat: ['M4 4h16v12H9l-5 4z', 'M8 8h8M8 12h5'],
@@ -17,6 +17,13 @@ const ICON_PATHS = {
   code: ['M3 4h18v16H3z', 'M3 8h18M7 12l3 2-3 2M13 17h4'],
   research: ['M6 3h13v18H6z', 'M4 6h4M4 10h4M4 14h4M4 18h4', 'M11 7h5M11 11h5M11 15h3'],
   experiment: ['M6 5H4v16h16V5h-2M9 3h6v4H9z', 'M10 10v4l-3 4h10l-3-4v-4M9 16h6'],
+  folder: ['M3 7V4h7l3 3h8v14H3z', 'M3 10h18'],
+  network: ['M12 9v6M9 12H5m10 0h4', 'M12 3a3 3 0 1 0 .01 0M3 9a3 3 0 1 0 .01 0M21 9a3 3 0 1 0 .01 0M12 18a3 3 0 1 0 .01 0'],
+  character: ['M12 3a4 4 0 1 0 .01 0', 'M5 21v-3a7 7 0 0 1 14 0v3M9 19h6'],
+  database: ['M3 6c0-4 18-4 18 0s-18 4-18 0v12c0 4 18 4 18 0V6', 'M3 12c0 4 18 4 18 0'],
+  service: ['M4 3h16v18H4zM4 9h16M4 15h16', 'M7 6h.01M7 12h.01M7 18h.01M11 6h6M11 12h6M11 18h6'],
+  cloud: ['M6 18a5 5 0 1 1 0-10 7 7 0 0 1 13 1 4.5 4.5 0 0 1-1 9z', 'M12 9v6m-3-3 3-3 3 3'],
+  portal: ['M12 2a10 10 0 1 0 .01 0M12 5a7 7 0 1 0 .01 0', 'M12 8l1 3 3 1-3 1-1 3-1-3-3-1 3-1z'],
   claim: ['M12 3l9 9-9 9-9-9z', 'M8 12l3 3 5-6']
 };
 function objectIcon(type) {
@@ -34,6 +41,141 @@ const make = (tag, className, text) => {
   if (text !== undefined) element.textContent = text;
   return element;
 };
+
+// Small CSS solids retain their depth as the camera orbits, including on non-GPU browsers.
+// Shapes are original constructions; their typed-object vocabulary follows Graph Gallery.
+const SCULPTURE_TYPES = new Set(['folder', 'network', 'character', 'database', 'service', 'cloud', 'portal']);
+const TYPE_COLORS = { folder: '#efbb55', network: '#39ada9', character: '#759bdd', database: '#aa89d9', service: '#5c9dbf', cloud: '#9cc9df', portal: '#c09bea' };
+function solidRoot(parent, className, x = 0, y = 0, z = 0, rotation = '') {
+  const root = make('span', `c3d-solid ${className}`);
+  root.style.transform = `translate3d(${x}px,${y}px,${z}px) ${rotation}`;
+  parent.append(root); return root;
+}
+function boxSolid(parent, className, width, height, depth, x = 0, y = 0, z = 0, rotation = '') {
+  const root = solidRoot(parent, className, x, y, z, rotation);
+  const surfaces = [
+    ['front', width, height, `translateZ(${depth / 2}px)`],
+    ['back', width, height, `rotateY(180deg) translateZ(${depth / 2}px)`],
+    ['right', depth, height, `rotateY(90deg) translateZ(${width / 2}px)`],
+    ['left', depth, height, `rotateY(-90deg) translateZ(${width / 2}px)`],
+    ['top', width, depth, `rotateX(90deg) translateZ(${height / 2}px)`],
+    ['bottom', width, depth, `rotateX(-90deg) translateZ(${height / 2}px)`]
+  ];
+  for (const [side, w, h, transform] of surfaces) {
+    const face = make('span', `c3d-solid-face c3d-face-${side}`);
+    face.style.width = `${w}px`; face.style.height = `${h}px`;
+    face.style.transform = `translate(-50%,-50%) ${transform}`; root.append(face);
+  }
+  return root;
+}
+function cylinderSolid(parent, className, radius, height, x = 0, y = 0, z = 0) {
+  const root = solidRoot(parent, className, x, y, z), sides = 16;
+  for (let i = 0; i < sides; i++) {
+    const angle = i * Math.PI * 2 / sides, face = make('span', 'c3d-cylinder-side');
+    face.style.width = `${2 * radius * Math.tan(Math.PI / sides) + .6}px`; face.style.height = `${height}px`;
+    face.style.transform = `translate(-50%,-50%) rotateY(${angle}rad) translateZ(${radius}px)`;
+    face.style.setProperty('--face-shade', `${Math.round(78 + 22 * Math.cos(angle - .7))}%`); root.append(face);
+  }
+  for (const sign of [-1, 1]) {
+    const cap = make('span', `c3d-cylinder-cap ${sign < 0 ? 'c3d-cap-top' : 'c3d-cap-bottom'}`);
+    cap.style.width = cap.style.height = `${radius * 2}px`;
+    cap.style.transform = `translate(-50%,-50%) translateY(${sign * height / 2}px) rotateX(${sign < 0 ? 90 : -90}deg)`; root.append(cap);
+  }
+  return root;
+}
+function orbSolid(parent, className, radius, x = 0, y = 0, z = 0) {
+  const root = solidRoot(parent, className, x, y, z), sectors = 10, bands = 6;
+  for (let ring = 0; ring < bands; ring++) {
+    const a = -Math.PI / 2 + ring * Math.PI / bands, b = a + Math.PI / bands;
+    const r1 = radius * Math.cos(a), r2 = radius * Math.cos(b), y1 = radius * Math.sin(a), y2 = radius * Math.sin(b);
+    const dr = (r2 - r1) * Math.cos(Math.PI / sectors), dy = y2 - y1, height = Math.hypot(dr, dy);
+    const w1 = 2 * r1 * Math.sin(Math.PI / sectors), w2 = 2 * r2 * Math.sin(Math.PI / sectors), width = Math.max(w1, w2) + .4;
+    for (let segment = 0; segment < sectors; segment++) {
+      const angle = segment * Math.PI * 2 / sectors, s = Math.sin(angle), c = Math.cos(angle);
+      const rad = (r1 + r2) / 2 * Math.cos(Math.PI / sectors);
+      const matrix = [c,0,-s,0, s*dr/height,dy/height,c*dr/height,0, s*dy/height,-dr/height,c*dy/height,0, s*rad,(y1+y2)/2,c*rad,1];
+      const face = make('span', 'c3d-orb-facet');
+      face.style.width = `${width}px`; face.style.height = `${height + .45}px`;
+      const top = (1 - w1 / width) * 50, bottom = (1 - w2 / width) * 50;
+      face.style.clipPath = `polygon(${top}% 0,${100-top}% 0,${100-bottom}% 100%,${bottom}% 100%)`;
+      face.style.transform = `translate(-50%,-50%) matrix3d(${matrix.join(',')})`;
+      face.style.setProperty('--face-shade', `${Math.round(71 + 17*c + 12*(-Math.sin((a+b)/2)))}%`);
+      root.append(face);
+    }
+  }
+  return root;
+}
+function rodSolid(parent, start, end, color) {
+  const delta = new THREE.Vector3(...end).sub(new THREE.Vector3(...start));
+  const center = new THREE.Vector3(...start).addScaledVector(delta, .5);
+  const rod = boxSolid(parent, 'c3d-network-rod', 7, delta.length(), 7);
+  const matrix = new THREE.Matrix4().compose(center, new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), delta.normalize()), new THREE.Vector3(1,1,1));
+  rod.style.transform = `matrix3d(${matrix.elements.join(',')})`; rod.style.setProperty('--body-color', color); return rod;
+}
+function buildSculpture(button, type, node) {
+  button.classList.add('c3d-sculpture'); button.style.setProperty('--body-color', TYPE_COLORS[type]);
+  const stage = make('span', 'c3d-sculpture-stage'); stage.setAttribute('aria-hidden', 'true'); button.append(stage);
+  if (type === 'folder') {
+    boxSolid(stage, 'c3d-folder-back', 252, 172, 14, 0, 14, -35);
+    boxSolid(stage, 'c3d-folder-tab', 92, 35, 14, -80, -84, -35);
+    for (let i = 0; i < 3; i++) boxSolid(stage, 'c3d-folder-paper', 220-i*7, 174, 3, i*5, -5+i*5, -18+i*12, `rotateZ(${i*3-3}deg)`);
+    boxSolid(stage, 'c3d-folder-flap', 252, 136, 10, 0, 45, 28, 'rotateX(-12deg)');
+  } else if (type === 'network') {
+    const points = [[-100,-78,0],[99,-58,15],[-95,65,-5],[95,73,-12],[0,-111,-52]];
+    points.forEach(point => rodSolid(stage, [0,0,0], point, '#63a6a4'));
+    orbSolid(stage, 'c3d-network-core', 49);
+    points.forEach((point,i) => { const orb = orbSolid(stage, 'c3d-network-node', i === 4 ? 22 : 29, ...point); orb.style.setProperty('--body-color', ['#7cc9c0','#f2b866','#85aadd','#bba3df','#ecaaa7'][i]); });
+    const emblem = make('span', 'c3d-network-emblem'); emblem.append(objectIcon('network')); stage.append(emblem);
+  } else if (type === 'character') {
+    const variant = Array.from(String(node.id || node.title || '')).reduce((sum, letter) => sum + letter.charCodeAt(0), 0) % 4;
+    stage.style.setProperty('--character-shirt', ['#83a4df','#72b5a3','#d5987d','#a494c7'][variant]);
+    stage.style.setProperty('--character-skin', ['#f7d0ac','#ce9878','#edbd96','#b98567'][variant]);
+    stage.style.setProperty('--character-hair', ['#765744','#443b42','#946640','#493d38'][variant]);
+    cylinderSolid(stage, 'c3d-character-base', 72, 22, 0, 133);
+    boxSolid(stage, 'c3d-character-shoe', 39, 24, 55, -25, 106, 10);
+    boxSolid(stage, 'c3d-character-shoe', 39, 24, 55, 25, 106, 10);
+    boxSolid(stage, 'c3d-character-leg', 28, 36, 32, -24, 77);
+    boxSolid(stage, 'c3d-character-leg', 28, 36, 32, 24, 77);
+    boxSolid(stage, 'c3d-character-body', 105, 90, 57, 0, 24);
+    orbSolid(stage, 'c3d-character-hand', 18, -74, 58, 8);
+    orbSolid(stage, 'c3d-character-hand', 18, 75, 30, 8);
+    boxSolid(stage, 'c3d-character-arm', 25, 71, 33, -65, 20, 0, 'rotateZ(17deg)');
+    boxSolid(stage, 'c3d-character-arm', 25, 66, 33, 64, -2, 0, 'rotateZ(-32deg)');
+    orbSolid(stage, 'c3d-character-head', 53, 0, -74, 0);
+    for (const [x,y,z,r] of [[-25,-113,-3,24],[1,-119,-7,24],[25,-111,-7,23]]) orbSolid(stage, 'c3d-character-hair', r, x,y,z);
+    const face = make('span', 'c3d-friendly-face');
+    face.append(make('span', 'c3d-eye c3d-eye-left'), make('span', 'c3d-eye c3d-eye-right'), make('span', 'c3d-smile'));
+    if (variant === 1 || variant === 3) face.append(make('span', 'c3d-character-glasses'));
+    stage.append(face, make('span', 'c3d-character-collar'), make('span', 'c3d-character-name', String(node.title || 'Guide').split(/[ ·—-]/)[0].slice(0, 10)));
+  } else if (type === 'database') {
+    for (let i = 0; i < 3; i++) {
+      cylinderSolid(stage, 'c3d-database-drum', 81, 57, 0, -72+i*67);
+      cylinderSolid(stage, 'c3d-database-rim', 83, 9, 0, -103+i*67);
+    }
+    for (let i = 0; i < 3; i++) { const lamp = make('span', 'c3d-data-led'); lamp.style.top = `${-73+i*67}px`; stage.append(lamp); }
+  } else if (type === 'service') {
+    boxSolid(stage, 'c3d-service-chassis', 169, 212, 105, 0, 0, -7);
+    boxSolid(stage, 'c3d-service-base', 193, 14, 127, 0, 113, -7);
+    for (let i = 0; i < 4; i++) {
+      const unit = boxSolid(stage, 'c3d-service-unit', 149, 38, 11, 0, -78+i*50, 52);
+      const vent = make('span', 'c3d-service-vent'), led = make('span', 'c3d-service-led');
+      unit.append(vent, led);
+    }
+  } else if (type === 'cloud') {
+    cylinderSolid(stage, 'c3d-cloud-base', 108, 22, 0, 78);
+    [[0,-24,6,75],[-80,20,0,49],[78,21,0,52],[-38,-54,-19,48],[50,-51,-8,52]].forEach(([x,y,z,r]) => orbSolid(stage, 'c3d-cloud-puff', r, x,y,z));
+    const mark = make('span', 'c3d-cloud-mark'); mark.append(objectIcon('cloud')); stage.append(mark);
+  } else if (type === 'portal') {
+    const rim = make('span', 'c3d-portal-rim'); stage.append(rim);
+    for (let i = 0; i < 16; i++) {
+      const angle = i * Math.PI / 8;
+      const gem = boxSolid(stage, 'c3d-portal-segment', 43, 30, 33, 96*Math.sin(angle), 96*Math.cos(angle)-10, 0, `rotateZ(${-angle}rad)`);
+      gem.style.setProperty('--body-color', i % 2 ? '#a884d4' : '#ccb5e6');
+    }
+    stage.append(make('span', 'c3d-portal-surface'), make('span', 'c3d-portal-star', '✦'));
+    cylinderSolid(stage, 'c3d-portal-base', 88, 24, 0, 121);
+  }
+}
 
 export function mountCompatibility3D(host, options = {}) {
   let disposed = false, frame = 0, generation = 0, ready = false, fitted = false;
@@ -118,7 +260,8 @@ export function mountCompatibility3D(host, options = {}) {
     button.type = 'button'; button.tabIndex = -1; button.dataset.c3dId = node.id; button.dataset.objectType = objectType;
     button.setAttribute('aria-label', `Inspect ${raw ? TYPE_LABELS[objectType].toLowerCase() + ' source' : 'processed knowledge'}: ${node.title}`);
     button.title = `${node.title || 'Untitled memory'} · ${TYPE_LABELS[objectType]} · Drag to move`;
-    for (let layer = 2; layer >= 0; layer--) button.append(make('span', `c3d-sheet c3d-layer-${layer}`));
+    if (SCULPTURE_TYPES.has(objectType)) buildSculpture(button, objectType, node);
+    else for (let layer = 2; layer >= 0; layer--) button.append(make('span', `c3d-sheet c3d-layer-${layer}`));
     const front = make('span', 'c3d-front');
     let decoded = Promise.resolve();
     if (SAFE_PREVIEW.test(node.previewUrl || '')) {
@@ -144,7 +287,7 @@ export function mountCompatibility3D(host, options = {}) {
     if (objectType === 'experiment') button.append(make('span', 'c3d-clipboard-clip'));
     if (!raw) button.dataset.status = node.status || 'proposed';
     const object = attach(button, point.clone().add(new THREE.Vector3(0, 1.4, 0)));
-    object.rotation.x = -.27; object.rotation.y = raw ? -.07 : .035;
+    object.rotation.x = SCULPTURE_TYPES.has(objectType) ? 0 : -.27; object.rotation.y = raw ? -.07 : .035;
     const shadow = make('div', 'c3d-shadow');
     const shadowObject = floorElement(shadow, point.clone().add(new THREE.Vector3(0, -.012, .25)));
     const ring = make('div', 'c3d-selection-ring');
@@ -205,7 +348,7 @@ export function mountCompatibility3D(host, options = {}) {
       pendingFocus = { id: active.dataset.c3dId, kind: active.classList.contains('c3d-label') ? 'label' : 'button' };
     }
     const ticket = ++generation; ready = false; resetScene(); addGround();
-    const loads = data.nodes.slice(0, 30).map(addNode); addEdges(); selection();
+    const loads = data.nodes.slice(0, 60).map(addNode); addEdges(); selection();
     if (!fitted && nodes.size) { fit(); fitted = true; }
     requestRender();
     Promise.all(loads).then(() => { if (!disposed && ticket === generation) { ready = true; requestRender(); } }).catch(fail);
@@ -229,8 +372,8 @@ export function mountCompatibility3D(host, options = {}) {
     const corners = [];
     for (const item of nodes.values()) {
       const point = item.point;
-      // The tilted page/tablet body, including its thickness and paper offsets.
-      for (const x of [-1.65, 1.65]) for (const y of [-.15, 3.0]) for (const z of [-.8, .8]) {
+      // Every sculptural body, including folder tabs, figure hands, and orbiting network hubs.
+      for (const x of [-1.7, 1.7]) for (const y of [-.2, 3.0]) for (const z of [-1.05, 1.05]) {
         corners.push(point.clone().add(new THREE.Vector3(x, y, z)));
       }
       // The selection footprint and the title sprite are also visible objects.

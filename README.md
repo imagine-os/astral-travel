@@ -14,7 +14,7 @@
 
 Turn what you collect into connections you can inspect, questions worth researching, and possibilities worth exploring.
 
-[![Version 0.4.0](https://img.shields.io/badge/version-0.4.0-8978ff?style=flat-square)](CHANGELOG.md)
+[![Version 0.5.0](https://img.shields.io/badge/version-0.5.0-8978ff?style=flat-square)](CHANGELOG.md)
 [![Status Alpha](https://img.shields.io/badge/status-alpha-e8c98b?style=flat-square)](#what-works-today)
 [![License MIT](https://img.shields.io/badge/license-MIT-8ddac6?style=flat-square)](LICENSE)
 
@@ -95,26 +95,33 @@ Turn an idea into an experiment. Measure the outcome. Carry what worked into the
 </picture>
 </a>
 
-The website starts in light mode. Use the appearance switch to change the complete interface to dark; your choice is saved on your device.
+These v0.4 screenshots show the saved-text previews and source inspector. The website starts in light mode. Use the appearance switch to change the complete interface to dark; your choice is saved on your device.
 
 </details>
 
 ## Recognize your memories. Arrange them your way.
 
-The [memory explorer](https://imagine-os.github.io/astral-travel/#lab) opens as **real 3D document objects**, with previews of the text you actually saved. Sources take recognizable forms: books, conversations, photo frames, video slates, audio cassettes, code terminals, notebooks, experiment boards, and original document stacks. Interpretations use violet tablets. Select either to read the full content and follow its references.
+The [playground](https://imagine-os.github.io/astral-travel/#lab) now opens a world of **17 distinct object forms**: folders with loose pages, friendly characters, connected network hubs, databases, server towers, soft clouds, and portal rings join books, documents, conversations, media notes, and violet interpretation tablets. Small previews show the text you actually saved. Select any object to read it and follow its sources.
 
-| Choose the view | Choose the arrangement |
+Inspired by your favorites in [Graph Gallery](https://github.com/imagine-os/graph-gallery), **five separate views** make the same knowledge easy to explore:
+
+| View | Find your way |
 | --- | --- |
-| **Objects 3D** — orbit, pan, zoom, and inspect | **Rooms** — group memories by topic |
-| **Cards** — browse visual document previews | **Lanes** — separate sources and interpretations |
-| **List** — scan titles and excerpts with the keyboard | **Radial** — put the selected memory at the center |
-| Your view preference is saved on this device. | **Grid** — scan an even arrangement |
+| **Objects 3D** | Orbit physical objects, drag them around, and follow their connections |
+| **Skill tree** | Trace connected branches through readable lanes and preview cards |
+| **Radial tree** | Explore connected branches around a central memory |
+| **Cards** | Browse the saved-text previews on a visual board |
+| **List** | Scan titles and excerpts with the keyboard |
+
+**Objects 3D and Cards have five arrangements:** Object bands, Rooms, Lanes, Radial, and Grid. Fresh preferences start with Object bands. The two tree views have their own branching layouts; they draw recorded links and show disconnected records separately.
 
 ![Card lanes separate original sources from processed knowledge, with actual saved-text previews](docs/assets/cards-light.jpg)
 
-**Drag an object to move it; drag empty space to orbit.** Your positions are saved separately for each arrangement on this device. Undo, reset, and keyboard movement controls are built in. Use **Add examples** to bring eight new fictional sources and two sourced proposals into an existing workspace.
+**Drag an object to move it; drag empty space to orbit.** Positions save per arrangement on this device, with Undo, Reset, and keyboard movement controls. Every view opens the same source inspector.
 
-Every view uses the same records. Arranging a memory does not change its evidence or review status. The current previews show saved text; PDF page rendering, image attachments, video posters, and audio waveforms are future work. [How the explorer works →](docs/explorer.md)
+Start with **48 fictional nodes and 68 connections**: 38 original sources and 10 interpretations. Already have the v0.4 examples? Click **Add examples** for 30 more nodes without replacing your memories. Larger workspaces show up to 60 records per page.
+
+Forms are visual cues for text records. Characters are role profiles; clouds and services are architecture notes; media objects hold written descriptions or transcripts. Live agents, uploaded media, and playable recordings are future work. Arranging a memory does not change its evidence or review status. [How the explorer works →](docs/explorer.md)
 
 ## Follow the idea back home
 
@@ -278,6 +285,6 @@ If the idea clicks, star the repository to help others discover it. If the proto
 
 **Keep the evidence. Follow the possibility.**
 
-[MIT licensed](LICENSE) · Made in the open · v0.4.0
+[MIT licensed](LICENSE) · Made in the open · v0.5.0
 
 </div>

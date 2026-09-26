@@ -2,6 +2,15 @@
 
 The history of saved project releases. Features listed under a release describe that version; planned work belongs in the roadmap.
 
+## 0.5.0 — 2026-09-26
+
+- Add seven distinct object forms: open folders, network hubs, friendly characters, stacked databases, server services, clouds, and portal rings. The collection now has 17 forms, with saved-text previews and the existing drag/placement controls.
+- Add separate Skill tree and Radial tree views patterned on the selected Graph Gallery demos. They use supplied record links, keep disconnected nodes separate, and share search, selection, and the source inspector with Objects 3D, Cards, and List.
+- Add Object bands as the default arrangement for fresh preferences, alongside Rooms, Lanes, Radial, and Grid. Existing saved preferences remain intact.
+- Expand the fresh fictional example workspace to 48 nodes (38 sources and 10 interpretations) with 68 recorded connections. Add examples adds missing records without overwriting memory or review decisions; a complete v0.4 sample gains 30 nodes.
+- Increase the visible page limit to 60 records and fit native 3D cameras to the measured bounds of each object form.
+- Keep example boundaries explicit: characters, media, services, and infrastructure remain text records, not live agents, uploaded attachments, or provisioned systems.
+
 ## 0.4.0 — 2026-09-25
 
 - Add distinct document, conversation, book, photo-frame, video-slate, audio-cassette, code-terminal, research-notebook, and experiment-board presentations, alongside interpretation tablets.

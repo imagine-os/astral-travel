@@ -136,3 +136,75 @@
 .c3d-kind-experiment .c3d-type-caption{left:19px;bottom:10px;color:#734929}
 .c3d-kind-experiment .c3d-type-badge{top:22px;background:#ab794f}
 .compatibility-3d[data-move-enabled=false] .c3d-object,.compatibility-3d[data-move-enabled=false] .c3d-label{cursor:pointer}
+/* Sculptural node families: actual side/top faces, rather than another rectangular card. */
+.c3d-sculpture{width:290px;height:290px;--body-color:#7aaabf}
+.c3d-sculpture-stage{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;pointer-events:none}
+.c3d-solid{display:block;position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;pointer-events:none}
+.c3d-solid-face,.c3d-cylinder-side,.c3d-cylinder-cap,.c3d-orb-facet{display:block;position:absolute;left:0;top:0;box-sizing:border-box;backface-visibility:hidden;pointer-events:none;transform-style:preserve-3d;background:var(--body-color)}
+.c3d-solid-face{border:1px solid color-mix(in srgb,var(--body-color) 75%,#3b3553);box-shadow:inset 0 0 2px #ffffff48}
+.c3d-face-front{background:linear-gradient(135deg,color-mix(in srgb,var(--body-color) 78%,white),var(--body-color))}
+.c3d-face-top{background:color-mix(in srgb,var(--body-color) 71%,white)}
+.c3d-face-right,.c3d-face-left{background:color-mix(in srgb,var(--body-color) 84%,#343953)}
+.c3d-face-back,.c3d-face-bottom{background:color-mix(in srgb,var(--body-color) 65%,#343953)}
+.c3d-cylinder-side,.c3d-orb-facet{background:color-mix(in srgb,var(--body-color) var(--face-shade,85%),#293249)}
+.c3d-cylinder-cap{border-radius:50%;border:1px solid color-mix(in srgb,var(--body-color) 90%,#fff);background:radial-gradient(ellipse at 35% 30%,color-mix(in srgb,var(--body-color) 55%,white),var(--body-color))}
+.c3d-cap-bottom{background:color-mix(in srgb,var(--body-color) 75%,#293249)}
+.c3d-sculpture .c3d-type-badge,.c3d-sculpture .c3d-clip{display:none}
+.c3d-sculpture .c3d-type-caption{bottom:-13px;text-align:center;color:var(--c3d-muted);font-size:11px;letter-spacing:.13em;transform:translateZ(70px)}
+.c3d-sculpture .c3d-front{inset:auto;left:50%;top:50%;width:100px;height:58px;padding:4px;border:2px solid #fff9;border-radius:6px;background:#fffdf5;transform:translate(-50%,-50%) translate3d(0,28px,83px);box-shadow:0 3px 6px #26314c30;pointer-events:none}
+.c3d-sculpture .c3d-preview{object-fit:cover;object-position:top}
+.c3d-sculpture .c3d-fallback-title{margin:3px;font-size:11px;line-height:1.2}
+.c3d-sculpture .c3d-fallback-text{display:none}
+.c3d-sculpture.is-selected .c3d-front,.c3d-sculpture:focus-visible .c3d-front,.c3d-sculpture.is-moving .c3d-front{outline:2px solid var(--c3d-accent);outline-offset:3px}
+.c3d-sculpture.is-selected .c3d-type-caption{color:var(--c3d-accent)}
+/* A real open folder: tabbed rear, protruding papers, and a forward-leaning pocket. */
+.c3d-folder-back,.c3d-folder-tab{--body-color:#dba84c}
+.c3d-folder-paper{--body-color:#fffef2}
+.c3d-folder-paper .c3d-face-front{background:repeating-linear-gradient(0deg,#fffef2 0 16px,#e4e2d4 17px,#fffef2 18px)}
+.c3d-folder-flap{--body-color:#f2c466}
+.c3d-kind-folder .c3d-front{width:118px;height:67px;transform:translate(-50%,-50%) translate3d(0,38px,42px)}
+/* Network hubs are connected colored beads in space. */
+.c3d-network-core{--body-color:#70c6c0}
+.c3d-network-rod{--body-color:#79b4b1}
+.c3d-network-emblem{display:grid;place-items:center;position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;background:#e1fff8;border:2px solid #d1f2e9;color:#3f8782;transform:translateZ(49px)}
+.c3d-network-emblem svg{width:30px;height:30px}
+.c3d-kind-network .c3d-front,.c3d-kind-character .c3d-front,.c3d-kind-cloud .c3d-front,.c3d-kind-portal .c3d-front{display:none}
+/* A friendly toy guide with a spherical head, raised arm, boots, and plinth. */
+.c3d-character-base{--body-color:#c6c7e0}
+.c3d-character-body,.c3d-character-arm{--body-color:var(--character-shirt,#83a4df)}
+.c3d-character-leg{--body-color:#617fb1}
+.c3d-character-shoe{--body-color:#4c5b84}
+.c3d-character-head,.c3d-character-hand{--body-color:var(--character-skin,#f7d0ac)}
+.c3d-character-hair{--body-color:var(--character-hair,#765744)}
+.c3d-friendly-face{position:absolute;width:70px;height:43px;left:-35px;top:-91px;transform:translateZ(51px);backface-visibility:hidden}
+.c3d-eye{position:absolute;top:5px;width:8px;height:10px;border-radius:50%;background:#4e3f42;box-shadow:inset 1px 2px 0 #fff8}
+.c3d-eye-left{left:14px}.c3d-eye-right{right:14px}
+.c3d-smile{position:absolute;left:25px;top:22px;width:19px;height:9px;border:3px solid #925d56;border-top:0;border-radius:0 0 15px 15px}
+.c3d-character-collar{position:absolute;left:-26px;top:-18px;width:52px;height:15px;border-radius:0 0 30px 30px;background:#dce8fd;transform:translateZ(30px)}
+.c3d-character-name{position:absolute;left:-34px;top:15px;width:68px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 2px;border-radius:4px;background:#f5f4fa;color:#425a8d;font:700 11px/1.1 system-ui,sans-serif;text-align:center;transform:translateZ(31px);box-shadow:0 2px 4px #34486c22}
+/* Three solid database cylinders and a rack of four visibly separate service units. */
+.c3d-database-drum{--body-color:#ac8fce}
+.c3d-database-rim{--body-color:#d9caee}
+.c3d-data-led{position:absolute;left:-54px;width:6px;height:6px;border-radius:50%;background:#c5f1d2;border:1px solid #76b494;transform:translateZ(64px)}
+.c3d-kind-database .c3d-front{width:76px;height:52px;transform:translate(-50%,-50%) translate3d(0,3px,84px)}
+.c3d-service-chassis{--body-color:#4a637b}
+.c3d-service-base{--body-color:#637d97}
+.c3d-service-unit{--body-color:#92c9dd}
+.c3d-service-vent{position:absolute;left:-59px;top:-8px;width:67px;height:16px;background:repeating-linear-gradient(90deg,#3a667b 0 4px,#6897aa 4px 7px);border-radius:2px;transform:translateZ(7px)}
+.c3d-service-led{position:absolute;left:52px;top:-4px;width:8px;height:8px;border-radius:50%;background:#e1d47b;border:1px solid #769681;box-shadow:0 0 0 2px #7199a4;transform:translateZ(7px)}
+.c3d-kind-service .c3d-front{width:62px;height:47px;transform:translate(-50%,-50%) translate3d(21px,0,61px)}
+/* Puffy cloud storage and a standing dream portal keep their silhouette without a card. */
+.c3d-cloud-base{--body-color:#c6dfea}
+.c3d-cloud-puff{--body-color:#d4eaf3}
+.c3d-cloud-mark{position:absolute;left:-29px;top:-12px;width:58px;height:48px;color:#6c98b5;transform:translateZ(81px);backface-visibility:hidden}
+.c3d-cloud-mark svg{width:100%;height:100%}
+.c3d-portal-base{--body-color:#c6b5da}
+.c3d-portal-surface{position:absolute;left:-81px;top:-91px;width:162px;height:162px;border:3px solid #f0ddff;border-radius:50%;background:radial-gradient(ellipse at 37% 30%,#fff8df 0,#e9e6ff 29%,#adc9e6 56%,#ae9ad4 78%,#9b80bd 100%);box-shadow:inset 0 0 22px #fff9,0 0 12px #d6bce34d;transform:translateZ(2px);backface-visibility:visible}
+.c3d-portal-star{position:absolute;left:-25px;top:-52px;width:50px;text-align:center;color:#fffbed;text-shadow:0 2px 8px #9b82b6;font:52px/1 system-ui,sans-serif;transform:translateZ(8px)}
+.c3d-portal-rim{position:absolute;left:-120px;top:-130px;width:240px;height:240px;border:6px solid #d6c3e8;border-radius:50%;box-sizing:border-box;transform:translateZ(-18px);pointer-events:none}
+.compatibility-3d[data-theme=dark] .c3d-sculpture .c3d-type-caption{color:#d4c7e4}
+.compatibility-3d[data-theme=dark] .c3d-portal-surface{box-shadow:inset 0 0 22px #fff9,0 0 26px #bb87f32a}
+
+.c3d-character-glasses{position:absolute;left:8px;top:0;width:54px;height:19px;background:linear-gradient(#514752,#514752) center 7px/14px 2px no-repeat;transform:translateZ(1px)}
+.c3d-character-glasses::before,.c3d-character-glasses::after{content:"";position:absolute;top:0;width:22px;height:19px;border:2px solid #514752;border-radius:6px;box-sizing:border-box}
+.c3d-character-glasses::before{left:0}.c3d-character-glasses::after{right:0}

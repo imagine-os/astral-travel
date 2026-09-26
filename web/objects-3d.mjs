@@ -2,6 +2,9 @@
  * A local, on-demand Three.js memory scene. Records remain ordinary application
  * data; this module owns only their presentation and releases all GPU resources.
  * Three.js is vendored under its MIT license in ./vendor/three/.
+ * Folder, server, database, and cloud construction adapts the primitive-model
+ * approach in imagine-os/graph-gallery/shared/assets/models/models.js.
+ * Astral keeps its own data, previews, picking, and drag lifecycle.
  */
 import * as THREE from './vendor/three/three.module.mjs';
 import { OrbitControls } from './vendor/three/OrbitControls.mjs';
@@ -60,7 +63,7 @@ function labelTexture(node, colors, selected) {
   roundedPath(context, 12, 10, 1000, 208, 40); context.stroke();
   context.fillStyle = node.type === 'raw' ? '#587cbb' : colors.accent;
   context.font = '600 34px system-ui, sans-serif';
-  const typeLabel = node.type === 'raw' ? 'ORIGINAL SOURCE' : 'PROCESSED KNOWLEDGE';
+  const typeLabel = node.type === 'raw' ? `${(node.objectType || 'document').toUpperCase()} · SOURCE` : 'INTERPRETATION · KNOWLEDGE';
   context.fillText(typeLabel, 42, 67);
   context.fillStyle = colors.ink;
   context.font = '600 53px system-ui, sans-serif';
@@ -268,7 +271,7 @@ export function mountObjects3D(host, options = {}) {
     const isRaw = node.type === 'raw';
     // Object kind is presentation metadata. Evidence status still comes from type.
     const kind = !isRaw ? 'claim' : node.objectType || 'document';
-    const palette = { book: '#45677a', image: '#b58c55', video: '#465264', audio: '#577d7b', code: '#34495e', chat: '#639b9a', research: '#68845f', experiment: '#c18a5b' };
+    const palette = { book: '#45677a', image: '#b58c55', video: '#465264', audio: '#577d7b', code: '#34495e', chat: '#639b9a', research: '#68845f', experiment: '#c18a5b', folder: '#d3a353', network: '#5c99b9', character: '#7a93d5', database: '#ca9c57', service: '#4e93a7', cloud: '#9dbfbd', portal: '#9a77c2' };
     const accent = palette[kind] || '#758eab';
     const matte = color => new THREE.MeshStandardMaterial({ color, roughness: .64, metalness: .06 });
     const metallic = color => new THREE.MeshStandardMaterial({ color, roughness: .36, metalness: .5 });
@@ -279,9 +282,123 @@ export function mountObjects3D(host, options = {}) {
     }
     const box = (w, h, d, color, x = 0, y = 0, z = 0) => addMesh(new THREE.BoxGeometry(w, h, d), matte(color), x, y, z);
     const body = (w, h, d, color, x = 0, y = 0, z = 0) => addMesh(tabletGeometry(w, h, d), matte(color), x, y, z);
-    let faceWidth = 1.82, faceHeight = 2.275, faceY = -.015, faceZ = .038;
+    const sphere = (r, color, x = 0, y = 0, z = 0, sx = 1, sy = 1, sz = 1) => {
+      const mesh = addMesh(new THREE.SphereGeometry(r, 20, 14), matte(color), x, y, z);
+      mesh.scale.set(sx, sy, sz); return mesh;
+    };
+    const cylinder = (r, h, color, x = 0, y = 0, z = 0) => addMesh(new THREE.CylinderGeometry(r, r, h, 24), matte(color), x, y, z);
+    const rod = (a, b, radius, color) => {
+      const start = new THREE.Vector3(...a), end = new THREE.Vector3(...b);
+      const mesh = addMesh(new THREE.CylinderGeometry(radius, radius, start.distanceTo(end), 10), metallic(color));
+      mesh.position.copy(start).lerp(end, .5);
+      mesh.quaternion.setFromUnitVectors(Y_AXIS, end.sub(start).normalize());
+      return mesh;
+    };
+    // Unlike the document family, these models stand on the floor with actual
+    // volume. Their preview is a small plaque, not the shape of the whole node.
+    const volumetric = ['folder', 'network', 'character', 'database', 'service', 'cloud', 'portal'].includes(kind);
+    if (volumetric) { object.position.set(0, 0, 0); object.rotation.set(0, -.10, 0); }
+    let faceWidth = 1.82, faceHeight = 2.275, faceX = 0, faceY = -.015, faceZ = .038;
+    let plaque = false;
 
-    if (kind === 'claim') {
+    if (kind === 'folder') {
+      // Open folder: angled front, tall tabbed back, and three loose sheets.
+      box(2.50, 1.76, .12, '#b88a40', 0, 1.04, -.34);
+      body(.88, .34, .12, '#b88a40', -.72, 2.04, -.34);
+      box(2.50, .16, .79, accent, 0, .23, 0);
+      for (let sheet = 0; sheet < 3; sheet++) {
+        const paper = box(2.12, 1.55, .035, ['#e7e3d8', '#f4ede0', colors.paper][sheet], .03 * sheet, 1.11 + sheet * .06, -.23 + sheet * .12);
+        paper.rotation.z = (sheet - 1) * .025;
+      }
+      const front = box(2.53, 1.35, .11, accent, 0, .91, .37);
+      front.rotation.x = -.15;
+      // The small front label carries the actual record preview.
+      faceWidth = .76; faceHeight = .95; faceY = 1.03; faceZ = .55; plaque = true;
+      box(.43, .10, .05, '#f1d095', -.87, 1.41, .49);
+      box(.43, .07, .05, '#b7893d', -.87, 1.24, .49);
+    } else if (kind === 'character') {
+      // A friendly miniature person, with limbs and face that read from afar.
+      cylinder(.91, .16, theme === 'dark' ? '#41485e' : '#dddfe9', 0, .12, 0);
+      for (const x of [-.24, .24]) {
+        box(.33, .16, .59, '#4a5470', x, .25, .13);
+        cylinder(.14, .63, '#54658b', x, .60, -.01);
+      }
+      addMesh(new THREE.CylinderGeometry(.32, .46, .89, 20), matte(accent), 0, 1.17, 0);
+      sphere(.18, '#efc6a2', 0, 1.64, 0);
+      sphere(.43, '#efc6a2', 0, 2.02, .015, 1, 1.08, .95);
+      sphere(.44, '#64516a', 0, 2.24, -.055, 1.03, .64, .93);
+      for (const x of [-.40, .40]) sphere(.105, '#efc6a2', x, 2.02, 0);
+      for (const x of [-.145, .145]) {
+        sphere(.069, '#fffef9', x, 2.075, .371, 1, 1.12, .43);
+        sphere(.031, '#3e3545', x + .005, 2.067, .401, 1, 1.1, .40);
+      }
+      sphere(.058, '#ddb08e', 0, 1.955, .409, .75, 1, .58);
+      const smile = addMesh(new THREE.TorusGeometry(.115, .018, 6, 16, Math.PI), matte('#9e665e'), 0, 1.915, .379);
+      smile.rotation.z = Math.PI;
+      rod([-.31, 1.45, 0], [-.67, .98, .03], .13, accent);
+      rod([.31, 1.45, 0], [.68, 1.69, .06], .13, accent);
+      sphere(.15, '#efc6a2', -.68, .92, .035);
+      sphere(.15, '#efc6a2', .71, 1.75, .065);
+      // A separate desk badge lets the model remain a character silhouette.
+      faceWidth = .52; faceHeight = .65; faceX = .83; faceY = .65; faceZ = .44; plaque = true;
+      rod([.83, .19, .40], [.83, .38, .40], .035, '#a8adb9');
+    } else if (kind === 'network') {
+      // An unmistakable spatial molecule: one hub, five satellites, real rods.
+      cylinder(.55, .15, '#657f92', 0, .13, 0);
+      rod([0, .18, 0], [0, 1.36, 0], .095, '#8ba8ba');
+      sphere(.40, accent, 0, 1.36, 0);
+      const satellites = [[-1.05, 1.90, -.10], [1.02, 1.98, -.14], [-.92, .72, .15], [.99, .76, .20], [0, 2.45, -.25]];
+      satellites.forEach((point, i) => {
+        rod([0, 1.36, 0], point, .064, '#9ab8c8');
+        sphere(.235, ['#91bdd1', '#93c6b4', '#d1b275', '#ac9dd0', '#7fadc6'][i], ...point);
+      });
+      faceWidth = .58; faceHeight = .725; faceY = .63; faceZ = .50; plaque = true;
+    } else if (kind === 'database') {
+      // Three independent drums, polished rims, and visible separation gaps.
+      cylinder(.93, .13, '#92723f', 0, .12, 0);
+      for (let level = 0; level < 3; level++) {
+        const y = .48 + level * .63;
+        cylinder(.81, .47, accent, 0, y, 0);
+        cylinder(.85, .07, '#eed39c', 0, y + .26, 0);
+        cylinder(.83, .055, '#a67e40', 0, y - .25, 0);
+        sphere(.045, '#4f8c76', .49, y + .025, .65);
+      }
+      faceWidth = .54; faceHeight = .675; faceY = 1.30; faceZ = .86; plaque = true;
+    } else if (kind === 'service') {
+      // A compact server tower: deep chassis, rack drawers, lights, feet.
+      body(1.66, 2.17, 1.07, '#46586b', 0, 1.27, 0);
+      box(1.84, .13, 1.23, '#697b8b', 0, .16, 0);
+      for (let unit = 0; unit < 4; unit++) {
+        const y = .52 + unit * .45;
+        box(1.51, .34, .095, accent, 0, y, .585);
+        box(.55, .07, .025, '#2b4658', -.27, y + .025, .646);
+        box(.34, .035, .025, '#8ac0cc', -.36, y - .08, .646);
+        sphere(.045, unit === 2 ? '#dfbb6d' : '#98c6a7', .55, y, .655);
+      }
+      for (const x of [-.42, .42]) for (let fin = 0; fin < 4; fin++) box(.07, .06, .65, '#34495c', x + fin * .12, 2.38, -.03);
+      // A narrow plaque to the side keeps rack details readable.
+      faceWidth = .53; faceHeight = .6625; faceX = 1.02; faceY = .78; faceZ = .36; plaque = true;
+      rod([.70, .78, .15], [1.02, .78, .29], .04, '#8ea5b8');
+    } else if (kind === 'cloud') {
+      // Soft overlapping volumes, not a flat cloud icon or another card frame.
+      cylinder(1.08, .14, '#bdcfd0', 0, .13, 0);
+      rod([0, .20, 0], [0, .88, 0], .09, '#b0c8c8');
+      for (const [x, y, z, r] of [[0, 1.43, 0, .68], [-.68, 1.15, 0, .48], [.67, 1.18, .05, .52], [-.32, 1.81, -.12, .47], [.33, 1.92, -.05, .48], [0, 1.12, .23, .53]]) {
+        sphere(r, accent, x, y, z);
+      }
+      faceWidth = .61; faceHeight = .7625; faceY = .68; faceZ = .81; plaque = true;
+    } else if (kind === 'portal') {
+      // A freestanding arch ring with an open center and a small source plaque.
+      box(1.96, .17, .80, '#8f79aa', 0, .15, 0);
+      for (const x of [-.81, .81]) rod([x, .20, 0], [x, .72, 0], .11, '#b9a5d4');
+      addMesh(new THREE.TorusGeometry(1.00, .15, 16, 48), metallic(accent), 0, 1.50, 0);
+      addMesh(new THREE.TorusGeometry(.97, .043, 10, 48), new THREE.MeshStandardMaterial({ color: '#d9c5ef', emissive: '#aa83d5', emissiveIntensity: .45, roughness: .35 }), 0, 1.50, .142);
+      for (let step = 0; step < 6; step++) {
+        const angle = step / 6 * Math.PI * 2;
+        sphere(.07, '#e1cdeb', Math.cos(angle) * 1.0, 1.50 + Math.sin(angle) * 1.0, .16);
+      }
+      faceWidth = .52; faceHeight = .65; faceX = .94; faceY = .62; faceZ = .30; plaque = true;
+    } else if (kind === 'claim') {
       addMesh(tabletGeometry(2.05, 2.62, .20), new THREE.MeshPhysicalMaterial({ color: colors.tablet, metalness: .16, roughness: .26, clearcoat: 1, clearcoatRoughness: .16, transparent: true, opacity: .90 }));
       const foot = new THREE.Mesh(new THREE.CylinderGeometry(.69, .88, .14, 32), metallic(theme === 'dark' ? '#49405d' : '#e3ddf0'));
       foot.position.set(0, .05, .1); foot.castShadow = true; group.add(foot);
@@ -367,12 +484,25 @@ export function mountObjects3D(host, options = {}) {
       }
       addMesh(new THREE.BoxGeometry(.42, .09, .18), metallic('#b59b6a'), -.42, 1.26, .015);
     }
+    if (plaque) {
+      body(faceWidth + .10, faceHeight + .10, .06, theme === 'dark' ? '#676177' : '#ece7f3', faceX, faceY, faceZ - .041);
+    }
     const face = new THREE.Mesh(new THREE.PlaneGeometry(faceWidth, faceHeight), new THREE.MeshBasicMaterial({ map: fallbackPreview(node), toneMapped: false, side: THREE.FrontSide }));
-    face.position.set(0, faceY, faceZ); object.add(face);
+    face.position.set(faceX, faceY, faceZ); object.add(face);
     // Only physical bodies and previews receive object drag hits; the footprint is decorative.
     object.traverse(child => { if (child.isMesh) targets.push(child); });
-    const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.48, 3.02, .67)), new THREE.LineBasicMaterial({ color: colors.selected, transparent: true, opacity: .85 }));
-    outline.visible = node.id === data.selectedId; outline.position.z = -.025; object.add(outline);
+    // Outline the true body bounds: wide folders and clouds should never inherit
+    // the narrow document box. Selection and fit use these same measured bounds.
+    group.updateMatrixWorld(true);
+    const bodyBounds = new THREE.Box3().setFromObject(object);
+    const bodySize = bodyBounds.getSize(new THREE.Vector3()).addScalar(.13);
+    const bodyCenter = bodyBounds.getCenter(new THREE.Vector3());
+    const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(bodySize.x, bodySize.y, bodySize.z)), new THREE.LineBasicMaterial({ color: colors.selected, transparent: true, opacity: .85 }));
+    outline.visible = node.id === data.selectedId; outline.position.copy(bodyCenter); group.add(outline);
+    // At this point group is not mounted in world yet; Box3 contains its local
+    // placement, so remove the node position to store reusable model extents.
+    bodyBounds.translate(group.position.clone().negate());
+    outline.position.sub(group.position);
     const halo = new THREE.Mesh(new THREE.RingGeometry(1.40, 1.46, 64), new THREE.MeshBasicMaterial({ color: colors.selected, transparent: true, opacity: .8, side: THREE.DoubleSide, depthWrite: false }));
     halo.rotation.x = -Math.PI / 2; halo.position.y = .025; halo.visible = node.id === data.selectedId; group.add(halo);
     const label = new THREE.Sprite(new THREE.SpriteMaterial({ map: labelTexture(node, colors, node.id === data.selectedId), transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
@@ -380,7 +510,7 @@ export function mountObjects3D(host, options = {}) {
     group.add(label); targets.push(label);
     group.traverse(child => { child.userData.id = node.id; });
     world.add(group);
-    nodeObjects.set(node.id, { group, node, outline, halo, label });
+    nodeObjects.set(node.id, { group, node, outline, halo, label, bodyBounds });
     return usePreview(node, face.material, currentGeneration);
   }
 
@@ -491,7 +621,7 @@ export function mountObjects3D(host, options = {}) {
     disposeTree(world);
     nodeObjects = new Map(); edgeObjects = []; targets = [];
     makeGroups();
-    const loads = data.nodes.slice(0, 30).map((node, index) => makeObject(node, index, currentGeneration));
+    const loads = data.nodes.slice(0, 60).map((node, index) => makeObject(node, index, currentGeneration));
     makeEdges(); refreshSelection(); updateShadows();
     if (!fitted && nodeObjects.size) { fit(); fitted = true; }
     requestRender();
@@ -523,8 +653,9 @@ export function mountObjects3D(host, options = {}) {
     const corners = [];
     for (const item of nodeObjects.values()) {
       const point = item.group.position;
-      // The tilted page/tablet body, including its thickness and paper offsets.
-      for (const x of [-1.45, 1.45]) for (const y of [-.12, 3.03]) for (const z of [-.95, 1.0]) {
+      // Measure every silhouette rather than assuming a uniform page shape.
+      const { min, max } = item.bodyBounds;
+      for (const x of [min.x - .10, max.x + .10]) for (const y of [min.y - .10, max.y + .10]) for (const z of [min.z - .10, max.z + .10]) {
         corners.push(point.clone().add(new THREE.Vector3(x, y, z)));
       }
       // The selection footprint and the title sprite are also visible objects.

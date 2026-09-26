@@ -135,6 +135,17 @@ test('object types are presentation metadata, including explicit media formats',
     ['Prototype test', [], 'experiment'],
     ['An interview transcript', ['audio'], 'audio'],
     ['A book about image processing', ['code'], 'code'],
+    ['Reference collection', [], 'folder'],
+    ['Topology sketch', [], 'network'],
+    ['Mira role profile', [], 'character'],
+    ['Source schema', [], 'database'],
+    ['Research connector', [], 'service'],
+    ['Storage bucket plan', [], 'cloud'],
+    ['Dream gateway', [], 'portal'],
+    ['Image research collection', ['folder'], 'folder'],
+    ['Book character', ['book', 'format:character'], 'character'],
+    ['Research network', ['research', 'format:network'], 'network'],
+    ['A fictional cloud service', ['format:document', 'cloud', 'service'], 'document'],
   ];
   for (const [title, tags, expected] of examples) {
     const raw = freeze({ id: expected, title, text: 'Unchanged source bytes.', tags });
@@ -150,6 +161,34 @@ test('object types are presentation metadata, including explicit media formats',
     assert.equal(claim.objectType, 'claim', 'a format hint must never hide the interpretation boundary');
     assert.equal(claim.status, 'proposed');
   }
-  assert.equal(new Set(OBJECT_TYPES.map(item => item.id)).size, 10);
+  assert.equal(new Set(OBJECT_TYPES.map(item => item.id)).size, 17);
   assert.ok(OBJECT_TYPES.every(item => item.label && item.icon && item.description));
+});
+
+
+test('object bands keep forty-eight records separated, deterministic, and ordered by recognizable type', () => {
+  const nodes = sample(48).map((node, index) => ({ ...node, type: 'raw', objectType: OBJECT_TYPES[index % OBJECT_TYPES.length].id }));
+  nodes.filter(node => node.objectType === 'claim').forEach(node => { node.type = 'claim'; });
+  freeze(nodes);
+  const before = JSON.stringify(nodes);
+  const result = arrangeMemories(nodes, [], 'bands');
+  assert.equal(result.positions.size, 48);
+  assert.deepEqual(result, arrangeMemories([...nodes].reverse(), [], 'bands'));
+  assert.equal(JSON.stringify(nodes), before);
+  assert.deepEqual(result.groups.map(group => group.label), ['Clouds & portals', 'Networks & services', 'Datastores', 'Folders', 'Sources', 'Ideas', 'Characters']);
+  assert.ok(result.groups.every(group => group.width <= 23), 'at most six objects across each band');
+  for (let index = 1; index < result.groups.length; index++) {
+    const previous = result.groups[index - 1];
+    const group = result.groups[index];
+    assert.ok(previous.z + previous.depth / 2 < group.z - group.depth / 2);
+  }
+  const points = [...result.positions.values()];
+  points.forEach((point, index) => {
+    assert.ok([point.x, point.y, point.z].every(Number.isFinite));
+    assert.equal(point.y, 0);
+    for (const other of points.slice(index + 1)) {
+      assert.ok(Math.hypot(point.x - other.x, point.z - other.z) >= 4 - 1e-8);
+    }
+  });
+  assert.equal(arrangeMemories([], [], 'bands').groups.length, 0);
 });

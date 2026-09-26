@@ -1,8 +1,9 @@
 # Astral Travel
-> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.4.0.
+> Open-source local-first memory, transparent dreaming, and isolated scenario exploration. Alpha v0.5.0.
 
 - [Repository](https://github.com/imagine-os/astral-travel)
 - [README](https://github.com/imagine-os/astral-travel/blob/main/README.md)
+- [Memory explorer](https://github.com/imagine-os/astral-travel/blob/main/docs/explorer.md)
 - [Engine API](https://github.com/imagine-os/astral-travel/blob/main/docs/engine.md)
 - [Local MCP setup](https://github.com/imagine-os/astral-travel/blob/main/docs/mcp.md)
 - [Architecture](https://github.com/imagine-os/astral-travel/blob/main/docs/architecture.md)
@@ -10,3 +11,7 @@
 - [Comparative research](https://github.com/imagine-os/astral-travel/blob/main/docs/research.md)
 
 The alpha uses deterministic keyword/tag matching and scenario templates. No model, autonomous research, remote MCP, or terabyte backend is included. Evidence sources, inferred claims, and simulations remain separate.
+
+The playground has Objects 3D, Skill tree, Radial tree, Cards, and List views over the same local records. Objects use 17 forms, including folders, networks, characters, databases, services, clouds, and portals. Object arrangements include Object bands (fresh default), Rooms, Lanes, Radial, and Grid. Graph views show supplied links and keep disconnected records separate. Dragged placements and appearance preferences are stored separately from evidence.
+
+Fresh examples contain 48 fictional text records (38 sources, 10 interpretations) and 68 recorded connections. Add examples adds missing records without overwriting user memory; a complete v0.4 sample gains 30 nodes. Views page through up to 60 records. Character, media, and infrastructure forms do not imply live agents, playable attachments, or provisioned services.

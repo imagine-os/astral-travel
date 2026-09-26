@@ -8,6 +8,8 @@ const palette = Object.freeze({
   chat: '#558bcc', experiment: '#cf9636', document: '#7b72c4',
   research: '#3c9a9b', media: '#b774ad', connection: '#9070d0',
   book: '#bc8554', image: '#b774ad', video: '#c76d70', audio: '#459e99', code: '#5278b4', claim: '#9070d0',
+  folder: '#d09b37', network: '#3a9f91', character: '#d17b91', database: '#548fc2',
+  service: '#6979b8', cloud: '#72a9c8', portal: '#9b76ca',
 });
 
 function compare(a, b) {
@@ -43,6 +45,13 @@ export const OBJECT_TYPES = Object.freeze([
   { id: 'code', label: 'Code', icon: '⌘', description: 'Saved snippets and implementation notes' },
   { id: 'research', label: 'Research', icon: '⌕', description: 'Research briefs and source reviews' },
   { id: 'experiment', label: 'Experiment', icon: '△', description: 'Test plans and recorded observations' },
+  { id: 'folder', label: 'Folder', icon: '▱', description: 'Collection outlines and linked note indexes' },
+  { id: 'network', label: 'Network', icon: '⌬', description: 'Relationship maps and connection plans' },
+  { id: 'character', label: 'Character', icon: '♟', description: 'People, personas, and fictional role profiles' },
+  { id: 'database', label: 'Database', icon: '▰', description: 'Dataset descriptions and schema notes' },
+  { id: 'service', label: 'Service', icon: '⚙', description: 'Tool descriptions and service blueprints' },
+  { id: 'cloud', label: 'Cloud', icon: '☁', description: 'Storage plans and infrastructure notes' },
+  { id: 'portal', label: 'Portal', icon: '◎', description: 'Navigation gateways and scenario entry points' },
   { id: 'claim', label: 'Interpretation', icon: '✧', description: 'Source-backed proposals and inferences' },
 ].map(value => Object.freeze(value)));
 
@@ -52,10 +61,21 @@ function objectTypeFor(record, type, tags) {
   const heading = `${record.title ?? ''} ${tags.join(' ')}`.toLowerCase();
   // Explicit format tags win over descriptive language in a title. For example,
   // an audio transcript of an interview should be an audio object, not a chat.
-  const tagSet = new Set(tags.map(tag => tag.toLowerCase()));
-  for (const format of ['code', 'book', 'image', 'video', 'audio']) {
-    if (tagSet.has(format)) return format;
-  }
+  const formats = new Set(OBJECT_TYPES.filter(item => item.id !== 'claim').map(item => item.id));
+  const normalizedTags = tags.map(tag => tag.trim().toLowerCase());
+  // A format: hint is unambiguous even when topic tags also name object types.
+  const formatHint = normalizedTags.find(tag => tag.startsWith('format:') && formats.has(tag.slice(7)));
+  if (formatHint) return formatHint.slice(7);
+  // Legacy simple format tags remain supported; their first occurrence wins.
+  const taggedFormat = normalizedTags.find(tag => formats.has(tag));
+  if (taggedFormat) return taggedFormat;
+  if (/\b(folder|collection|binder)\b/u.test(heading)) return 'folder';
+  if (/\b(network|topology|relationship map)\b/u.test(heading)) return 'network';
+  if (/\b(character|persona|profile|avatar)\b/u.test(heading)) return 'character';
+  if (/\b(database|dataset|schema)\b/u.test(heading)) return 'database';
+  if (/\b(service|connector|endpoint)\b/u.test(heading)) return 'service';
+  if (/\b(cloud|storage bucket)\b/u.test(heading)) return 'cloud';
+  if (/\b(portal|gateway)\b/u.test(heading)) return 'portal';
   if (/\b(code|javascript|typescript|python|snippet|function)\b/u.test(heading)) return 'code';
   if (/\b(book|reading|chapter|novel)\b/u.test(heading)) return 'book';
   if (/\b(image|photo|photograph|moodboard|illustration)\b/u.test(heading)) return 'image';
@@ -195,6 +215,40 @@ function lanes(nodes, positions) {
   });
 }
 
+/** Depth bands echo a physical object gallery while keeping stable record IDs. */
+function bands(nodes, positions) {
+  const definitions = [
+    { label: 'Clouds & portals', types: ['cloud', 'portal'] },
+    { label: 'Networks & services', types: ['network', 'service'] },
+    { label: 'Datastores', types: ['database'] },
+    { label: 'Folders', types: ['folder'] },
+    { label: 'Sources', types: ['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment'] },
+    { label: 'Ideas', types: ['claim'] },
+    { label: 'Characters', types: ['character'] },
+  ];
+  const byType = new Map(definitions.flatMap((band, index) => band.types.map(type => [type, index])));
+  const buckets = definitions.map(() => []);
+  for (const node of nodes) {
+    const type = node.type === 'claim' ? 'claim' : node.objectType;
+    buckets[byType.get(type) ?? 4].push(node);
+  }
+  const populated = definitions.map((definition, index) => {
+    const members = buckets[index];
+    const columns = Math.min(6, Math.max(1, members.length));
+    const rows = Math.ceil(members.length / columns);
+    return { label: definition.label, members, columns, rows, width: (columns - 1) * SPACING + ROOM_PADDING, depth: (rows - 1) * SPACING + ROOM_PADDING };
+  }).filter(band => band.members.length);
+  const gap = 1.8;
+  const totalDepth = populated.reduce((sum, band) => sum + band.depth, 0) + Math.max(0, populated.length - 1) * gap;
+  let top = -totalDepth / 2;
+  return populated.map(band => {
+    const z = top + band.depth / 2;
+    putGrid(positions, band.members, band, 0, z);
+    top += band.depth + gap;
+    return { label: band.label, x: 0, z, width: band.width, depth: band.depth };
+  });
+}
+
 function distance(a, b) { return Math.hypot(a.x - b.x, a.z - b.z); }
 
 function ringPoints(count, radius, offset = 0, stretch = 1) {
@@ -252,13 +306,14 @@ function getBounds(positions, groups) {
   return { minX, maxX, minZ, maxZ, width: maxX - minX, depth: maxZ - minZ, center: { x: (minX + maxX) / 2, y: 0, z: (minZ + maxZ) / 2 } };
 }
 
-/** Arrange the same stable IDs in a room, evidence lane, radial, or grid view. */
+/** Arrange stable IDs in rooms, object bands, evidence lanes, radial, or grid views. */
 export function arrangeMemories(nodes, edges = [], layout = 'rooms', selectedId) {
   const ordered = [...new Map(nodes.map(node => [node.id, node])).values()].sort(nodeOrder);
   const positions = new Map();
   let groups = [];
   if (ordered.length) {
-    if (layout === 'lanes') groups = lanes(ordered, positions);
+    if (layout === 'bands') groups = bands(ordered, positions);
+    else if (layout === 'lanes') groups = lanes(ordered, positions);
     else if (layout === 'radial') groups = radial(ordered, edges, positions, selectedId);
     else if (layout === 'grid') putGrid(positions, ordered, gridShape(ordered.length, 1.5));
     else groups = rooms(ordered, positions);

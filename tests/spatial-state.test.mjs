@@ -98,7 +98,7 @@ test('inherited properties and accessors do not become saved positions', () => {
 
 test('object type preferences are immutable, allow only source shapes, and reset with null', () => {
   let state = createSpatialState();
-  const types = ['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment'];
+  const types = ['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment', 'folder', 'network', 'character', 'database', 'service', 'cloud', 'portal'];
   for (const type of types) state = setSpatialObjectType(state, type, type);
   freeze(state);
   assert.equal(Object.keys(state.objects).length, types.length);
@@ -121,4 +121,16 @@ test('saved preferences have a combined 5,000-entry bound but existing entries r
   assert.deepEqual(setSpatialObjectType(state, 'extra', 'book'), state);
   assert.equal(moveSpatialObject(state, 'rooms', 'id-0', { x: 2, z: 3 }).layouts.rooms['id-0'].x, 2);
   assert.equal(setSpatialObjectType(state, 'a', 'video').objects.a, 'video');
+});
+
+
+test('object-band placements persist independently from earlier arrangements', () => {
+  let state = moveSpatialObject(createSpatialState(), 'rooms', 'mira', { x: 1, z: 2 });
+  state = moveSpatialObject(state, 'bands', 'mira', { x: -5, z: 12 });
+  state = setSpatialObjectType(state, 'mira', 'character');
+  const restored = normalizeSpatialState(JSON.parse(JSON.stringify(state)));
+  assert.deepEqual(restored.layouts.rooms.mira, { x: 1, y: 0, z: 2 });
+  assert.deepEqual(restored.layouts.bands.mira, { x: -5, y: 0, z: 12 });
+  assert.equal(restored.objects.mira, 'character');
+  assert.equal(resetSpatialLayout(restored, 'bands').layouts.bands, undefined);
 });

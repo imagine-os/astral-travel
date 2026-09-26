@@ -1,6 +1,12 @@
 # Release verification
 
-September 25, 2026.
+September 26, 2026.
+
+## v0.5.0 — A world of objects
+
+The example upgrade preserves all original v0.4 source text, identities, tags, and review decisions. Fresh samples contain **48 records, 68 recorded relationships, and 17 object forms**. Automated checks cover additive upgrades, connectivity, presentation classification, object-band spacing, and placement persistence. Syntax checks and the static build pass.
+
+A native geometry harness built all seventeen forms and checked finite vertices, floor clearance, model dimensions, and world-independent bounds. Native GPU visual verification still requires a hardware-accelerated browser. Public examples remain fictional text records; no live service, attachment playback, or agent capability is implied by their shapes.
 
 ## v0.4.0 — Object forms and manual placement
 

@@ -1,6 +1,6 @@
 // Presentation preferences only. These helpers never receive or modify evidence.
-const LAYOUTS = new Set(['rooms', 'lanes', 'radial', 'grid']);
-const OBJECT_TYPES = new Set(['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment']);
+const LAYOUTS = new Set(['rooms', 'lanes', 'radial', 'grid', 'bands']);
+const OBJECT_TYPES = new Set(['document', 'chat', 'book', 'image', 'video', 'audio', 'code', 'research', 'experiment', 'folder', 'network', 'character', 'database', 'service', 'cloud', 'portal']);
 const MAX_ENTRIES = 5000;
 const MAX_COORDINATE = 100;
 
