@@ -85,19 +85,16 @@ Turn an idea into an experiment. Measure the outcome. Carry what worked into the
 
 > **A working alpha.** Local memory, traceable knowledge, reviewable connections, research reminders, and isolated scenario worksheets. No account or API key required. Model calls, autonomous research, predictive simulation, and outcome-driven improvement are future work.
 
-<details>
-<summary><strong>See the actual working playground</strong></summary>
+### See the actual working playground
 
 <a href="https://imagine-os.github.io/astral-travel/#lab">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/objects-v04-dark.jpg">
-  <img src="docs/assets/objects-v04-light.jpg" alt="Astral Travel: recognizable document objects and a source inspector" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/objects-v05-dark.jpg">
+  <img src="docs/assets/characters-v05-light.jpg" alt="Friendly character figures stand among connected memories, with actual source text in the inspector" width="100%">
 </picture>
 </a>
 
-These v0.4 screenshots show the saved-text previews and source inspector. The website starts in light mode. Use the appearance switch to change the complete interface to dark; your choice is saved on your device.
-
-</details>
+Actual v0.5.1 playground captures. **[See all 48 objects](docs/assets/objects-v05-light.jpg)** · **[Explore networks, clouds, and services](docs/assets/objects-v05-dark.jpg)**. Light by default, with a complete dark theme. Select an object, then use **Focus** for a closer look.
 
 ## Recognize your memories. Arrange them your way.
 
@@ -115,7 +112,12 @@ Inspired by your favorites in [Graph Gallery](https://github.com/imagine-os/grap
 
 **Objects 3D and Cards have five arrangements:** Object bands, Rooms, Lanes, Radial, and Grid. Fresh preferences start with Object bands. The two tree views have their own branching layouts; they draw recorded links and show disconnected records separately.
 
-![Card lanes separate original sources from processed knowledge, with actual saved-text previews](docs/assets/cards-light.jpg)
+<table>
+<tr>
+<td width="50%" valign="top"><a href="docs/assets/skilltree-v05-light.jpg"><img src="docs/assets/skilltree-v05-light.jpg" width="100%" alt="Skill Tree: a character connects to a project folder, interview, and source-backed ideas."></a><h3>Follow the branches.</h3>Skill Tree turns recorded connections into lanes you can trace. Icons identify the objects; previews open the original text.</td>
+<td width="50%" valign="top"><a href="docs/assets/radial-v05-dark.jpg"><img src="docs/assets/radial-v05-dark.jpg" width="100%" alt="Radial Tree in dark mode, with connected branches, crosslinks, and a character record in the inspector."></a><h3>Change your perspective.</h3>Radial Tree puts a memory at the center. Focus on a new record to explore its surrounding connections.</td>
+</tr>
+</table>
 
 **Drag an object to move it; drag empty space to orbit.** Positions save per arrangement on this device, with Undo, Reset, and keyboard movement controls. Every view opens the same source inspector.
 

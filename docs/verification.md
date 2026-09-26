@@ -6,6 +6,10 @@ September 26, 2026.
 
 The example upgrade preserves all original v0.4 source text, identities, tags, and review decisions. Fresh samples contain **48 records, 68 recorded relationships, and 17 object forms**. **59 tests pass**, covering additive upgrades, connectivity, presentation classification, object-band spacing, placement persistence, and graph layouts with cycles and disconnected nodes. The 48-node sample has no overlapping tree-view cards in the layout checks. Syntax checks and the static build pass.
 
+Live desktop checks showed all 48 objects and all 17 forms in compatibility 3D. An actual pointer drag moved a character and its connection lines without changing the camera; Undo restored its position. Repeating Add examples kept the count at 48. Both tree views rendered 48 nodes and 68 edges, preserved the camera during selection, shared the inspector, supported search, and worked in both themes. Radial Focus rerooted the graph around the selected character. The oversized compatibility floor found during testing was bounded to visible records; the compatibility renderer also avoids repeated damping and decorative shadows in dense scenes. Its event-driven updates commit the DOM without waiting for animation frames, and use simple shaded round surfaces in place of expensive spherical CSS meshes. The native renderer retains its volumetric geometry.
+
+[Objects · light](assets/objects-v05-light.jpg) · [Objects · dark](assets/objects-v05-dark.jpg) · [Skill Tree](assets/skilltree-v05-light.jpg) · [Radial Tree](assets/radial-v05-dark.jpg)
+
 A native geometry harness built all seventeen forms and checked finite vertices, floor clearance, model dimensions, and world-independent bounds. Native GPU visual verification still requires a hardware-accelerated browser. Public examples remain fictional text records; no live service, attachment playback, or agent capability is implied by their shapes.
 
 ## v0.4.0 — Object forms and manual placement
